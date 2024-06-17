@@ -1,0 +1,244 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2023-05-01",
+      "name": "[parameters('storageAccountName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "StorageV2",
+      "properties": {
+        "supportsHttpsTrafficOnly": true
+      },
+      "resources": [
+        {
+          "type": "fileServices",
+          "apiVersion": "2023-05-01",
+          "name": "default",
+          "dependsOn": [
+            "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+          ],
+          "resources": [
+            {
+              "type": "shares",
+              "apiVersion": "2023-05-01",
+              "name": "[parameters('grafanaFileShareName')]",
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/fileServices', parameters('storageAccountName'), 'default')]"
+              ],
+              "properties": {
+                "shareQuota": 5120
+              }
+            },
+            {
+              "type": "shares",
+              "apiVersion": "2023-05-01",
+              "name": "[parameters('prometheusFileShareName')]",
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/fileServices', parameters('storageAccountName'), 'default')]"
+              ],
+              "properties": {
+                "shareQuota": 5120
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Microsoft.ContainerInstance/containerGroups",
+      "apiVersion": "2023-05-01",
+      "name": "[parameters('containerName')]",
+      "location": "[parameters('location')]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts/fileServices/shares', parameters('storageAccountName'), 'default', parameters('grafanaFileShareName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts/fileServices/shares', parameters('storageAccountName'), 'default', parameters('prometheusFileShareName'))]"
+      ],
+      "properties": {
+        "containers": [
+          {
+            "name": "[parameters('containerName')]",
+            "properties": {
+              "image": "[parameters('image')]",
+              "resources": {
+                "requests": {
+                  "cpu": "[parameters('cpu')]",
+                  "memoryInGb": "[parameters('memoryInGb')]"
+                }
+              },
+              "volumeMounts": [
+                {
+                  "name": "grafanavolume",
+                  "mountPath": "/var/lib/grafana"
+                },
+                {
+                  "name": "prometheusvolume",
+                  "mountPath": "/data/prometheus"
+                }
+              ],
+              "ports": [
+                {
+                  "port": 8080
+                }
+              ],
+              "environmentVariables": [
+                {
+                  "name": "SUPABASE_PROJECT_REF",
+                  "value": "[parameters('supabaseProjectRef')]"
+                },
+                {
+                  "name": "SUPABASE_SERVICE_ROLE_KEY",
+                  "value": "[parameters('supabaseServiceRoleKey')]"
+                },
+                {
+                  "name": "GRAFANA_PASSWORD",
+                  "value": "[parameters('grafanaPassword')]"
+                }
+              ]
+            }
+          }
+        ],
+        "osType": "Linux",
+        "ipAddress": {
+          "type": "Public",
+          "ports": [
+            {
+              "protocol": "tcp",
+              "port": 8080
+            }
+          ]
+        },
+        "volumes": [
+          {
+            "name": "grafanavolume",
+            "azureFile": {
+              "shareName": "[parameters('grafanaFileShareName')]",
+              "storageAccountName": "[parameters('storageAccountName')]",
+              "storageAccountKey": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2023-05-01').keys[0].value]"
+            }
+          },
+          {
+            "name": "prometheusvolume",
+            "azureFile": {
+              "shareName": "[parameters('prometheusFileShareName')]",
+              "storageAccountName": "[parameters('storageAccountName')]",
+              "storageAccountKey": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2023-05-01').keys[0].value]"
+            }
+          }
+        ],
+        "imageRegistryCredentials": [
+          {
+            "server": "[concat(parameters('acrName'), '.azurecr.io')]",
+            "username": "[listCredentials(resourceId('Microsoft.ContainerRegistry/registries', parameters('acrName')), '2023-07-01').username]",
+            "password": "[listCredentials(resourceId('Microsoft.ContainerRegistry/registries', parameters('acrName')), '2023-07-01').passwords[0].value]"
+          }
+        ]
+      }
+    }
+  ],
+  "parameters": {
+    "acrName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Azure Container Registry."
+      }
+    },
+    "adminUserEnabled": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable admin user for Azure Container Registry."
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "eastus",
+      "metadata": {
+        "description": "Location for all resources."
+      }
+    },
+    "sku": {
+      "type": "string",
+      "defaultValue": "Standard",
+      "allowedValues": [
+        "Basic",
+        "Standard",
+        "Premium"
+      ],
+      "metadata": {
+        "description": "The SKU of the Azure Container Registry."
+      }
+    },
+    "storageAccountName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Azure Storage Account."
+      }
+    },
+    "containerName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the container"
+      }
+    },
+    "image": {
+      "type": "string",
+      "metadata": {
+        "description": "Container image to deploy"
+      }
+    },
+    "cpu": {
+      "type": "int",
+      "defaultValue": 1,
+      "metadata": {
+        "description": "CPU cores to allocate"
+      }
+    },
+    "memoryInGb": {
+      "type": "int",
+      "defaultValue": 2,
+      "metadata": {
+        "description": "The amount of memory to allocate to the container in gigabytes."
+      }
+    },
+    "grafanaFileShareName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Azure File Share for Grafana"
+      }
+    },
+    "prometheusFileShareName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Azure File Share for Prometheus"
+      }
+    },
+    "supabaseProjectRef": {
+      "type": "string",
+      "metadata": {
+        "description": "Supabase project reference."
+      }
+    },
+    "supabaseServiceRoleKey": {
+      "type": "string",
+      "metadata": {
+        "description": "Supabase service role key."
+      }
+    },
+    "grafanaPassword": {
+      "type": "string",
+      "metadata": {
+        "description": "Password for Grafana."
+      }
+    }
+  }
+}
+
