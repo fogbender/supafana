@@ -44,6 +44,7 @@ in with pkgs; mkShell {
     nix-tree
     dive
     just
+    azure-cli
   ]
   ++ file-notifier
   ++ elixir_libs
