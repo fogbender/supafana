@@ -26,3 +26,5 @@ supafana-*.tar
 /tmp/
 
 result
+
+supabase-grafana/run.sh
