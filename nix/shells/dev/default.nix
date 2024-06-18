@@ -1,4 +1,4 @@
-{ pkgs, unstable, beamPackages, ... }:
+{ pkgs, beamPackages, ... }:
 let
 
   inherit (pkgs.lib) optional optionals;
@@ -29,7 +29,7 @@ let
     rebar3
   ];
 
-  js_libs = with unstable; [
+  js_libs = with pkgs; [
     nodejs
     nodePackages.pnpm
   ];

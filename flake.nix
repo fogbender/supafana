@@ -2,8 +2,7 @@
   description = "EMBS flake";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
-    unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
 
     utils.url = "github:numtide/flake-utils";
 
@@ -11,20 +10,18 @@
     gitignore.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, utils, unstable, gitignore }:
+  outputs = { self, nixpkgs, utils, gitignore }:
     let
       inherit (nixpkgs.lib) filterAttrs const;
       inherit (builtins) readDir mapAttrs;
 
       overlay = final: prev: {
         inherit (gitignore.lib) gitignoreSource;
-        unstable = unstable.legacyPackages.${final.system};
-        # TODO switch to beam_nox.packages.erlang_26 when available in nix cache
-        beamPackages = final.unstable.beam_minimal.packages.erlang_26.extend(new: old: {
+        beamPackages = final.beam.packages.erlang.extend(new: old: {
           rebar3 = old.rebar3.overrideAttrs{ doCheck = false; };
         });
         mkMixDeps = final.callPackage ./nix/lib/mk-mix-deps.nix { };
-        embs = final.callPackage ./nix/lib/embs.nix { };
+        embs = final.callPackage ./nix/lib/supafana.nix { };
       };
 
       sysPkgs = (system :

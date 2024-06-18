@@ -1,4 +1,4 @@
-{ pkgs, unstable, supafana, beamPackages, writeScriptBin, lib, ... }:
+{ pkgs, supafana, beamPackages, writeScriptBin, lib, ... }:
 let
   js_libs = with unstable; [
     nodejs
