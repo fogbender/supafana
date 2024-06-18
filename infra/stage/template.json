@@ -77,7 +77,7 @@
               "volumeMounts": [
                 {
                   "name": "grafanavolume",
-                  "mountPath": "/var/lib/grafana"
+                  "mountPath": "/data/grafana/data"
                 },
                 {
                   "name": "prometheusvolume",
@@ -85,8 +85,11 @@
                 }
               ],
               "ports": [
+  				{
+                  "port": 80
+                },
                 {
-                  "port": 8080
+                  "port": 443
                 }
               ],
               "environmentVariables": [
@@ -97,6 +100,10 @@
                 {
                   "name": "SUPABASE_SERVICE_ROLE_KEY",
                   "value": "[parameters('supabaseServiceRoleKey')]"
+                },
+                {
+                  "name": "GRAFANA_URL",
+                  "value": "[parameters('grafanaUrl')]"
                 },
                 {
                   "name": "GRAFANA_PASSWORD",
@@ -110,11 +117,16 @@
         "ipAddress": {
           "type": "Public",
           "ports": [
+			{
+              "protocol": "tcp",
+              "port": 80
+            },
             {
               "protocol": "tcp",
-              "port": 8080
+              "port": 443
             }
-          ]
+          ],
+          "dnsNameLabel": "[parameters('dnsNameLabel')]"
         },
         "volumes": [
           {
@@ -233,11 +245,20 @@
         "description": "Supabase service role key."
       }
     },
+    "grafanaUrl": {
+      "type": "string",
+      "metadata": {
+        "description": "Grafana URL."
+      }
+    },
     "grafanaPassword": {
       "type": "string",
       "metadata": {
         "description": "Password for Grafana."
       }
+    },
+    "dnsNameLabel": {
+      "type": "string"
     }
   }
 }
