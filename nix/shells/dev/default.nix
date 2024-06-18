@@ -45,6 +45,7 @@ in with pkgs; mkShell {
     dive
     just
     azure-cli
+    bicep
   ]
   ++ file-notifier
   ++ elixir_libs
