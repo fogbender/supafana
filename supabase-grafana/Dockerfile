@@ -49,8 +49,7 @@ ENV SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
 ENV PASSWORD_PROTECTED=true
 ENV GRAFANA_PASSWORD=${GRAFANA_PASSWORD}
 
-
-RUN echo "$GRAFANA_URL\n\nreverse_proxy :8080" > /etc/caddy/Caddyfile
+RUN echo '{$GRAFANA_URL}\n\nreverse_proxy :8080' > /etc/caddy/Caddyfile
 
 EXPOSE 8080
 
