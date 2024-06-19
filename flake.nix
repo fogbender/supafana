@@ -65,6 +65,18 @@
             };
           }
       );
+
+      supafanaAzureImage = (system:
+        let
+          pkgs = sysPkgs system;
+          img = nixpkgs.lib.nixosSystem {
+	          inherit pkgs system;
+            modules = [ nix/azure-image/image.nix nix/hosts/supafana ];
+          };
+        in
+        img.config.system.build.azureImage
+      );
+
     in
     {
       devShells.x86_64-linux = shells "x86_64-linux";
@@ -79,5 +91,7 @@
       packages.aarch64-darwin.embs = pkgEmbs "aarch64-darwin";
 
       overlays.default = overlay;
+
+      packages.x86_64-linux.supafana-image = supafanaAzureImage "x86_64-linux";
     };
 }

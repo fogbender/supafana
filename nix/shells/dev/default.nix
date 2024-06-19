@@ -44,8 +44,7 @@ in with pkgs; mkShell {
     nix-tree
     dive
     just
-    azure-cli
-    bicep
+    azure-cli bicep azure-storage-azcopy
   ]
   ++ file-notifier
   ++ elixir_libs
