@@ -1,19 +1,10 @@
 // The name of your Virtual Machine.
 param vmName string = 'supafana'
-// Username for the Virtual Machine.
-param adminUsername string
-// Type of authentication to use on the Virtual Machine. SSH key is recommended.
-param authenticationType string = 'sshPublicKey'
-// SSH Key or password for the Virtual Machine. SSH key is recommended.
-@secure()
-param adminPasswordOrKey string
-// Unique DNS Name for the Public IP used to access the Virtual Machine.
-param dnsLabelPrefix string = toLower('flowmon-${uniqueString(resourceGroup().id)}')
 
 // Location for all resources.
 param location string = resourceGroup().location
 // The size of the VM.
-param vmSize string = 'Standard_B4ms'
+param vmSize string = 'Standard_B2s'
 // Name of the VNET.
 param virtualNetworkName string = 'vNet'
 // Name of the subnet in the virtual network.
@@ -26,19 +17,9 @@ var publicIPAddressName = '${vmName}PublicIP'
 var networkInterfaceName = '${vmName}Nic'
 var subnetRef = '${vnet.id}/subnets/${subnetName}'
 var osDiskType = 'Standard_LRS'
+var osDiskSizeGB = 20
 var subnetAddressPrefix = '10.5.0.0/24'
 var addressPrefix = '10.5.0.0/16'
-var linuxConfiguration = {
-  disablePasswordAuthentication: true
-  ssh: {
-    publicKeys: [
-      {
-        path: '/home/${adminUsername}/.ssh/authorized_keys'
-        keyData: adminPasswordOrKey
-      }
-    ]
-  }
-}
 
 // Network interface
 resource nic 'Microsoft.Network/networkInterfaces@2020-06-01' = {
@@ -147,5 +128,49 @@ resource publicIP 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
   }
   sku: {
     name: 'Standard'
+  }
+}
+
+// image
+
+resource image 'Microsoft.Compute/images@2023-09-01' existing = {
+  name: 'supafana'
+  scope: resourceGroup('MKIMAGERESOURCEGROUP')
+}
+
+
+// Virtual Machine
+
+resource vm 'Microsoft.Compute/virtualMachines@2021-03-01' = {
+  name: vmName
+  location: location
+  properties: {
+    hardwareProfile: {
+      vmSize: vmSize
+    }
+    storageProfile: {
+      osDisk: {
+        createOption: 'FromImage'
+        managedDisk: {
+          storageAccountType: osDiskType
+        }
+        diskSizeGB: osDiskSizeGB
+      }
+      imageReference: {
+        id: image.id
+      }
+    }
+    networkProfile: {
+      networkInterfaces: [
+        {
+          id: nic.id
+        }
+      ]
+    }
+    diagnosticsProfile: {
+      bootDiagnostics: {
+        enabled: true
+      }
+    }
   }
 }
