@@ -6,6 +6,7 @@ in
 {
   imports = [
     ../../azure-image/common.nix
+    ./nginx.nix
   ];
 
   services.openssh.settings.PasswordAuthentication = false;
@@ -20,18 +21,11 @@ in
         description = "Supafana user";
         openssh.authorizedKeys.keys = [ keys.abs keys.abs2 keys.mk ];
     };
-    mk = {
+    admin = {
         isNormalUser = true;
-        home = "/home/mk";
+        home = "/home/admin";
         extraGroups = [ "wheel" ];
-        openssh.authorizedKeys.keys = [ keys.mk ];
-    };
-    abs = {
-      isNormalUser = true;
-      home = "/home/abs";
-      extraGroups = [ "wheel" ];
-      openssh.authorizedKeys.keys = [ keys.abs keys.abs2 ];
+        openssh.authorizedKeys.keys = [ keys.mk keys.abs keys.abs2 ];
     };
   };
-
 }

@@ -86,6 +86,23 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2020-06-01' = {
                destinationAddressPrefixes : []
           }
       }
+      {
+           name : 'HTTP'
+           properties : {
+               protocol :  'Tcp'
+               sourcePortRange :  '*'
+               destinationPortRange :  '80'
+               sourceAddressPrefix :  '*'
+               destinationAddressPrefix :  '*'
+               access :  'Allow'
+               priority : 1030
+               direction :  'Inbound'
+               sourcePortRanges : []
+               destinationPortRanges : []
+               sourceAddressPrefixes : []
+               destinationAddressPrefixes : []
+          }
+      }
     ]
   }
 }

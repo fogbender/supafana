@@ -1,5 +1,5 @@
 {
-  description = "EMBS flake";
+  description = "Supafana flake";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
@@ -8,10 +8,13 @@
 
     gitignore.url = "github:hercules-ci/gitignore.nix";
     gitignore.inputs.nixpkgs.follows = "nixpkgs";
+
+    deploy-rs.url = "github:serokell/deploy-rs";
   };
 
-  outputs = { self, nixpkgs, utils, gitignore }:
+  outputs = { self, nixpkgs, utils, gitignore, deploy-rs }:
     let
+      system = "x86_64-linux";
       inherit (nixpkgs.lib) filterAttrs const;
       inherit (builtins) readDir mapAttrs;
 
@@ -21,7 +24,7 @@
           rebar3 = old.rebar3.overrideAttrs{ doCheck = false; };
         });
         mkMixDeps = final.callPackage ./nix/lib/mk-mix-deps.nix { };
-        embs = final.callPackage ./nix/lib/supafana.nix { };
+        supafana = final.callPackage ./nix/lib/supafana.nix { };
       };
 
       sysPkgs = (system :
@@ -33,9 +36,17 @@
         }
       );
 
-      pkgEmbs = (system:
+      deployPkgs = import nixpkgs {
+        inherit system;
+        overlays = [
+          deploy-rs.overlay
+          (self: super: { deploy-rs = { inherit (sysPkgs system) deploy-rs; lib = super.deploy-rs.lib; }; })
+        ];
+      };
+
+      pkgSupafana = (system:
         let pkgs = sysPkgs system;
-        in pkgs.embs.server
+        in pkgs.supafana.server
       );
 
       shells = (system:
@@ -48,18 +59,18 @@
         let
           pkgs = sysPkgs system;
           inherit (pkgs) coreutils bash;
-          embs = pkgEmbs system;
+          supafana = pkgSupafana system;
         in
           pkgs.dockerTools.streamLayeredImage {
-            name = "embs";
+            name = "supafana";
             tag = "latest";
-            contents = [ coreutils bash embs ];
+            contents = [ coreutils bash supafana ];
             config = {
               Env = [
                 "RELEASE_COOKIE=TEST"
                 "ELIXIR_ERL_OPTIONS=+fnu"
               ];
-              Cmd = [ "bash" "${embs}/bin/start.sh" ];
+              Cmd = [ "bash" "${supafana}/bin/start.sh" ];
               Volumes = { "/tmp" = { }; };
               ExposedPorts = { "80" = { }; };
             };
@@ -83,15 +94,35 @@
       devShells.x86_64-darwin = shells "x86_64-darwin";
       devShells.aarch64-darwin = shells "aarch64-darwin";
 
-      packages.x86_64-linux.default = self.packages.x86_64-linux.embs;
+      packages.x86_64-linux.default = self.packages.x86_64-linux.supafana;
       packages.x86_64-linux.dockerImage = buildDockerImage "x86_64-linux";
 
-      packages.x86_64-linux.embs = pkgEmbs "x86_64-linux";
-      packages.x86_64-darwin.embs = pkgEmbs "x86_64-darwin";
-      packages.aarch64-darwin.embs = pkgEmbs "aarch64-darwin";
+      packages.x86_64-linux.supafana = pkgSupafana "x86_64-linux";
+      packages.x86_64-darwin.supafana = pkgSupafana "x86_64-darwin";
+      packages.aarch64-darwin.supafana = pkgSupafana "aarch64-darwin";
 
       overlays.default = overlay;
 
       packages.x86_64-linux.supafana-image = supafanaAzureImage "x86_64-linux";
+
+      nixosConfigurations = {
+        supafana = nixpkgs.lib.nixosSystem {
+          inherit system;
+          modules = [
+            nix/hosts/supafana
+          ];
+        };
+      };
+
+      deploy = {
+        sshUser = "admin";
+        user = "root";
+        nodes = {
+          supafana = {
+            hostname = "supafana.com";
+            profiles.system.path = deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.supafana;
+          };
+        };
+      };
     };
 }

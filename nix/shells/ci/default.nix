@@ -1,6 +1,6 @@
 { pkgs, supafana, beamPackages, writeScriptBin, lib, ... }:
 let
-  js_libs = with unstable; [
+  js_libs = with pkgs; [
     nodejs
     nodePackages.pnpm
   ];
