@@ -121,9 +121,6 @@ resource publicIP 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
   properties: {
     publicIPAllocationMethod: 'Static'
     publicIPAddressVersion: 'IPv4'
-    dnsSettings: {
-      domainNameLabel: dnsLabelPrefix
-    }
     idleTimeoutInMinutes: 4
   }
   sku: {
@@ -134,8 +131,8 @@ resource publicIP 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
 // image
 
 resource image 'Microsoft.Compute/images@2023-09-01' existing = {
-  name: 'supafana'
-  scope: resourceGroup('MKIMAGERESOURCEGROUP')
+  name: 'supafana-v2'
+  scope: resourceGroup('MkImageResourceGroup')
 }
 
 
@@ -147,6 +144,11 @@ resource vm 'Microsoft.Compute/virtualMachines@2021-03-01' = {
   properties: {
     hardwareProfile: {
       vmSize: vmSize
+    }
+    osProfile: {
+      computerName: vmName
+      adminUserName: 'supafana'
+      adminPassword: 'Azurepass1349' //will be removed by nixos-rebuild
     }
     storageProfile: {
       osDisk: {

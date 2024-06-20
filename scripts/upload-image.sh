@@ -176,8 +176,9 @@ then
 
   az disk create                \
     --resource-group "${resource_group}" \
-    --name "${img_name}"        \
-    --for-upload true           \
+    --name "${img_name}" \
+    --hyper-v-generation V2 \
+    --upload-type Upload \
     --upload-size-bytes "${bytes}"
 
   timeout=$(( 60 * 60 )) # disk access token timeout
@@ -210,6 +211,7 @@ then
     --resource-group "${resource_group}"  \
     --name "${img_name}"         \
     --source "$(show_id "disk")" \
+    --hyper-v-generation V2 \
     --os-type "linux" >/dev/null
 fi
 
@@ -218,3 +220,10 @@ then
   img_id="$(show_id "image")"
   ./boot-vm.sh $(make_boot_sh_opts $img_id $boot_opts_d)
 fi
+
+imageid="$(az image show -g "${resource_group}" -n "${img_name}" -o json | jq -r .id)"
+echo "image creation completed:"
+echo "image_id: ${imageid}"
+
+# delete the nix build link
+rm -fr ./azure
