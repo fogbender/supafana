@@ -5,14 +5,8 @@
     "acrName": {
       "value": "supafanastgcr"
     },
-    "adminUserEnabled": {
-      "value": true
-    },
     "location": {
       "value": "eastus"
-    },
-    "sku": {
-      "value": "Standard"
     },
     "storageAccountName": {
       "value": "supafanastgsa000"
@@ -46,9 +40,6 @@
     },
     "grafanaPassword": {
       "value": "hello"
-    },
-    "dnsNameLabel": {
-      "value": "qlsuulkvgexqylfezivg-supafana"
     }
   }
 }

@@ -8,17 +8,21 @@ param vmSize string = 'Standard_B2s'
 // Name of the VNET.
 param virtualNetworkName string = 'vNet'
 // Name of the subnet in the virtual network.
-param subnetName string = 'Subnet'
+param vmSubnetName string = 'VMSubnet'
+param containerSubnetName string = 'ContainerSubnet'
 // Name of the Network Security Group.
 param networkSecurityGroupName string = 'SecGroupNet'
+param privateDnsZoneName string = 'supafana.local'
 
 
 var publicIPAddressName = '${vmName}PublicIP'
 var networkInterfaceName = '${vmName}Nic'
-var subnetRef = '${vnet.id}/subnets/${subnetName}'
+var vmSubnetRef = resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetworkName, vmSubnetName)
+var containerSubnetRef = resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetworkName, containerSubnetName)
 var osDiskType = 'Standard_LRS'
 var osDiskSizeGB = 20
-var subnetAddressPrefix = '10.5.0.0/24'
+var vmSubnetAddressPrefix = '10.5.0.0/24'
+var containerSubnetAddressPrefix = '10.5.1.0/24'
 var addressPrefix = '10.5.0.0/16'
 
 // Network interface
@@ -31,7 +35,7 @@ resource nic 'Microsoft.Network/networkInterfaces@2020-06-01' = {
         name: 'ipconfig1'
         properties: {
           subnet: {
-            id: subnetRef
+            id: vmSubnetRef
           }
           privateIPAllocationMethod: 'Dynamic'
           publicIPAddress: {
@@ -103,6 +107,19 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2020-06-01' = {
                destinationAddressPrefixes : []
           }
       }
+      {
+        name: 'Internal'
+        properties: {
+          protocol: '*'
+          sourcePortRange: '*'
+          destinationPortRange: '*'
+          sourceAddressPrefix: addressPrefix
+          destinationAddressPrefix: addressPrefix
+          access: 'Allow'
+          priority: 1040
+          direction: 'Inbound'
+        }
+      }
     ]
   }
 }
@@ -119,11 +136,25 @@ resource vnet 'Microsoft.Network/virtualNetworks@2020-06-01' = {
     }
     subnets: [
       {
-        name: subnetName
+        name: vmSubnetName
         properties: {
-          addressPrefix: subnetAddressPrefix
+          addressPrefix: vmSubnetAddressPrefix
           privateEndpointNetworkPolicies: 'Enabled'
           privateLinkServiceNetworkPolicies: 'Enabled'
+        }
+      }
+      {
+        name: containerSubnetName
+        properties: {
+          addressPrefix: containerSubnetAddressPrefix
+          delegations: [
+            {
+              name: 'aciDelegation'
+              properties: {
+                serviceName: 'Microsoft.ContainerInstance/containerGroups'
+              }
+            }
+          ]
         }
       }
     ]
@@ -145,16 +176,33 @@ resource publicIP 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
   }
 }
 
-// image
+// Private DNS Zone
+resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
+  name: privateDnsZoneName
+  location: 'global'
+}
+
+// DNS Zone Link
+resource dnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
+  name: '${virtualNetworkName}-link'
+  location: 'global'
+  parent: privateDnsZone
+  properties: {
+    virtualNetwork: {
+      id: vnet.id
+    }
+    registrationEnabled: true
+  }
+}
+
+// Image
 
 resource image 'Microsoft.Compute/images@2023-09-01' existing = {
   name: 'supafana-v2'
   scope: resourceGroup('MkImageResourceGroup')
 }
 
-
 // Virtual Machine
-
 resource vm 'Microsoft.Compute/virtualMachines@2021-03-01' = {
   name: vmName
   location: location
