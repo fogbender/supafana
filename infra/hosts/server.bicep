@@ -1,19 +1,29 @@
-// The name of your Virtual Machine.
+@description('Vm image name')
+param imageName string = 'supafana-v3'
+
+@description('Vm name') //generates new one for image update, so vm will be recreated
 param vmName string = 'supafana'
 
-// Location for all resources.
+@description('Location for all resources.')
 param location string = resourceGroup().location
-// The size of the VM.
-param vmSize string = 'Standard_B2s'
-// Name of the VNET.
-param virtualNetworkName string = 'vNet'
-// Name of the subnet in the virtual network.
-param vmSubnetName string = 'VMSubnet'
-param containerSubnetName string = 'ContainerSubnet'
-// Name of the Network Security Group.
-param networkSecurityGroupName string = 'SecGroupNet'
-param privateDnsZoneName string = 'supafana.local'
 
+@description('The size of the VM.')
+param vmSize string = 'Standard_B2s'
+
+@description('Name of the VNET.')
+param virtualNetworkName string = 'vNet'
+
+@description('VM subnet name')
+param vmSubnetName string = 'Subnet'
+
+@description('Containers subnet name')
+param containerSubnetName string = 'ContainerSubnet'
+
+@description('Name of the Network Security Group.')
+param networkSecurityGroupName string = 'SecGroupNet'
+
+@description('Local domain')
+param privateDnsZoneName string = 'supafana.local'
 
 var publicIPAddressName = '${vmName}PublicIP'
 var networkInterfaceName = '${vmName}Nic'
@@ -21,9 +31,9 @@ var vmSubnetRef = resourceId('Microsoft.Network/virtualNetworks/subnets', virtua
 var containerSubnetRef = resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetworkName, containerSubnetName)
 var osDiskType = 'Standard_LRS'
 var osDiskSizeGB = 20
+var addressPrefix = '10.5.0.0/16'
 var vmSubnetAddressPrefix = '10.5.0.0/24'
 var containerSubnetAddressPrefix = '10.5.1.0/24'
-var addressPrefix = '10.5.0.0/16'
 
 // Network interface
 resource nic 'Microsoft.Network/networkInterfaces@2020-06-01' = {
@@ -147,9 +157,11 @@ resource vnet 'Microsoft.Network/virtualNetworks@2020-06-01' = {
         name: containerSubnetName
         properties: {
           addressPrefix: containerSubnetAddressPrefix
+          privateEndpointNetworkPolicies: 'Enabled'
+          privateLinkServiceNetworkPolicies: 'Enabled'
           delegations: [
             {
-              name: 'aciDelegation'
+              name: 'DelegationService'
               properties: {
                 serviceName: 'Microsoft.ContainerInstance/containerGroups'
               }
@@ -198,7 +210,7 @@ resource dnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020
 // Image
 
 resource image 'Microsoft.Compute/images@2023-09-01' existing = {
-  name: 'supafana-v2'
+  name: imageName
   scope: resourceGroup('MkImageResourceGroup')
 }
 
