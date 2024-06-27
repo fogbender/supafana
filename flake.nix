@@ -77,6 +77,31 @@
           }
       );
 
+      echoDockerImage = (system:
+        let
+          pkgs = sysPkgs system;
+          caddyPort = "80";
+          caddyConf = pkgs.writeTextDir "Caddyfile" ''
+          :${caddyPort} {
+              respond "Hello World from {$SUPAFANA_PROJECT_ID}"
+          }
+          '';
+        in
+          pkgs.dockerTools.buildLayeredImage {
+            name = "caddy-container";
+            tag = "latest";
+            contents = [
+              pkgs.caddy
+            ];
+            config = {
+              Cmd = [ "caddy" "run" "--config" "${caddyConf}/Caddyfile" ];
+              ExposedPorts = {
+                "${caddyPort}/tcp" = {};
+              };
+            };
+          });
+
+
       supafanaAzureImage = (system:
         let
           pkgs = sysPkgs system;
@@ -104,6 +129,7 @@
       overlays.default = overlay;
 
       packages.x86_64-linux.supafana-image = supafanaAzureImage "x86_64-linux";
+      packages.x86_64-linux.echo-docker-image = echoDockerImage "x86_64-linux";
 
       nixosConfigurations = {
         supafana = nixpkgs.lib.nixosSystem {
