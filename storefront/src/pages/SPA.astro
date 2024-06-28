@@ -1,0 +1,13 @@
+---
+import Layout from "../layouts/SPA-layout.astro";
+import { App } from "../spa";
+import { getVersion } from "./ssg/version.json";
+const version = getVersion();
+---
+
+<Layout title="Supafana Dashboard">
+  <script data-version={version}>
+    window._supafana_version = document.currentScript?.dataset.version;
+  </script>
+  <App client:only="react" />
+</Layout>
