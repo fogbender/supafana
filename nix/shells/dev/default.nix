@@ -46,6 +46,7 @@ in with pkgs; mkShell {
     just
     azure-cli bicep azure-storage-azcopy
     deploy-rs
+    corepack_18
   ]
   ++ file-notifier
   ++ elixir_libs
