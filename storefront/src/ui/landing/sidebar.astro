@@ -1,0 +1,41 @@
+---
+const links = [
+  { name: "Docs", href: "/docs" },
+  { name: "Blogs", href: "/blogs" },
+  { name: "Showcase", href: "/showcase" },
+  { name: "Enterprise", href: "/enterprise" },
+];
+---
+
+<style>
+  .sidebar-container {
+    z-index: 15;
+    overscroll-behavior: contain;
+    backface-visibility: hidden;
+    contain: layout style;
+    transition: transform 0.8s cubic-bezier(0.52, 0.16, 0.04, 1);
+  }
+</style>
+<aside
+  class="sidebar-container w-full pt-16 bottom-0 top-0 fixed flex flex-col md:top-16 md:shrink-0 motion-reduce:transform-none transform-gpu transition-all ease-in-out print:hidden md:w-64 md:hidden max-md:[transform:translate3d(0,-100%,0)] dark:max-md:bg-[rgba(17,17,17)] max-md:bg-white"
+>
+  <div class="p-4">
+    <ul class="flex flex-col gap-1 md:hidden">
+      {
+        links.map(link => {
+          return (
+            <li>
+              <a
+                class="flex rounded px-2 py-1.5 text-sm transition-colors [word-break:break-word] cursor-pointer [-webkit-tap-highlight-color:transparent] contrast-more:border text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-[rgba(224,243,255,5%)] dark:hover:text-[rgba(249,250,251)] contrast-more:text-gray-900 contrast-more:dark:text-gray-50 contrast-more:border-transparent contrast-more:hover:border-gray-900 contrast-more:dark:hover:border-gray-50"
+                href={link.href}
+              >
+                {link.name}
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </div>
+</aside>
+<script></script>

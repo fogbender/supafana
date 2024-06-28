@@ -1,0 +1,30 @@
+---
+
+---
+
+<style>
+  .gradient-border-divider {
+    background: linear-gradient(90deg, #288cf9, #e32c6b);
+  }
+  .gradient-section {
+    width: 60vw;
+    height: 255px;
+    top: -200px;
+    filter: blur(50px);
+    mix-blend-mode: normal;
+    border-radius: 100%;
+  }
+  .gradient-border-left {
+    left: -200px;
+    background: linear-gradient(180deg, #58a5ff, #a67af4);
+  }
+  .gradient-border-right {
+    right: -200px;
+    background: linear-gradient(180deg, #ff3358, #ff4fd8);
+  }
+</style>
+<div>
+  <span class="absolute top-0 h-[1px] w-full opacity-25 gradient-border-divider"></span>
+  <span class="opacity-[0.15] absolute gradient-section gradient-border-left"></span>
+  <span class="opacity-[0.15] absolute gradient-section gradient-border-right"></span>
+</div>

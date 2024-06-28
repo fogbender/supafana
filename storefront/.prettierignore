@@ -1,0 +1,6 @@
+*/uild/
+build
+dist
+.astro
+.netlify
+.vscode

@@ -1,0 +1,41 @@
+---
+import SectionLayout from "../../layouts/section-layout.astro";
+import Button from "../../ui/landing/button.astro";
+import HeroText from "../../ui/landing/hero-text.astro";
+---
+
+<SectionLayout>
+  <HeroText>
+    Scaling your Codebase
+    <br />
+    shouldn't be so difficult
+  </HeroText>
+  <div class="flex max-w-xl flex-col leading-6 md:text-lg opacity-70 text-black dark:text-white">
+    <p>
+      The bigger your project grows, the slower it gets. Tasks like linting, testing, and building
+      begin to take enormous amounts of time.
+    </p>
+    <br />
+    <p>
+      If you're serving multiple applications, you might reach for a monorepo. They're incredible
+      for productivity, especially on the frontend, but the tooling can be a nightmare. There's a
+      lot of stuff to do (and things to mess up). Nothing “just works.” It's become completely
+      normal to waste entire days or weeks on plumbing—tweaking configs, writing one-off scripts,
+      and stitching stuff together.
+    </p>
+    <br />
+    <p>We need something else.</p>
+    <br />
+    <p>
+      A fresh take on the whole setup. Designed to glue everything together. A toolchain that works
+      for you and not against you. With sensible defaults, but even better escape hatches. Built
+      with the same techniques used by the big guys, but in a way that doesn't require PhD to learn
+      or a staff to maintain.
+    </p>
+  </div>
+  <div class="relative mt-16 flex w-full justify-center">
+    <div class="w-full max-w-[180px]">
+      <Button name="Start Building" />
+    </div>
+  </div>
+</SectionLayout>

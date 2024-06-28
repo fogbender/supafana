@@ -1,0 +1,39 @@
+---
+import { Image } from "astro:assets";
+import blinkingCircle from "./assets/circle.svg";
+import fogbenderLogo from "./assets/logo.svg";
+---
+
+<style>
+  .bg-conic-gradient {
+    background: conic-gradient(from 180deg at 50% 50%, #2a8af6 0deg, #a853ba 180deg, #e92a67 1turn);
+    filter: blur(32px);
+    mix-blend-mode: normal;
+    will-change: filter;
+  }
+</style>
+<div class="z-50 flex w-full items-center justify-center">
+  <Image
+    width={"614"}
+    height={"614"}
+    loading={"lazy"}
+    class="absolute"
+    src={blinkingCircle}
+    alt={"blinking-cirlce"}
+  />
+  <div class="absolute z-50 flex h-64 w-64 items-center justify-center">
+    <span
+      class="absolute max-w-full rounded-full w-[120px] h-[120px] bg-conic-gradient dark:opacity-100 opacity-40"
+    ></span>
+  </div>
+  <div class="z-50 h-[120px] w-[120px]">
+    <Image
+      src={fogbenderLogo}
+      height={120}
+      width={120}
+      decoding="async"
+      loading="lazy"
+      alt={"fogbender-logo"}
+    />
+  </div>
+</div>

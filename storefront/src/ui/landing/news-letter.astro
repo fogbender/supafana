@@ -1,0 +1,28 @@
+---
+import Button from "./button.astro";
+---
+
+<div class="mt-12 xl:mt-0">
+  <h3 class="text-sm text-white dark:text-white">Subscribe to our newsletter</h3>
+  <p class="mt-4 text-sm text-[#66666666] dark:text-[#88888888]">
+    Subscribe to the Turbo newsletter and stay updated on new releases and features, guides, and
+    case studies.
+  </p>
+  <form class="mt-4 sm:flex sm:max-w-md">
+    <label class="sr-only" for="email-address"> Email address </label>
+    <input
+      autocomplete="email"
+      class="w-full min-w-0 appearance-none bg-transparent text-white text-base rounded-md border px-4 py-2 placeholder-gray-500 focus:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-800 border-[#888888] focus:border-white sm:text-sm focus:visible"
+      id="email-address"
+      name="email-address"
+      placeholder="you@example.com"
+      type="email"
+      required
+    />
+    <div class="mt-3 rounded-md sm:ml-3 sm:mt-0 sm:flex-shrink-0">
+      <div class="w-full">
+        <Button name="Subscribe" />
+      </div>
+    </div>
+  </form>
+</div>

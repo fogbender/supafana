@@ -1,0 +1,34 @@
+{
+  "printWidth": 100,
+  "tabWidth": 2,
+  "trailingComma": "es5",
+  "arrowParens": "avoid",
+  "quoteProps": "preserve",
+  "plugins": ["prettier-plugin-astro"],
+  "overrides": [
+    {
+      "files": "*.astro",
+      "options": {
+        "parser": "astro"
+      }
+    },
+    {
+      "files": ["README.md", "docs/README_fogbender_com.md"],
+      "options": {
+        "parser": "markdown"
+      }
+    },
+    {
+      "files": "package.json",
+      "options": {
+        "printWidth": 9999
+      }
+    },
+    {
+      "files": [],
+      "options": {
+        "singleQuote": true
+      }
+    }
+  ]
+}

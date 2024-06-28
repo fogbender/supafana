@@ -1,0 +1,57 @@
+---
+import AnimateOnScroll from "../../layouts/animate-on-scroll.astro";
+import HeroText from "../../ui/landing/hero-text.astro";
+import HeroLogo from "../../ui/landing/hero-logo.astro";
+import SupafanaTextLogo from "./supafana-text-logo.astro";
+import Button from "./button.astro";
+import Caption from "./caption.astro";
+---
+
+<style>
+  .bg-gradient-glow-conic {
+    background: conic-gradient(from 180deg at 50% 50%, #2a8af6 0deg, #a853ba 180deg, #e92a67 1turn);
+  }
+  .gradient-glow {
+    filter: blur(75px);
+    mix-blend-mode: normal;
+    will-change: filter;
+  }
+</style>
+
+<AnimateOnScroll>
+  <section class="mx-auto flex font-prompt">
+    <div class="w-full break-words">
+      <div
+        class="relative z-0 flex w-auto flex-col items-center justify-between gap-8 pb-16 pt-12 md:pb-24 md:pt-16 lg:pb-32 lg:pt-20 min-h-[calc(100svh-64px)]"
+      >
+        <HeroLogo />
+        <span
+          class="absolute max-w-full rounded-full top-[-500px] opacity-20 bg-gradient-glow-conic gradient-glow w-[1000px] h-[1000px]"
+        ></span>
+        <div
+          class="absolute top-0 z-10 h-48 w-full bg-gradient-to-b to-transparent from-white dark:from-black"
+        >
+        </div>
+        <div class="z-50 flex flex-col items-center justify-center gap-5 px-6 text-center lg:gap-6">
+          <SupafanaTextLogo className="w-40 md:w-[200px]" />
+          <HeroText variant="large">Observability for Supabase</HeroText>
+          <Caption>
+            Supafana is a hosted version of the <a href="https://github.com/supabase/supabase-grafana">supabase/supabase-grafana</a> Grafana &amp; Prometheus observability stack
+          </Caption>
+        </div>
+        <div class="z-50 flex max-w-md flex-col items-center gap-5 px-6 w-full">
+          <div class="flex flex-col gap-3 md:flex-row w-full">
+            <Button name="Get Started" />
+            <Button name="Github" type="secondary" />
+          </div>
+        </div>
+        <div class="relative w-full">
+          <div
+            class="absolute bottom-0 h-72 w-full bg-gradient-to-t to-transparent from-white dark:from-black"
+          >
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</AnimateOnScroll>

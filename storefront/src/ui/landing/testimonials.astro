@@ -1,0 +1,18 @@
+---
+import SectionLayout from "../../layouts/section-layout.astro";
+import ConicGradient from "./conic-gradient.astro";
+import HeroText from "./hero-text.astro";
+import TestimonialCard from "./testimonial-card.astro";
+---
+
+<SectionLayout>
+  <HeroText variant="small">Don't take our word for it</HeroText>
+  <div class="my-6 grid grid-cols-1 gap-4 rounded-xl lg:grid-cols-2 xl:grid-cols-3">
+    {
+      [1, 2, 3, 4, 5, 6, 7, 8, 9].map(() => {
+        return <TestimonialCard />;
+      })
+    }
+  </div>
+  <ConicGradient name="conic-gradient" />
+</SectionLayout>

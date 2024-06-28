@@ -1,0 +1,96 @@
+---
+import NewsLetter from "./news-letter.astro";
+const footerLinks = [
+  {
+    heading: "Resources",
+    childrens: [
+      { name: "Blog", href: "" },
+      { name: "Releases", href: "" },
+      { name: "Governance", href: "" },
+    ],
+  },
+  {
+    heading: "Turborepo",
+    childrens: [
+      { name: "Documentation", href: "" },
+      { name: "API Reference", href: "" },
+      { name: "FAQ", href: "" },
+    ],
+  },
+  {
+    heading: "Turbopack",
+    childrens: [
+      { name: "Documentation", href: "" },
+      { name: "Features", href: "" },
+    ],
+  },
+  {
+    heading: "Company",
+    childrens: [
+      { name: "Vercel", href: "" },
+      { name: "Open Source", href: "" },
+      { name: "Open Source Software", href: "" },
+      { name: "Contact Sales", href: "" },
+    ],
+  },
+  {
+    heading: "Legal",
+    childrens: [
+      { name: "Privay Policy", href: "" },
+      { name: "Terms of Service", href: "" },
+    ],
+  },
+  {
+    heading: "Support",
+    childrens: [
+      { name: "Github", href: "" },
+      { name: "Discord", href: "" },
+    ],
+  },
+];
+---
+
+<footer class="relative bg-[#FAFAFA] dark:bg-black">
+  <div
+    class="pointer-events-none absolute top-0 h-12 w-full -translate-y-full bg-gradient-to-t to-transparent from-[#FAFAFA] dark:from-black"
+  >
+  </div>
+  <hr class="dark:border-neutral-800" />
+  <div class="mx-auto flex max-w-[90rem] justify-center py-12 text-black dark:text-white px-6">
+    <div aria-labelledby="footer-heading" class="w-full">
+      <h2 class="sr-only" id="footer-heading">Footer</h2>
+      <div class="py-8 xl:grid xl:grid-cols-3 xl:gap-8">
+        <div class="gird grid-cols-1 gap--8 xl:col-span-2">
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 md:gap-8">
+            {
+              footerLinks.map(footerLink => {
+                const { heading, childrens } = footerLink;
+                return (
+                  <div class="mt-12 md:mt-0">
+                    <h3 class="text-sm text-black dark:text-white">{heading}</h3>
+                    <ul class="ml-0 mt-4 list-none space-y-1.5">
+                      {childrens.map(children => {
+                        const { name, href } = children;
+                        return (
+                          <li>
+                            <a
+                              class="text-sm text-[#666666] dark:text-[#88888888] no-underline hover:text-gray-700 dark:hover:text-white transition"
+                              href={href}
+                            >
+                              {name}
+                            </a>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                );
+              })
+            }
+          </div>
+        </div>
+        <NewsLetter />
+      </div>
+    </div>
+  </div>
+</footer>

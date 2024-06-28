@@ -1,0 +1,48 @@
+---
+import "../styles/main.css";
+import type { Props as BaseHeadProps } from "../ui/landing/BaseHead.astro";
+import BaseHead from "../ui/landing/BaseHead.astro";
+import Footer from "../ui/landing/footer.astro";
+import Header from "../ui/landing/header.astro";
+import Sidebar from "../ui/landing/sidebar.astro";
+
+export type Props = {
+  meta: BaseHeadProps;
+  linkedData?: object;
+};
+const { meta, linkedData } = Astro.props;
+---
+
+<html lang="en" class="dark">
+  <head>
+    <BaseHead {...meta}>
+      <Fragment slot="preload"> </Fragment>
+
+      <Fragment slot="assets"></Fragment>
+    </BaseHead>
+
+    {linkedData && <script type="application/ld+json" set:html={JSON.stringify(linkedData)} />}
+
+    <script>
+      window.addEventListener("DOMContentLoaded", () => {
+        document.body.classList.add("js");
+      });
+    </script>
+  </head>
+  <body class="bg-white dark:bg-black font-prompt md:overscroll-y-none overscroll-none">
+    <Header />
+    <Sidebar />
+    <main class="relative">
+      <slot />
+      <Footer />
+      <style is:global>
+        body {
+          @apply bg-black;
+        }
+        img {
+          content-visibility: auto;
+        }
+      </style>
+    </main>
+  </body>
+</html>
