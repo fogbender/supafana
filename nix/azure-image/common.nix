@@ -22,8 +22,9 @@
     Restart = "on-failure";
   };
   services.cloud-init.network.enable = true;
-  networking.useDHCP = false;
+  networking.useDHCP = true;
   networking.useNetworkd = true;
+  networking.nameservers = [ "168.63.129.16" ];
 
   nix.settings = {
     warn-dirty = false;

@@ -6,7 +6,7 @@ in
 {
   imports = [
     ../../azure-image/common.nix
-    ./nginx.nix
+    ./grafana-container.nix
   ];
 
   services.openssh.settings.PasswordAuthentication = false;
@@ -20,6 +20,7 @@ in
         isNormalUser = true;
         home = "/home/supafana";
         description = "Supafana user";
+        extraGroups = [ "podman" ];
         openssh.authorizedKeys.keys = [ keys.abs keys.abs2 keys.mk ];
     };
     admin = {

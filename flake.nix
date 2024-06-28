@@ -113,6 +113,17 @@
         img.config.system.build.azureImage
       );
 
+      grafanaAzureImage = (system:
+        let
+          pkgs = sysPkgs system;
+          img = nixpkgs.lib.nixosSystem {
+	          inherit pkgs system;
+            modules = [ nix/azure-image/image.nix nix/hosts/grafana ];
+          };
+        in
+        img.config.system.build.azureImage
+      );
+
     in
     {
       devShells.x86_64-linux = shells "x86_64-linux";
@@ -129,6 +140,7 @@
       overlays.default = overlay;
 
       packages.x86_64-linux.supafana-image = supafanaAzureImage "x86_64-linux";
+      packages.x86_64-linux.grafana-image = grafanaAzureImage "x86_64-linux";
       packages.x86_64-linux.echo-docker-image = echoDockerImage "x86_64-linux";
 
       nixosConfigurations = {
@@ -138,6 +150,12 @@
             nix/hosts/supafana
           ];
         };
+        grafana = nixpkgs.lib.nixosSystem {
+          inherit system;
+          modules = [
+            nix/hosts/grafana
+          ];
+        };
       };
 
       deploy = {
@@ -145,8 +163,12 @@
         user = "root";
         nodes = {
           supafana = {
-            hostname = "supafana.com";
+            hostname = "48.217.15.150";
             profiles.system.path = deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.supafana;
+          };
+          grafana1 = {
+            hostname = "4.255.124.68";
+            profiles.system.path = deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.grafana;
           };
         };
       };
