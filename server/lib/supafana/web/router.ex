@@ -32,6 +32,7 @@ defmodule Supafana.Web.Router do
 
     api_keys =
       projects
+      |> Enum.filter(&(&1["status"] === "ACTIVE_HEALTHY"))
       |> Enum.map(fn p ->
         %{"id" => project_ref} = p
 
