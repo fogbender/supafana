@@ -57,7 +57,7 @@ export const Dashboard = () => {
               <div>{o.name} (organization)</div>
               {projects?.map(p => (
                 <div key={p.id}>
-                  <div>{p.name} (project)</div>
+                  <div>{p.name} (project) - {p.id} - {p.status}</div>
                 </div>
               ))}
             </div>

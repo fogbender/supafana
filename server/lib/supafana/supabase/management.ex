@@ -1,4 +1,9 @@
 defmodule Supafana.Supabase.Management do
+  def project_api_keys(token, project_ref) do
+    path = "/v1/projects/#{project_ref}/api-keys"
+    client(token) |> Tesla.get(path)
+  end
+
   def projects(token) do
     path = "/v1/projects"
 

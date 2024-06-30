@@ -30,6 +30,25 @@ defmodule Supafana.Web.Router do
 
     {:ok, projects} = Supafana.Supabase.Management.projects(access_token)
 
+    api_keys =
+      projects
+      |> Enum.map(fn p ->
+        %{"id" => project_ref} = p
+
+        project_api_keys =
+          case Supafana.Supabase.Management.project_api_keys(access_token, project_ref) do
+            {:ok, %{status: 200, body: body}} ->
+              body
+
+            _ ->
+              :error
+          end
+
+        project_api_keys
+      end)
+
+    IO.inspect(api_keys)
+
     conn |> ok_json(projects)
   end
 
