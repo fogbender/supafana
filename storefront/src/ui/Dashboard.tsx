@@ -49,7 +49,7 @@ export const Dashboard = () => {
   console.log(organizationId, organizations);
 
   return (
-    <div>
+    <div className="flex h-full w-full items-center justify-center">
       {organizations ? (
         <div>
           {organizations.map(o => (
