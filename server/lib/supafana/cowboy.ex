@@ -13,6 +13,7 @@ defmodule Supafana.Cowboy do
   plug(:match)
   plug(:dispatch)
 
+  forward("/auth", to: Supafana.Web.AuthRouter)
   forward("/", to: Supafana.Web.Router)
 
   # match _ do
@@ -20,6 +21,10 @@ defmodule Supafana.Cowboy do
   # end
 
   def handle_errors(conn, %{kind: kind, reason: reason, stack: stack}) do
-    send_resp(conn, conn.status, Jason.encode!(%{"error" => kind, "reason" => reason, "stack" => stack}))
+    send_resp(
+      conn,
+      conn.status,
+      Jason.encode!(%{"error" => kind, "reason" => reason, "stack" => stack})
+    )
   end
 end

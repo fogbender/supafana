@@ -14,11 +14,10 @@ defmodule Supafana.Application do
         Registry.child_spec(keys: :unique, name: Registry.Supafana),
         cowboy(),
         {Finch,
-          name: AzureFinch,
-          pools: %{
-            :default => [size: 32, count: 8]
-          }
-        }
+         name: AzureFinch,
+         pools: %{
+           :default => [size: 32, count: 8]
+         }}
       ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
@@ -35,7 +34,11 @@ defmodule Supafana.Application do
     {Plug.Cowboy,
      scheme: :http,
      plug: Supafana.Cowboy,
-     options: [dispatch: dispatch(), port: Supafana.env(:supafana_port), ip: Supafana.env(:supafana_ip)]}
+     options: [
+       dispatch: dispatch(),
+       port: Supafana.env(:supafana_port),
+       ip: Supafana.env(:supafana_ip)
+     ]}
   end
 
   defp dispatch do

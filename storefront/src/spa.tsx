@@ -16,6 +16,7 @@ export const App = () => {
 };
 
 if ("serviceWorker" in navigator) {
+  /*
   const scopePath = "/~notifications/";
   navigator.serviceWorker
     .register(scopePath + "service-worker.js", { updateViaCache: "none", scope: scopePath })
@@ -36,4 +37,5 @@ if ("serviceWorker" in navigator) {
     .catch(err => {
       console.error("Registration failed!", err);
     });
+  */
 }

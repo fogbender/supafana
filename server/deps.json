@@ -216,18 +216,6 @@
     "sha256": "sha256-vfdc38vp5GIt0Y4DSyJ9d90X8PEzhTocc7l7PWx3Dos=",
     "version": "0.24.0"
   },
-  "gpt3_tokenizer": {
-    "builder": "mix",
-    "deps": {
-      "jason": false,
-      "memoize": false
-    },
-    "fetcher": "hex",
-    "name": "gpt3_tokenizer",
-    "pkg": "gpt3_tokenizer",
-    "sha256": "sha256-sFENcWtDPQ+kpvoxMy6yTE1Bte/7oKC0dhKwLJmoR1M=",
-    "version": "0.1.1"
-  },
   "hackney": {
     "builder": "rebar3",
     "deps": {
@@ -309,15 +297,6 @@
     "pkg": "jose",
     "sha256": "sha256-YnXLdVBPnB5g7qy3ca3+7kkFqeGCEDqlm1P+1lH/lzg=",
     "version": "1.11.6"
-  },
-  "memoize": {
-    "builder": "mix",
-    "deps": {},
-    "fetcher": "hex",
-    "name": "memoize",
-    "pkg": "memoize",
-    "sha256": "sha256-p1F2uEuc6S+q9WfIL8vFhO+Vcn4IJ8s4YGsKGX9+R+8=",
-    "version": "1.4.3"
   },
   "metrics": {
     "builder": "rebar3",
@@ -419,20 +398,6 @@
     "pkg": "plug_crypto",
     "sha256": "sha256-U2lbrlfMTlRWbZk+sBB05NiUtlo3ZvHEPixhobD0Xqk=",
     "version": "2.0.0"
-  },
-  "postgrex": {
-    "builder": "mix",
-    "deps": {
-      "db_connection": false,
-      "decimal": false,
-      "jason": true,
-      "table": true
-    },
-    "fetcher": "hex",
-    "name": "postgrex",
-    "pkg": "postgrex",
-    "sha256": "sha256-ZFj31bcGUryBw+p1n5FzbBajG+AA8wbTxkvN/poYs8w=",
-    "version": "0.17.4"
   },
   "quantum": {
     "builder": "mix",

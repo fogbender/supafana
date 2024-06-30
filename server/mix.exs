@@ -56,7 +56,6 @@ defmodule Supafana.MixProject do
       {:syn, "~> 2.1"},
       {:quantum, "~> 3.4"},
       {:timex, "~> 3.7"},
-
       {:bamboo, "~> 2.0"}
     ]
   end

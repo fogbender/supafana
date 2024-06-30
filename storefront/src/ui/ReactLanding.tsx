@@ -25,7 +25,7 @@ export const Landing = () => {
           page, please start `yarn start` instead of `yarn dev`.
         </div>
         <div className="container mx-auto text-center text-xl">
-          Or return to the <a href="/admin">App</a>
+          Or return to the <a href="/dashboard">App</a>
         </div>
       </div>
     );

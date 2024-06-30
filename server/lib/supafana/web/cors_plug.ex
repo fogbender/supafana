@@ -33,7 +33,7 @@ defmodule Supafana.CORS do
     } = uri
 
     case {scheme, host, port} do
-      {"http", "localhost", 5173} ->
+      {"http", "localhost", 3900} ->
         true
 
       {"https", hostname, 443} ->
@@ -47,18 +47,10 @@ defmodule Supafana.CORS do
 
   defp check_origin_hostname(hostname) do
     IO.inspect({:hostname, hostname})
+
     allowedHosts = [
       # prod
-      {:exact, "ask.briefly.legal"},
-      {:exact, "scrape-vm-prod-02.eastus2.cloudapp.azure.com"},
-
-      # stage
-      {:exact, "wonderful-pebble-0bd64a010.4.azurestaticapps.net"},
-      {:exact, "scrape-vm-stage-00.eastus.cloudapp.azure.com"},
-
-      # int
-      {:exact, "gray-pond-03694bb10.4.azurestaticapps.net"},
-      {:exact, "scrape-vm-int-00.eastus.cloudapp.azure.com/embeddings-api"}
+      # {:exact, "api.supafana.com"}
     ]
 
     Enum.any?(allowedHosts, fn

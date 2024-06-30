@@ -23,10 +23,10 @@ supafana-clean:
 	cd server && mix clean
 
 supafana-format:
-	mix format
+	cd server && mix format
 
 supafana-format-check:
-	mix format --check-formatted
+	cd server && mix format --check-formatted
 
 supafana-bump:
 	scripts/calver bump "$$(cat server/VERSION)" > server/VERSION
@@ -35,3 +35,8 @@ supafana-bump:
 	git tag -a "supafana-$$(cat server/VERSION)" -m "supafana version bump"
 
 clean: supafana-clean
+
+web-format:
+	cd storefront && pnpm fmt
+
+format: web-format supafana-format

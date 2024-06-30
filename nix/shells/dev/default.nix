@@ -57,4 +57,11 @@ in with pkgs; mkShell {
   LOCALE_ARCHIVE = if stdenv.isLinux then "${glibcLocales}/lib/locale/locale-archive" else "";
   LANG = "en_US.UTF-8";
   LD_LIBRARY_PATH = lib.makeLibraryPath [ libsodium ];
+
+  shellHook = ''
+  if [ -f "./local.env" ]; then
+  echo Sourcing local.env..
+  . local.env
+  fi
+  '';
 }

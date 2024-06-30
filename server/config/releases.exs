@@ -6,6 +6,14 @@
 
 import Config
 
+config :supafana,
+  supabase_client_id: System.get_env("SUPABASE_CLIENT_ID"),
+  supabase_client_secret: System.get_env("SUPABASE_CLIENT_SECRET"),
+  secret_key_base: System.get_env("SUPAFANA_SECRET_KEY_BASE")
+
+config :supafana,
+  supafana_api_url: System.get_env("SUPAFANA_API_URL")
+
 config :logger, :console,
   level: (System.get_env("SUPAFANA_LOG_LEVEL") || "debug") |> String.to_atom(),
   format: "\n$time [$level] $message $metadata\n",
