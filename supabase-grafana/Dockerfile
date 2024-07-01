@@ -1,5 +1,3 @@
-FROM caddy:2.7.6 as caddy
-
 FROM prom/prometheus:v2.50.1 as prometheus
 
 FROM grafana/grafana:10.2.4-ubuntu as grafana
@@ -32,9 +30,6 @@ COPY grafana/datasource.yml /etc/grafana/provisioning/datasources/prometheus.yml
 COPY grafana/dashboard.yml /etc/grafana/provisioning/dashboards/dashboard.yml
 COPY grafana/dashboard.json /var/lib/grafana/dashboards/dashboard.json
 
-COPY --from=caddy /usr/bin/caddy /bin/caddy
-COPY Caddyfile /etc/caddy/Caddyfile
-
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 COPY entrypoint.sh /entrypoint.sh
@@ -48,8 +43,6 @@ ENV SUPABASE_PROJECT_REF=${SUPABASE_PROJECT_REF}
 ENV SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
 ENV PASSWORD_PROTECTED=true
 ENV GRAFANA_PASSWORD=${GRAFANA_PASSWORD}
-
-RUN echo '{$GRAFANA_URL}\n\nreverse_proxy :8080' > /etc/caddy/Caddyfile
 
 EXPOSE 8080
 

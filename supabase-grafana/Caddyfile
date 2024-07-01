@@ -1,3 +1,0 @@
-{$GRAFANA_URL}
-
-reverse_proxy :8080

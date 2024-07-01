@@ -28,7 +28,7 @@
       };
       "~ ^/app/([a-zA-Z0-9]+)(/.*)" = {
         proxyWebsockets = true;
-        proxyPass = "http://$1.supafana.local:8080$2";
+        proxyPass = "http://$1.supafana.local:8080/app/$1$2";
       };
     };
   };

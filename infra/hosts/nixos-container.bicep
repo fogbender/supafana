@@ -1,8 +1,14 @@
-@description('Supafana project id')
-param projectId string = 'grafana1'
+@description('Supabase project id')
+param supabaseProjectRef string
+
+@description('Supabase role key')
+param supabaseServiceRoleKey string
+
+@description('Supafana project id - will be used for routing')
+param projectId string = supabaseProjectRef
 
 @description('Vm image name')
-param imageName string = 'grafana-v1'
+param imageName string = 'grafana-v2'
 
 @description('Location for all resources.')
 param location string = resourceGroup().location
@@ -28,22 +34,17 @@ var subnetRef = resourceId('Microsoft.Network/virtualNetworks/subnets', virtualN
 var osDiskType = 'Standard_LRS'
 var osDiskSizeGB = 20
 
-var customDataRaw = '''
+var customDataRaw = format('''
 #cloud-config
-
 write_files:
-- content: AUFZJWFoiO+e2OtOA4W1iHA3Spah9jGOx8VKVt6+iO+ACRA0O/J0
-  path: /var/lib/supafana/registry-pass.txt
-  owner: supafana:supafana
-  defer: true
 - content: |
-    SUPABASE_PROJECT_REF=qlsuulkvgexqylfezivg
-    SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFsc3V1bGt2Z2V4cXlsZmV6aXZnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcxODIwODY5NCwiZXhwIjoyMDMzNzg0Njk0fQ.LLSQrKBJeCeZzq01ezNCLVUVJysdpB09bK9qFqnZc70
-    GRAFANA_URL=supafana.com
+    SUPABASE_PROJECT_REF={0}
+    SUPABASE_SERVICE_ROLE_KEY={1}
+    GF_SERVER_ROOT_URL=https://supafana.com/app/{2}
+    GF_SERVER_SERVE_FROM_SUB_PATH=true
     GRAFANA_PASSWORD=hello
   path: /var/lib/supafana/supafana.env
-  defer: true
-'''
+''', supabaseProjectRef, supabaseServiceRoleKey, projectId)
 
 // Public IP
 
