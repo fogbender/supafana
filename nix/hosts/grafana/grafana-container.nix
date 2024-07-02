@@ -4,7 +4,7 @@ let
   passFile = ./registry-pass.txt;
 in
 {
-  networking.firewall.allowedTCPPorts = [ 8080 80 9090];
+  networking.firewall.allowedTCPPorts = [ 8080 9090];
 
   virtualisation.oci-containers.containers.grafana = {
     image = "supafanastgcr.azurecr.io/supafana-image:2024-07-02";

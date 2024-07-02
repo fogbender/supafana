@@ -4,11 +4,14 @@ param supabaseProjectRef string
 @description('Supabase role key')
 param supabaseServiceRoleKey string
 
+@description('Supafana domain')
+param supafanaDomain string
+
 @description('Supafana project id - will be used for routing')
 param projectId string = supabaseProjectRef
 
 @description('Vm image name')
-param imageName string = 'grafana-v2'
+param imageName string = 'grafana-v3'
 
 @description('Location for all resources.')
 param location string = resourceGroup().location
@@ -40,11 +43,11 @@ write_files:
 - content: |
     SUPABASE_PROJECT_REF={0}
     SUPABASE_SERVICE_ROLE_KEY={1}
-    GF_SERVER_ROOT_URL=https://supafana.com/app/{2}
+    GF_SERVER_ROOT_URL=https://{3}/dashboard/{2}
     GF_SERVER_SERVE_FROM_SUB_PATH=true
     GRAFANA_PASSWORD=hello
   path: /var/lib/supafana/supafana.env
-''', supabaseProjectRef, supabaseServiceRoleKey, projectId)
+''', supabaseProjectRef, supabaseServiceRoleKey, projectId, supafanaDomain)
 
 // Public IP
 

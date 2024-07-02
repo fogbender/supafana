@@ -1,7 +1,11 @@
 { config, lib, pkgs, ... }:
 
+let
+  urlPrefix = "dashboard";
+  domain = config.networking.domain;
+in
 {
-  security.acme.defaults.email = "admin@supafana.com";
+  security.acme.defaults.email = "admin@${domain}";
   security.acme.acceptTerms = true;
 
   networking.firewall.allowedTCPPorts = [ 80 443 ];
@@ -14,7 +18,7 @@
     resolver.addresses = [ "127.0.0.53" ];
   };
 
-  services.nginx.virtualHosts."supafana.com" = {
+  services.nginx.virtualHosts."${domain}" = {
     forceSSL = true;
     enableACME = true;
 
@@ -26,9 +30,9 @@
       "/" = {
         root = ./site;
       };
-      "~ ^/app/([a-zA-Z0-9]+)(/.*)" = {
+      "~ ^/${urlPrefix}/([a-zA-Z0-9]+)(/.*)" = {
         proxyWebsockets = true;
-        proxyPass = "http://$1.supafana.local:8080/app/$1$2";
+        proxyPass = "http://$1.supafana.local:8080/${urlPrefix}/$1$2";
       };
     };
   };
