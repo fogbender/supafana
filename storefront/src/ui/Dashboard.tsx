@@ -50,6 +50,8 @@ export const Dashboard = () => {
 
   console.log(organizationId, organizations);
 
+  const [connecting, setConnecting] = React.useState(false);
+
   return (
     <div className="h-full flex flex-col">
       <div className="bg-transparent sticky top-0 z-20">
@@ -63,10 +65,17 @@ export const Dashboard = () => {
           <div className="flex items-center mr-auto gap-x-5">
             <img src={SupafanaLogo} alt="supafana-logo" width={35} height={35} />
           </div>
+          {organizations && (
+            <form className="" method="post" action={signOutActionUrl}>
+              <button className="btn btn-xs" type="submit">
+                Sign out
+              </button>
+            </form>
+          )}
           <ThemeController />
         </nav>
       </div>
-      <div className="flex-1 flex items-center justify-center">
+      <div className="flex-1 flex items-center justify-center text-black dark:text-white">
         {organizations ? (
           <div>
             {organizations.map(o => (
@@ -79,19 +88,30 @@ export const Dashboard = () => {
                 ))}
               </div>
             ))}
-
-            <form method="post" action={signOutActionUrl}>
-              <button className="btn" type="submit">
-                Sign out
-              </button>
-            </form>
           </div>
         ) : (
-          <form method="post" action={connectActionUrl}>
-            <button type="submit">
-              <img src="/connect-supabase-dark.svg" alt="Connect Supabase button" />
-            </button>
-          </form>
+          connecting ? (
+            <span className="loading loading-ring loading-lg text-accent" />
+          ) : (
+            <form
+              onClick={(e) => {
+                if (e.target instanceof HTMLElement) {
+                  const form = e.target.closest("form");
+
+                  if (form) {
+                    setConnecting(true);
+                    form.submit();
+                  }
+                }
+              }}
+              method="post"
+              action={connectActionUrl}
+            >
+              <button type="button">
+                <img src="/connect-supabase-dark.svg" alt="Connect Supabase button" />
+              </button>
+            </form>
+          )
         )}
       </div>
     </div>
