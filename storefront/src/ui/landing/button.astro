@@ -1,10 +1,11 @@
 ---
 type Props = {
   name: string;
+  href: string;
   type?: string;
   className?: string;
 };
-const { name, className, type = "primary" } = Astro.props as Props;
+const { name, href, className, type = "primary" } = Astro.props as Props;
 
 const buttonClassNames = [
   {
@@ -50,7 +51,7 @@ const buttonClassNames = [
     ]}
     type="submit"
   >
-    <a class="block py-3" href="/dashboard">
+    <a class="block py-3" href={href}>
       {name}
     </a>
   </button>

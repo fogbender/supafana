@@ -6,36 +6,33 @@ import HeroText from "../../ui/landing/hero-text.astro";
 
 <SectionLayout>
   <HeroText>
-    Scaling your Codebase
+    Database monitoring
     <br />
-    shouldn't be so difficult
+    without a Ph.D. in Database Monitoring
   </HeroText>
   <div class="flex max-w-xl flex-col leading-6 md:text-lg opacity-70 text-black dark:text-white">
     <p>
-      The bigger your project grows, the slower it gets. Tasks like linting, testing, and building
-      begin to take enormous amounts of time.
+      The rather unfortunate NoSQL chapter in the storied almanach of database technology wasn’t born so much as a revolt against relational algebra or SQL per se, but as a totally understandable pushback against the mind-shattering complexity of getting going and maintaining a relational database in a non-enterprise&mdash;i.e. startup&mdash;setting. While the rise of cloud computing platforms unambiguously ushered in a renaissance for Postgres and friends, the bar remained unacceptably high until Supabase made its debut.
     </p>
     <br />
     <p>
-      If you're serving multiple applications, you might reach for a monorepo. They're incredible
-      for productivity, especially on the frontend, but the tooling can be a nightmare. There's a
-      lot of stuff to do (and things to mess up). Nothing “just works.” It's become completely
-      normal to waste entire days or weeks on plumbing—tweaking configs, writing one-off scripts,
-      and stitching stuff together.
+      Supabase managed to bring two fairly different camps of folks&mdash;the "I’ll never use Firebase because not relational" and the "I’ll suffer through the indignities of handwavy data integrity because I’m not terraforming" ones&mdash;under one, gigantic, expanding roof. This is an enormous accomplishment that will reverberate across the internetverse for decades.
     </p>
     <br />
-    <p>We need something else.</p>
+    <p>
+      However, at least at the time of this writing, the skillset delta between running a Supabase Postgres project and monitoring a Supabase Postgres project remains a tad bit galactic. This is not an accident&mdash;to properly fix this, Supabase has to spin up what would essentially amount to another&mdash;observability-focused&mdash;company.
+    </p>
     <br />
     <p>
-      A fresh take on the whole setup. Designed to glue everything together. A toolchain that works
-      for you and not against you. With sensible defaults, but even better escape hatches. Built
-      with the same techniques used by the big guys, but in a way that doesn't require PhD to learn
-      or a staff to maintain.
+      And while we’d never bet against Supabase, we figure that a) they’re too focused on core business to build an observability company and b) they’re very likely to continue dragging other database companies for filth with increasing velocity, becoming an attractive host for us, Remoras.
+    </p>
+    <p>
+      With this, we invite you to observe in peace, monitor with confidence, and stay hydrated with Supafana.
     </p>
   </div>
   <div class="relative mt-16 flex w-full justify-center">
     <div class="w-full max-w-[180px]">
-      <Button name="Start Building" />
+      <Button name="Start Observing" />
     </div>
   </div>
 </SectionLayout>

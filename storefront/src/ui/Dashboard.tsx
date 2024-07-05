@@ -68,7 +68,7 @@ export const Dashboard = () => {
         >
           <div className="flex items-center mr-auto gap-x-5">
             <a title="Home" href="/">
-              <img src={SupafanaLogo} alt="Supafana logo" width={35} height={35} />
+              <img src={SupafanaLogo} alt="Supafana logo" width={22} height={22} />
             </a>
           </div>
           {organization && (
