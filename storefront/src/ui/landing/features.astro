@@ -2,6 +2,14 @@
 import { Image } from "astro:assets";
 import featureImg from "./assets/feature.svg";
 import featureLightImage from "./assets/feature-light.svg";
+import { TbHorseToy as Baby } from "react-icons/tb";
+import { HiCursorArrowRays as OneClick } from "react-icons/hi2";
+import { GiDinosaurBones as Persistent } from "react-icons/gi";
+import { GiSawedOffShotgun as Secure } from "react-icons/gi";
+import { AiFillAlert as Alerts } from "react-icons/ai";
+import { GiWomanElfFace as Support } from "react-icons/gi";
+import { FaGithubAlt as GitHub } from "react-icons/fa";
+
 ---
 
 <div class="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-6 lg:gap-y-6">
@@ -9,19 +17,15 @@ import featureLightImage from "./assets/feature-light.svg";
     <div
       class="relative box-border flex flex-col gap-5 overflow-hidden dark:border-neutral-800 rounded-xl border p-8 no-underline text-black dark:text-white"
     >
-      <Image src={featureImg} class={"dark:block hidden"} height="64" width="64" alt="feature" />
-      <Image
-        src={featureLightImage}
-        class={"dark:hidden block"}
-        height="64"
-        width="64"
-        alt="feature"
-      />
+      <div class="p-1 max-w-min border rounded-full">
+        <div class="p-3 max-w-min border rounded-full text-pink-500">
+          <Baby size={36} />
+        </div>
+      </div>
       <div class="flex flex-col gap-2">
-        <h3 class="m-0 font-bold leading-5text-white">Incremental builds</h3>
+        <h3 class="m-0 font-bold leading-5text-white">Hosted</h3>
         <p class="m-0 leading-6 opacity-70">
-          Building once is painful enough, Turborepo will remember what you've built and skip the
-          stuff that's already been computed.
+        If you use hosted Supabase, chances are, you have an appreciation for having someone else handle infrastructure. Say, you want advanced observability for your Supa DB, but got better things to do than sort out Grafana deployment? Supafana is for you!
         </p>
       </div>
     </div>
@@ -30,19 +34,15 @@ import featureLightImage from "./assets/feature-light.svg";
     <div
       class="relative box-border flex flex-col gap-5 overflow-hidden dark:border-neutral-800 rounded-xl border p-8 no-underline text-black dark:text-white"
     >
-      <Image src={featureImg} class={"dark:block hidden"} height="64" width="64" alt="feature" />
-      <Image
-        src={featureLightImage}
-        class={"dark:hidden block"}
-        height="64"
-        width="64"
-        alt="feature"
-      />
+      <div class="p-1 max-w-min border rounded-full">
+        <div class="p-3 max-w-min border rounded-full text-pink-500">
+          <OneClick size={36} />
+        </div>
+      </div>
       <div class="flex flex-col gap-2">
-        <h3 class="m-0 font-bold leading-5text-white">Incremental builds</h3>
+        <h3 class="m-0 font-bold leading-5text-white">One-click setup</h3>
         <p class="m-0 leading-6 opacity-70">
-          Building once is painful enough, Turborepo will remember what you've built and skip the
-          stuff that's already been computed.
+          When things are going wrong with your production DB, the last thing you want is drop everything and march down the road of solving observability infrastricture. Supafana offers a one-click alternative.
         </p>
       </div>
     </div>
@@ -51,19 +51,15 @@ import featureLightImage from "./assets/feature-light.svg";
     <div
       class="relative box-border flex flex-col gap-5 overflow-hidden dark:border-neutral-800 rounded-xl border p-8 no-underline text-black dark:text-white"
     >
-      <Image src={featureImg} class={"dark:block hidden"} height="64" width="64" alt="feature" />
-      <Image
-        src={featureLightImage}
-        class={"dark:hidden block"}
-        height="64"
-        width="64"
-        alt="feature"
-      />
+      <div class="p-1 max-w-min border rounded-full">
+        <div class="p-3 max-w-min border rounded-full text-pink-500">
+          <Persistent size={36} />
+        </div>
+      </div>
       <div class="flex flex-col gap-2">
-        <h3 class="m-0 font-bold leading-5text-white">Incremental builds</h3>
+        <h3 class="m-0 font-bold leading-5text-white">Persistent historical data</h3>
         <p class="m-0 leading-6 opacity-70">
-          Building once is painful enough, Turborepo will remember what you've built and skip the
-          stuff that's already been computed.
+          One of the issues with running <a class="link flex gap-1.5 items-center" href="https://github.com/supabase/supabase-grafana" target="_blank"><GitHub /> supabase-grafana</a> as a vanilla container is having all historical data wiped on container restart. Supafana ensures historical data remains intact if your observability instance reboots.
         </p>
       </div>
     </div>
@@ -72,19 +68,15 @@ import featureLightImage from "./assets/feature-light.svg";
     <div
       class="relative box-border flex flex-col gap-5 overflow-hidden dark:border-neutral-800 rounded-xl border p-8 no-underline text-black dark:text-white"
     >
-      <Image src={featureImg} class={"dark:block hidden"} height="64" width="64" alt="feature" />
-      <Image
-        src={featureLightImage}
-        class={"dark:hidden block"}
-        height="64"
-        width="64"
-        alt="feature"
-      />
+      <div class="p-1 max-w-min border rounded-full">
+        <div class="p-3 max-w-min border rounded-full text-pink-500">
+          <Secure size={36} />
+        </div>
+      </div>
       <div class="flex flex-col gap-2">
-        <h3 class="m-0 font-bold leading-5text-white">Incremental builds</h3>
+        <h3 class="m-0 font-bold leading-5text-white">Secure</h3>
         <p class="m-0 leading-6 opacity-70">
-          Building once is painful enough, Turborepo will remember what you've built and skip the
-          stuff that's already been computed.
+        <a class="link flex gap-1.5 items-center" href="https://github.com/supabase/supabase-grafana" target="_blank"><GitHub /> supabase-grafana</a> requires a <a href="https://supabase.com/docs/guides/api/api-keys">highly-sensitive <code class="text-xs">service_role</code> key</a>. Unless you’re running your Grafana container on the intranet, it’s imperative to take security extremely seriously&mdash;for example, to keep the dashboard behind <code class="text-xs">https://</code>.
         </p>
       </div>
     </div>
@@ -93,19 +85,15 @@ import featureLightImage from "./assets/feature-light.svg";
     <div
       class="relative box-border flex flex-col gap-5 overflow-hidden dark:border-neutral-800 rounded-xl border p-8 no-underline text-black dark:text-white"
     >
-      <Image src={featureImg} class={"dark:block hidden"} height="64" width="64" alt="feature" />
-      <Image
-        src={featureLightImage}
-        class={"dark:hidden block"}
-        height="64"
-        width="64"
-        alt="feature"
-      />
+      <div class="p-1 max-w-min border rounded-full">
+        <div class="p-3 max-w-min border rounded-full text-pink-500">
+          <Alerts size={36} />
+        </div>
+      </div>
       <div class="flex flex-col gap-2">
-        <h3 class="m-0 font-bold leading-5text-white">Incremental builds</h3>
+        <h3 class="m-0 font-bold leading-5text-white">Alerts</h3>
         <p class="m-0 leading-6 opacity-70">
-          Building once is painful enough, Turborepo will remember what you've built and skip the
-          stuff that's already been computed.
+          Supafana observability instances come pre-configured with a working SMTP setup, ready for Grafana Alerting.
         </p>
       </div>
     </div>
@@ -114,19 +102,15 @@ import featureLightImage from "./assets/feature-light.svg";
     <div
       class="relative box-border flex flex-col gap-5 overflow-hidden dark:border-neutral-800 rounded-xl border p-8 no-underline text-black dark:text-white"
     >
-      <Image src={featureImg} class={"dark:block hidden"} height="64" width="64" alt="feature" />
-      <Image
-        src={featureLightImage}
-        class={"dark:hidden block"}
-        height="64"
-        width="64"
-        alt="feature"
-      />
+      <div class="p-1 max-w-min border rounded-full" title="This is Galadriel, obviously">
+        <div class="p-3 max-w-min border rounded-full text-pink-500">
+          <Support size={36} />
+        </div>
+      </div>
       <div class="flex flex-col gap-2">
-        <h3 class="m-0 font-bold leading-5text-white">Incremental builds</h3>
+        <h3 class="m-0 font-bold leading-5text-white">Supported</h3>
         <p class="m-0 leading-6 opacity-70">
-          Building once is painful enough, Turborepo will remember what you've built and skip the
-          stuff that's already been computed.
+          The Supafana team offers round-the-clock fanatical support to all customer teams via in-app team-to-team messaging.
         </p>
       </div>
     </div>

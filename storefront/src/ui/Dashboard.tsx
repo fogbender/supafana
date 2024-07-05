@@ -1,4 +1,3 @@
-import browser from "browser-detect";
 import classNames from "classnames";
 import { Provider as JotaiProvider, useAtom } from "jotai";
 import React from "react";

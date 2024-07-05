@@ -6,10 +6,10 @@ import Hamburger from "./hamburger.astro";
 // import ThemeController from "./theme-controller.astro";
 import ThemeController from "../ReactThemeController";
 const links = [
-  { name: "Docs", href: "/docs" },
+  // { name: "Docs", href: "/docs" },
   { name: "Blog", href: "/blog" },
-  { name: "Showcase", href: "/showcase" },
-  { name: "Enterprise", href: "/enterprise" },
+  // { name: "Showcase", href: "/showcase" },
+  // { name: "Enterprise", href: "/enterprise" },
 ];
 ---
 
@@ -42,7 +42,7 @@ const links = [
           <a
             class="text-sm contrast-more:dark:text-gray-100 relative -ml-2 hidden whitespace-nowrap p-2 md:inline-block text-gray-400 hover:text-gray-200"
             aria-current="false"
-            href="/repo/docs"
+            href={link.href}
           >
             <span class="absolute inset-x-0 text-center">{link.name}</span>
             <span class="invisible font-medium">{link.name}</span>
