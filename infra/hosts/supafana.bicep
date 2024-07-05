@@ -1,42 +1,27 @@
-@description('Vm image name')
-param imageName string = 'supafana-v3'
-
-@description('Vm name') //generates new one for image update, so vm will be recreated
-param vmName string = 'supafana'
-
-@description('Location for all resources.')
 param location string = resourceGroup().location
-
-@description('The size of the VM.')
-param vmSize string = 'Standard_B2s'
-
-@description('Name of the VNET.')
 param virtualNetworkName string = 'vNet'
+param supafanaSubnetName string = 'SupafanaSubnet'
 
-@description('VM subnet name')
-param vmSubnetName string = 'Subnet'
+param imageResourceGroupName string = 'supafana-images-rg'
+param imageGalleryName string = 'supafanasig'
+param imageName string = 'supafana'
+param imageVersion string = '0.0.1'
 
-@description('Containers subnet name')
-param containerSubnetName string = 'ContainerSubnet'
+param vmName string = 'supafana'
+param vmSize string = 'Standard_B2s'
+param osDiskType string = 'Standard_LRS'
+param osDiskSizeGB int = 20
 
-@description('Name of the Network Security Group.')
-param networkSecurityGroupName string = 'SecGroupNet'
-
-@description('Local domain')
-param privateDnsZoneName string = 'supafana.local'
-
+var osDiskName = '${vmName}OSDisk'
 var publicIPAddressName = '${vmName}PublicIP'
 var networkInterfaceName = '${vmName}Nic'
-var vmSubnetRef = resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetworkName, vmSubnetName)
-var containerSubnetRef = resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetworkName, containerSubnetName)
-var osDiskType = 'Standard_LRS'
-var osDiskSizeGB = 20
-var addressPrefix = '10.5.0.0/16'
-var vmSubnetAddressPrefix = '10.5.0.0/24'
-var containerSubnetAddressPrefix = '10.5.1.0/24'
+var networkSecurityGroupName = '${vmName}SecGroupNet'
 
-var grafanaSubnetName = 'GrafanaSubnet'
-var grafanaSubnetAddressPrefix = '10.5.2.0/24'
+resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' existing = {
+  name: virtualNetworkName
+}
+var addressPrefix = vnet.properties.addressSpace.addressPrefixes[0]
+var supafanaSubnetRef = resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetworkName, supafanaSubnetName)
 
 // Network interface
 resource nic 'Microsoft.Network/networkInterfaces@2020-06-01' = {
@@ -48,7 +33,7 @@ resource nic 'Microsoft.Network/networkInterfaces@2020-06-01' = {
         name: 'ipconfig1'
         properties: {
           subnet: {
-            id: vmSubnetRef
+            id: supafanaSubnetRef
           }
           privateIPAllocationMethod: 'Dynamic'
           publicIPAddress: {
@@ -61,6 +46,9 @@ resource nic 'Microsoft.Network/networkInterfaces@2020-06-01' = {
       id: nsg.id
     }
   }
+  dependsOn: [
+    vnet
+  ]
 }
 
 // Security group
@@ -137,52 +125,6 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2020-06-01' = {
   }
 }
 
-// Virtual Network
-resource vnet 'Microsoft.Network/virtualNetworks@2020-06-01' = {
-  name: virtualNetworkName
-  location: location
-  properties: {
-    addressSpace: {
-      addressPrefixes: [
-        addressPrefix
-      ]
-    }
-    subnets: [
-      {
-        name: vmSubnetName
-        properties: {
-          addressPrefix: vmSubnetAddressPrefix
-          privateEndpointNetworkPolicies: 'Enabled'
-          privateLinkServiceNetworkPolicies: 'Enabled'
-        }
-      }
-      {
-        name: grafanaSubnetName
-        properties: {
-          addressPrefix: grafanaSubnetAddressPrefix
-          privateEndpointNetworkPolicies: 'Enabled'
-          privateLinkServiceNetworkPolicies: 'Enabled'
-        }
-      }
-      {
-        name: containerSubnetName
-        properties: {
-          addressPrefix: containerSubnetAddressPrefix
-          privateEndpointNetworkPolicies: 'Enabled'
-          privateLinkServiceNetworkPolicies: 'Enabled'
-          delegations: [
-            {
-              name: 'DelegationService'
-              properties: {
-                serviceName: 'Microsoft.ContainerInstance/containerGroups'
-              }
-            }
-          ]
-        }
-      }
-    ]
-  }
-}
 
 // Public IP
 
@@ -199,30 +141,10 @@ resource publicIP 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
   }
 }
 
-// Private DNS Zone
-resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
-  name: privateDnsZoneName
-  location: 'global'
-}
-
-// DNS Zone Link
-resource dnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
-  name: '${virtualNetworkName}-link'
-  location: 'global'
-  parent: privateDnsZone
-  properties: {
-    virtualNetwork: {
-      id: vnet.id
-    }
-    registrationEnabled: true
-  }
-}
-
 // Image
-
-resource image 'Microsoft.Compute/images@2023-09-01' existing = {
-  name: imageName
-  scope: resourceGroup('MkImageResourceGroup')
+resource image 'Microsoft.Compute/galleries/images/versions@2023-07-03' existing = {
+  name: '${imageGalleryName}/${imageName}/${imageVersion}'
+  scope: resourceGroup(imageResourceGroupName)
 }
 
 // Virtual Machine
@@ -235,16 +157,18 @@ resource vm 'Microsoft.Compute/virtualMachines@2021-03-01' = {
     }
     osProfile: {
       computerName: vmName
-      adminUserName: 'supafana'
-      adminPassword: 'Azurepass1349' //will be removed by nixos-rebuild
+      adminUsername: 'supafana'
+      adminPassword: 'Azurepass1349' //will be removed by nixos
     }
     storageProfile: {
       osDisk: {
+        name: osDiskName
         createOption: 'FromImage'
         managedDisk: {
           storageAccountType: osDiskType
         }
         diskSizeGB: osDiskSizeGB
+        osType: 'Linux'
       }
       imageReference: {
         id: image.id
