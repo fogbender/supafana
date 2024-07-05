@@ -1,41 +1,29 @@
-@description('Supabase project id')
+param location string = resourceGroup().location
+param virtualNetworkName string = 'vNet'
+param supafanaSubnetName string = 'SupafanaSubnet'
+param grafanaSubnetName string = 'GrafanaSubnet'
+
+param imageResourceGroupName string = 'supafana-images-rg'
+param imageGalleryName string = 'supafanasig'
+param imageName string = 'grafana'
+param imageVersion string = '0.0.1'
+
 param supabaseProjectRef string
-
-@description('Supabase role key')
 param supabaseServiceRoleKey string
-
-@description('Supafana domain')
 param supafanaDomain string
 
-@description('Supafana project id - will be used for routing')
 param projectId string = supabaseProjectRef
 
-@description('Vm image name')
-param imageName string = 'grafana-v3'
-
-@description('Location for all resources.')
-param location string = resourceGroup().location
-
-@description('The size of the VM.')
+param vmName string = projectId
 param vmSize string = 'Standard_B2s'
+param osDiskType string = 'Standard_LRS'
+param osDiskSizeGB int = 20
 
-@description('Name of the VNET.')
-param virtualNetworkName string = 'vNet'
-
-@description('Subnet name')
-param subnetName string = 'GrafanaSubnet'
-
-@description('Name of the Network Security Group.')
-param networkSecurityGroupName string = 'SecGroupNet'
-
-@description('Local domain')
-param privateDnsZoneName string = 'supafana.local'
-
-var vmName = projectId
+var osDiskName = '${vmName}OSDisk'
 var networkInterfaceName = '${vmName}Nic'
-var subnetRef = resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetworkName, subnetName)
-var osDiskType = 'Standard_LRS'
-var osDiskSizeGB = 20
+var networkSecurityGroupName = '${vmName}SecGroupNet'
+
+param privateDnsZoneName string = 'supafana.local'
 
 var customDataRaw = format('''
 #cloud-config
@@ -45,24 +33,16 @@ write_files:
     SUPABASE_SERVICE_ROLE_KEY={1}
     GF_SERVER_ROOT_URL=https://{3}/dashboard/{2}
     GF_SERVER_SERVE_FROM_SUB_PATH=true
-    GRAFANA_PASSWORD=hello
+    GRAFANA_PASSWORD=admin
   path: /var/lib/supafana/supafana.env
 ''', supabaseProjectRef, supabaseServiceRoleKey, projectId, supafanaDomain)
 
-// Public IP
-
-resource publicIP 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
-  name: '${vmName}-ip'
-  location: location
-  properties: {
-    publicIPAllocationMethod: 'Static'
-    publicIPAddressVersion: 'IPv4'
-    idleTimeoutInMinutes: 4
-  }
-  sku: {
-    name: 'Standard'
-  }
+resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' existing = {
+  name: virtualNetworkName
 }
+var addressPrefix = vnet.properties.addressSpace.addressPrefixes[0]
+var grafanaSubnetRef = resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetworkName, grafanaSubnetName)
+var tags = { vm: vmName }
 
 // Network interface
 resource nic 'Microsoft.Network/networkInterfaces@2020-06-01' = {
@@ -74,12 +54,9 @@ resource nic 'Microsoft.Network/networkInterfaces@2020-06-01' = {
         name: 'ipconfig1'
         properties: {
           subnet: {
-            id: subnetRef
+            id: grafanaSubnetRef
           }
           privateIPAllocationMethod: 'Dynamic'
-          publicIPAddress: {
-            id: publicIP.id
-          }
         }
       }
     ]
@@ -87,6 +64,10 @@ resource nic 'Microsoft.Network/networkInterfaces@2020-06-01' = {
       id: nsg.id
     }
   }
+  tags: tags
+  dependsOn: [
+    vnet
+  ]
 }
 
 // Security group
@@ -144,13 +125,15 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2020-06-01' = {
       }
     ]
   }
+  tags: tags
 }
 
 // Image
 
-resource image 'Microsoft.Compute/images@2023-09-01' existing = {
-  name: imageName
-  scope: resourceGroup('MkImageResourceGroup')
+// Image
+resource image 'Microsoft.Compute/galleries/images/versions@2023-07-03' existing = {
+  name: '${imageGalleryName}/${imageName}/${imageVersion}'
+  scope: resourceGroup(imageResourceGroupName)
 }
 
 // Virtual Machine
@@ -174,6 +157,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2021-03-01' = {
           storageAccountType: osDiskType
         }
         diskSizeGB: osDiskSizeGB
+        osType: 'Linux'
       }
       imageReference: {
         id: image.id
@@ -192,7 +176,9 @@ resource vm 'Microsoft.Compute/virtualMachines@2021-03-01' = {
       }
     }
   }
+  tags: tags
 }
 
-output publicIPAddress string = publicIP.properties.ipAddress
 output privateIPAddress string = nic.properties.ipConfigurations[0].properties.privateIPAddress
+output localDomain string = '${projectId}.${privateDnsZoneName}'
+output publicUri string = 'https://${supafanaDomain}/dashboard/${projectId}'

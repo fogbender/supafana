@@ -163,7 +163,7 @@
         user = "root";
         nodes = {
           supafana-test = {
-            hostname = "48.217.15.150";
+            hostname = "172.214.29.22";
             profiles.system.path = deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.supafana-test;
           };
           grafana1 = {
