@@ -1,6 +1,7 @@
 ---
 import { Image } from "astro:assets";
-import blinkingCircle from "./assets/circle.svg";
+import lightCircle from "./assets/light-circle.svg";
+import darkCircle from "./assets/dark-circle.svg";
 import fogbenderLogo from "./assets/logo.svg";
 ---
 
@@ -17,9 +18,17 @@ import fogbenderLogo from "./assets/logo.svg";
     width={"614"}
     height={"614"}
     loading={"lazy"}
-    class="absolute"
-    src={blinkingCircle}
-    alt={"blinking-cirlce"}
+    class="absolute dark:hidden"
+    src={darkCircle}
+    alt={"blinking-light-cirlce"}
+  />
+  <Image
+    width={"614"}
+    height={"614"}
+    loading={"lazy"}
+    class="absolute hidden dark:block"
+    src={lightCircle}
+    alt={"blinking-dark-cirlce"}
   />
   <div class="absolute z-50 flex h-64 w-64 items-center justify-center">
     <span
