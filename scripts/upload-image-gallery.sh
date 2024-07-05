@@ -11,7 +11,7 @@ then
   echo
   echo '********************************************************'
   echo '* Please log  in to  Azure by  typing "az  login", and *'
-  echo '* repeat the "./upload-image.sh" command.              *'
+  echo '* repeat the "./upload-image-gallery.sh" command.      *'
   echo '********************************************************'
   exit 1
 fi
@@ -156,7 +156,7 @@ then
   az group create     \
     --name "${resource_group}" \
     --location "${location_d}" \
-    "${debug}"
+    ${debug:+"$debug"}
 fi
 
 # Make image gallery exists
@@ -165,7 +165,7 @@ then
   az sig create \
     --resource-group "${resource_group}" \
     --gallery-name "${gallery_name}" \
-    "${debug}"
+    ${debug:+"$debug"}
 fi
 
 # Make image definition exists
@@ -181,7 +181,7 @@ then
     --os-type "Linux" \
     --hyper-v-generation "V2" \
     --os-state "Generalized" \
-    "${debug}"
+    ${debug:+"$debug"}
 fi
 
 
@@ -201,7 +201,7 @@ then
     --hyper-v-generation V2 \
     --upload-type Upload \
     --upload-size-bytes "${bytes}" \
-    "${debug}"
+    ${debug:+"$debug"}
 
   timeout=$(( 60 * 60 )) # disk access token timeout
   sasurl="$(\
@@ -211,8 +211,7 @@ then
       --name "${disk_name}"             \
       --duration-in-seconds ${timeout} \
       --query "[accessSas]"            \
-      --output tsv \
-      "${debug}"
+      --output tsv
   )"
 
   azcopy copy "${img_file}" "${sasurl}" \
@@ -235,7 +234,7 @@ then
     --gallery-image-definition "${image_name}" \
     --gallery-image-version "${image_version}" \
     --os-snapshot "$(disk_id)" \
-    "${debug}"
+    ${debug:+"$debug"}
 fi
 
 echo "Image creation completed!"
