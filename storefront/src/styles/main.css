@@ -2,3 +2,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.bg-dots {
+  background-image: radial-gradient(currentColor 1px, transparent 1px);
+  background-size: 5px 5px;
+}
