@@ -12,7 +12,7 @@ function setLocalStorage(mode: Modes) {
 
 function getLocalStorage(key: string) {
   const mode = localStorage.getItem(key);
-  return mode === LIGHT ? LIGHT : DARK;
+  return mode === DARK ? DARK : LIGHT;
 }
 
 function enableLightMode(persist: boolean = true) {
@@ -35,14 +35,6 @@ function enableDarkMode(persist: boolean = true) {
 
 const ThemeController = () => {
   const [checked, setChecked] = React.useState(getLocalStorage(localStorageKey) === "light");
-
-  React.useEffect(() => {
-    if (checked) {
-      enableLightMode(false /** set localstorage */);
-    } else {
-      enableDarkMode(false);
-    }
-  }, []);
 
   function onChangeTheme(evt: React.ChangeEvent) {
     const lightMode = (evt.target as HTMLInputElement).checked;

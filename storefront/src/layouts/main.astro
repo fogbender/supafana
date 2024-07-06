@@ -13,7 +13,7 @@ export type Props = {
 const { meta, linkedData } = Astro.props;
 ---
 
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <BaseHead {...meta}>
       <Fragment slot="preload"> </Fragment>
@@ -45,4 +45,9 @@ const { meta, linkedData } = Astro.props;
       </style>
     </main>
   </body>
+  <script>
+    const mode = localStorage.getItem("supafana.theme_mode") ?? "light";
+    const rootEl = document.documentElement;
+    rootEl.classList.add(mode);
+  </script>
 </html>
