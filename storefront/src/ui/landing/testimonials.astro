@@ -3,14 +3,53 @@ import SectionLayout from "../../layouts/section-layout.astro";
 import ConicGradient from "./conic-gradient.astro";
 import HeroText from "./hero-text.astro";
 import TestimonialCard from "./testimonial-card.astro";
+
+import Founder00 from "../../ui/landing/assets/founders/founder-00.png";
+import Founder01 from "../../ui/landing/assets/founders/founder-01.png";
+import Founder02 from "../../ui/landing/assets/founders/founder-02.png";
+
+const testimonials = [
+  {
+    image: Founder00,
+    name: "Bromley McAlister",
+    company: "Riot Forever",
+    date: "Sept 17, 2024",
+    text: "Checked out Supafana, and it’s rad, but I’m all about that rack and stack life. So I whipped up a similar setup in our colo in like half a Saturday. The best part? It’s chillin’ here till spring when we’re leveling up to a killer new DC.",
+  },
+  {
+    image: Founder01,
+    name: "Tanner Lexington",
+    company: "Boldwave",
+    date: "Aug 3, 2024",
+    text: "My understanding is Supafana uses Elixir as its application server, and while the service looks really useful, I simply refuse to pay for SaaS not written in Rust. Best of luck, though!",
+  },
+  {
+    image: Founder02,
+    name: "Avery Baldwin",
+    company: "Spartan",
+    date: "Aug 30, 2024",
+    text: "Supafana is an incredible service with a lot of potential. Their team’s innovation and dedication are truly impressive. However, our infrastructure requirements are quite specific, and since Supafana uses Nix, it just doesn’t align with our current tech stack. We wish them the best and look forward to seeing their continued success!",
+  },
+];
 ---
 
 <SectionLayout>
-  <HeroText variant="small">Don't take our word for it</HeroText>
+  <HeroText variant="small">Have you heard?</HeroText>
+  {
+    /*
   <div class="my-6 grid grid-cols-1 gap-4 rounded-xl lg:grid-cols-2 xl:grid-cols-3">
     {
       [1, 2, 3, 4, 5, 6, 7, 8, 9].map(() => {
         return <TestimonialCard />;
+      })
+    }
+  </div>
+  */
+  }
+  <div class="my-6 grid grid-cols-1 gap-4 rounded-xl lg:grid-cols-2 xl:grid-cols-3 items-baseline">
+    {
+      testimonials.map(t => {
+        return <TestimonialCard testimonial={t} />;
       })
     }
   </div>

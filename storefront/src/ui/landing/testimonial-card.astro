@@ -1,3 +1,21 @@
+---
+import { Image } from "astro:assets";
+
+type Testimonial = {
+  image: typeof Image;
+  name: string;
+  company: string;
+  date: string;
+  text: string;
+};
+
+type Props = {
+  testimonial: Testimonial;
+};
+
+const { testimonial } = Astro.props as Props;
+---
+
 <style>
   .animated-border {
     --border-bg: conic-gradient(
@@ -66,27 +84,22 @@
     <div>
       <figure>
         <figcaption class="flex items-center justify-between">
-          <a href="https://twitter.com/t3dotgg" class="cursor-pointer hover:underline">
+          <a href="https://x.com/TheMillennialVC" class="cursor-pointer hover:underline">
             <div class="group flex items-center gap-3">
-              <img
-                src="https://github.com/t3dotgg.png"
-                alt="t3dotgg"
-                class="h-12 w-12 rounded-full"
-              />
+              <Image src={testimonial.image} alt={testimonial.name} width={72} />
               <cite class="not-italic group-hover:underline">
-                <p class="text-base font-bold">Theo - ping.gg</p>
-                <p class="text-sm text-zinc-600 dark:text-zinc-400">@t3dotgg</p>
+                <span class="text-base font-bold">{testimonial.name}</span>
+                <br />
+                <span class="text-base font-thin">{testimonial.company}</span>
+                <div class="text-sm text-zinc-600 dark:text-zinc-400">
+                  <time datetime="2022-09-19T18:01:33.000Z">{testimonial.date}</time>
+                </div>
               </cite>
             </div>
           </a>
-          <div class="text-sm text-zinc-600 dark:text-zinc-400">
-            <time datetime="2022-09-19T18:01:33.000Z">Sep 19</time>
-          </div>
         </figcaption>
-        <p class="whitespace-pre-wrap border-none pl-0 pt-4 text-zinc-600 dark:text-zinc-400">
-          The amount that tRPC has improved the quality of our code, the speed of our delivery, and
-          the happiness of our devs is hard to comprehend. I know I shill it a lot but seriously,
-          please try @trpcio
+        <p class="border-none pl-0 pt-4 text-zinc-600 dark:text-zinc-400">
+          {testimonial.text}
         </p>
       </figure>
     </div>
