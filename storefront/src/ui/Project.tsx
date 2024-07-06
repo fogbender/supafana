@@ -11,11 +11,7 @@ dayjs.extend(relativeTime);
 
 type ProvisioningStatus = "initial" | "provisioning" | "provisioned" | "error";
 
-const Project = ({
-  project
-}: {
-  project: ProjectT
-}) => {
+const Project = ({ project }: { project: ProjectT }) => {
   const [provisioningStatus, setProvisioningStatus] = React.useState<ProvisioningStatus>("initial");
 
   React.useEffect(() => {
@@ -27,9 +23,7 @@ const Project = ({
   }, [provisioningStatus]);
 
   return (
-    <div
-      className="p-4 border border-gray-200 dark:border-gray-700 rounded-md flex gap-4"
-    >
+    <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-md flex gap-4">
       <table className="text-gray-200 dark:text-gray-700 bg-dots table max-w-1/2">
         <tbody className="text-black dark:text-white">
           <tr>
@@ -72,7 +66,8 @@ const Project = ({
                       return "text-error";
                     }
                   })()
-                )}>
+                )}
+              >
                 {project.status}
               </span>
             </td>
@@ -87,10 +82,9 @@ const Project = ({
       </table>
       <div className="min-h-full w-full flex items-center justify-center">
         {provisioningStatus === "initial" && (
-          <button
-            className="btn"
-            onClick={() => setProvisioningStatus("provisioning")}
-          >Provision observability dashboard</button>
+          <button className="btn" onClick={() => setProvisioningStatus("provisioning")}>
+            Provision observability dashboard
+          </button>
         )}
         {provisioningStatus === "provisioning" && (
           <div className="flex gap-1">
@@ -114,11 +108,7 @@ const Project = ({
   );
 };
 
-const RowHeader = ({
-  children
-}: {
-  children: JSX.Element | string
-}) => {
+const RowHeader = ({ children }: { children: JSX.Element | string }) => {
   return (
     <td>
       <span className="text-gray-500 dark:text-gray-300">{children}</span>

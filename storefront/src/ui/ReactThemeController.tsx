@@ -46,7 +46,7 @@ const ThemeController = () => {
 
   function onChangeTheme(evt: React.ChangeEvent) {
     const lightMode = (evt.target as HTMLInputElement).checked;
-    
+
     if (lightMode) {
       enableLightMode();
       setChecked(true);

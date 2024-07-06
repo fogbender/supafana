@@ -29,4 +29,3 @@ HyperDX.setGlobalAttributes({
   version: getVersion().niceVersion,
 });
 */
-

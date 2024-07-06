@@ -59,13 +59,8 @@ export const Dashboard = () => {
   return (
     <div className="h-full flex flex-col">
       <div className="bg-transparent sticky top-0 z-20">
-        <div
-          className="nav-container-blur bg-white absolute z-[-1] h-full w-full shadow-[0_2px_4px_rgba(0,0,0,.02),0_1px_0_rgba(0,0,0,.06)] dark:shadow-[0_-1px_0_rgba(255,255,255,.1)_inset] dark:bg-black dark:contrast-more:shadow-[0_0_0_1px_#000] contrast-more:shadow-[0_0_0_1px_#fff]"
-        >
-        </div>
-        <nav
-          className="mx-auto flex h-16 max-w-[90rem] items-center justify-end gap-3 pl-[max(env(safe-area-inset-left),1.5rem)] pr-[max(env(safe-area-inset-right),1.5rem)] text-black dark:text-white"
-        >
+        <div className="nav-container-blur bg-white absolute z-[-1] h-full w-full shadow-[0_2px_4px_rgba(0,0,0,.02),0_1px_0_rgba(0,0,0,.06)] dark:shadow-[0_-1px_0_rgba(255,255,255,.1)_inset] dark:bg-black dark:contrast-more:shadow-[0_0_0_1px_#000] contrast-more:shadow-[0_0_0_1px_#fff]"></div>
+        <nav className="mx-auto flex h-16 max-w-[90rem] items-center justify-end gap-3 pl-[max(env(safe-area-inset-left),1.5rem)] pr-[max(env(safe-area-inset-right),1.5rem)] text-black dark:text-white">
           <div className="flex items-center mr-auto gap-x-5">
             <a title="Home" href="/">
               <img src={SupafanaLogo} alt="Supafana logo" width={22} height={22} />
@@ -83,7 +78,7 @@ export const Dashboard = () => {
           )}
           {organization && (
             <form
-              onClick={(e) => {
+              onClick={e => {
                 if (e.target instanceof HTMLElement) {
                   const form = e.target.closest("form");
 
@@ -114,35 +109,31 @@ export const Dashboard = () => {
               </div>
             ) : (
               <div className="flex flex-col gap-4">
-                {projects?.map(p => (
-                  <Project key={p.id} project={p} />
-                ))}
+                {projects?.map(p => <Project key={p.id} project={p} />)}
               </div>
             )}
           </div>
+        ) : connecting || organizationsLoading ? (
+          <span className="loading loading-ring loading-lg text-accent" />
         ) : (
-          (connecting || organizationsLoading) ? (
-            <span className="loading loading-ring loading-lg text-accent" />
-          ) : (
-            <form
-              onClick={(e) => {
-                if (e.target instanceof HTMLElement) {
-                  const form = e.target.closest("form");
+          <form
+            onClick={e => {
+              if (e.target instanceof HTMLElement) {
+                const form = e.target.closest("form");
 
-                  if (form) {
-                    setConnecting(true);
-                    form.submit();
-                  }
+                if (form) {
+                  setConnecting(true);
+                  form.submit();
                 }
-              }}
-              method="post"
-              action={connectActionUrl}
-            >
-              <button type="button">
-                <img src="/connect-supabase-dark.svg" alt="Connect Supabase button" />
-              </button>
-            </form>
-          )
+              }
+            }}
+            method="post"
+            action={connectActionUrl}
+          >
+            <button type="button">
+              <img src="/connect-supabase-dark.svg" alt="Connect Supabase button" />
+            </button>
+          </form>
         )}
       </div>
     </div>
