@@ -1,0 +1,99 @@
+---
+import Main from "../layouts/main.astro";
+import Customers from "../ui/landing/customers.astro";
+import Hero from "../ui/landing/hero.astro";
+import Scaling from "../ui/landing/scaling.astro";
+import Testimonials from "../ui/landing/testimonials.astro";
+import WhySupafana from "../ui/landing/why-supafana.astro";
+
+const pricing = {
+  plans: ["Free", "Pro"],
+  features: [
+    {
+      name: "Price per month",
+      tiers: [
+        {
+          plan: "Free",
+          value: "Free",
+        },
+        {
+          plan: "Pro",
+          value: "$100 per project",
+        },
+      ],
+    },
+    {
+      name: "Supafana instance paused",
+      tiers: [
+        {
+          plan: "Free",
+          value: "After 8 hours",
+        },
+        {
+          plan: "Pro",
+          value: "Never",
+        },
+      ],
+    },
+    {
+      name: "Support",
+      tiers: [
+        {
+          plan: "Free",
+          value: "Reluctant",
+        },
+        {
+          plan: "Pro",
+          value: "Fanatical",
+        },
+      ],
+    },
+    {
+      name: "Alerts",
+      tiers: [
+        {
+          plan: "Free",
+          value: "When instance is running",
+        },
+        {
+          plan: "Pro",
+          value: "Yes",
+        },
+      ],
+    },
+  ],
+};
+---
+
+<Main meta={{ title: "Supafana pricing" }}>
+  <div class="min-h-3/4 my-24 w-full flex px-4 md:px-24 gap-6">
+    <table class="mt-8 text-gray-200 dark:text-gray-700 bg-dots table max-w-xl m-auto">
+      <thead>
+        <tr>
+          <th></th>
+          {
+            pricing.plans.map(p => (
+              <th>
+                <h2 class="font-bold text-3xl text-black dark:text-white">{p}</h2>
+              </th>
+            ))
+          }
+        </tr>
+      </thead>
+      <tbody>
+        {
+          pricing.features.map(f => (
+            <tr>
+              <td>
+                <span class="text-gray-500 dark:text-gray-300">{f.name}</span>
+              </td>
+              {f.tiers.map(t => (
+                <td class="text-black dark:text-white">{t.value}</td>
+              ))}
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+</Main>

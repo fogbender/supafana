@@ -13,6 +13,8 @@ const links = [
   // { name: "Showcase", href: "/showcase" },
   // { name: "Enterprise", href: "/enterprise" },
 ];
+
+const pathname = Astro.url.pathname;
 ---
 
 <style is:global>
@@ -34,10 +36,12 @@ const links = [
   <nav
     class="mx-auto flex h-16 max-w-[90rem] items-center justify-end gap-3 pl-[max(env(safe-area-inset-left),1.5rem)] pr-[max(env(safe-area-inset-right),1.5rem)]"
   >
-    <div class="h-full items-center flex mr-auto gap-x-4">
-      <Image src={SupafanaLogo} alt="Supafana logo" width={22} height={22} />
-      <SupafanaTextLogo className="mt-1 w-28 leading-0" />
-    </div>
+    <a title="Home" href="/" class="h-full mr-auto">
+      <div class="h-full items-center flex mr-auto gap-x-4">
+        <Image src={SupafanaLogo} alt="Supafana logo" width={22} height={22} />
+        <SupafanaTextLogo className="mt-1 w-28 leading-0" />
+      </div>
+    </a>
     {
       links.map(link => {
         return (
@@ -46,7 +50,14 @@ const links = [
             aria-current="false"
             href={link.href}
           >
-            <span class="absolute inset-x-0 text-center">{link.name}</span>
+            <span
+              class:list={[
+                "absolute inset-x-0 text-center",
+                { "underline": pathname === link.href },
+              ]}
+            >
+              {link.name}
+            </span>
             <span class="invisible font-medium">{link.name}</span>
           </a>
         );

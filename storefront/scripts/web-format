@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-x=$(git diff --name-only --diff-filter d | xargs)
+x=$(git diff --name-only --diff-filter d --relative . | xargs)
 
 if [[ ${#x} > 0 ]]; then
+    echo "Formatting $x"
     npx prettier --write --ignore-unknown --no-error-on-unmatched-pattern $x
 else
     echo "No files to format"

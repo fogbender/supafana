@@ -30,7 +30,7 @@ const Project = ({ project }: { project: ProjectT }) => {
             <RowHeader>Database</RowHeader>
             <td>
               <a
-                className="flex items-center gap-1.5 font-medium link link-primary dark:link-secondary"
+                className="inline-flex items-baseline gap-1.5 font-medium link link-primary dark:link-secondary"
                 href={`https://supabase.com/dashboard/project/${project.id}`}
                 title={`Open ${project.name} in Supabase`}
               >
