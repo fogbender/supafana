@@ -86,7 +86,7 @@ const { testimonial } = Astro.props as Props;
         <figcaption class="flex items-center justify-between">
           <a href="https://x.com/TheMillennialVC" class="cursor-pointer hover:underline">
             <div class="group flex items-center gap-3">
-              <Image src={testimonial.image} alt={testimonial.name} width={72} />
+              <Image class="rounded-full" src={testimonial.image} alt={testimonial.name} width={72} />
               <cite class="not-italic group-hover:underline">
                 <span class="text-base font-bold">{testimonial.name}</span>
                 <br />
