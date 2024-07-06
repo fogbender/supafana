@@ -8,15 +8,15 @@ export interface Props {
   canonicalURL?: URL | string;
   image?: ImageMetadata;
 }
-const defaultDescription = "Fogbender is a team-to-team customer support platform designed for B2B";
-const defaultTitle = "Fogbender | Team messaging widget for B2B support | B2B support platform";
+const defaultDescription = "Supafana is hosted Grafana and Prometheus metrics and observability stack for Supabase";
+const defaultTitle = "Supafana | Grafana for Supabase | Metrics and observability for Supabase";
 
 const { canonicalURL: canonicalURL0 = Astro.url, image = defaultImage as any as ImageMetadata } =
   Astro.props;
 const canonicalURL = new URL(canonicalURL0, Astro.site).href.replace(/\.html$/, "");
 const imageUrl = new URL(image.src, Astro.site).href;
 const description = Astro.props.description || defaultDescription;
-const title = Astro.props.title ? `Fogbender | ${Astro.props.title}` : defaultTitle;
+const title = Astro.props.title ? `Supafana | ${Astro.props.title}` : defaultTitle;
 ---
 
 <!-- Global Metadata -->

@@ -48,6 +48,8 @@ const footerLinks = [
     ],
   },
 ];
+
+const year = new Date().getFullYear();
 ---
 
 <footer class="relative bg-[#FAFAFA] dark:bg-black">
@@ -89,7 +91,13 @@ const footerLinks = [
             }
           </div>
         </div>
-        <NewsLetter />
+        {/* <NewsLetter /> */}
+        <a href="https://fogbender.com" target="_blank">
+          <div class="mt-4 text-sm text-gray-600 flex items-center gap-1">
+            <span>©</span>
+            <span><time datetime={`${year}`}>{year}</time> Fogbender Software, Inc.</span>
+          </div>
+        </a>
       </div>
     </div>
   </div>
