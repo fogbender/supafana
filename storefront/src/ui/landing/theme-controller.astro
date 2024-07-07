@@ -2,14 +2,14 @@
 
 ---
 
-<label class="text-black dark:text-white cursor-pointer swap swap-rotate">
+<label class="text-black dark:text-white cursor-pointer swap swap-rotate w-6 h-6">
   {/* this hidden checkbox controls the state */}
-  <input type="checkbox" class="theme-controller" value="synthwave" />
+  <input type="checkbox" class="theme-controller" checked value="synthwave" />
 
   {/* moon icon */}
 
   <svg
-    class="theme-controller swap-off swap-active fill-current w-6 h-6"
+    class="theme-controller hidden swap-off fill-current w-full h-full"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
     ><path
@@ -19,7 +19,7 @@
 
   {/* sun icon */}
   <svg
-    class="theme-controller swap-on fill-current w-6 h-6"
+    class="theme-controller hidden swap-on fill-current w-full h-full"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
     ><path
@@ -28,17 +28,30 @@
   >
 </label>
 <script>
-  const themeControllerButtons = document.querySelectorAll("svg.theme-controller");
-  themeControllerButtons.forEach(button => {
-    button.addEventListener("click", () => {
-      const themeMode = localStorage.getItem("landing.theme_mode");
-      if (themeMode === "light") {
-        localStorage.setItem("landing.theme_mode", "dark");
-        document.documentElement.classList.add("dark");
-      } else {
-        localStorage.setItem("landing.theme_mode", "light");
-        document.documentElement.classList.remove("dark");
-      }
-    });
+  const localStorageKey = "supafana.theme_mode";
+  const LIGHT = "light";
+  const DARK = "dark";
+
+  const themeController =
+    document.documentElement.querySelector<HTMLInputElement>("input.theme-controller")!;
+  const svgs = document.querySelectorAll("svg.theme-controller");
+
+  themeController.checked = localStorage.getItem(localStorageKey) === LIGHT;
+
+  svgs.forEach(svg => {
+    svg.classList.replace("hidden", "block");
+  }); // A workaround for an issue that occurs when the icon is rendered on page load and a small transition from the sun to the moon icon shows.
+
+  themeController.addEventListener("change", evt => {
+    const target = evt.target as HTMLInputElement;
+    if (target.checked) {
+      target.checked = true;
+      localStorage.setItem(localStorageKey, LIGHT);
+      document.documentElement.classList.replace(DARK, LIGHT);
+    } else {
+      localStorage.setItem(localStorageKey, DARK);
+      target.checked = false;
+      document.documentElement.classList.replace(LIGHT, DARK);
+    }
   });
 </script>

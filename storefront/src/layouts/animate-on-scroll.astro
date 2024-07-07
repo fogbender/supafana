@@ -1,3 +1,6 @@
+---
+import { ViewTransitions } from 'astro:transitions';
+---
 <script>
   const elements = document.querySelectorAll(".animate-on-scroll");
   let options = { thersold: "100%", rootMargin: "0px" };
@@ -32,6 +35,7 @@
   }
 </style>
 
-<div class="animate-on-scroll">
+<div class="animate-on-scroll overflow-hidden">
   <slot />
+  <ViewTransitions/>
 </div>
