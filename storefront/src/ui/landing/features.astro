@@ -9,6 +9,7 @@ import { GiSawedOffShotgun as Secure } from "react-icons/gi";
 import { AiFillAlert as Alerts } from "react-icons/ai";
 import { GiWomanElfFace as Support } from "react-icons/gi";
 import { FaGithubAlt as GitHub } from "react-icons/fa";
+import { FaInternetExplorer as Intranet } from "react-icons/fa";
 ---
 
 <div class="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-6 lg:gap-y-6">
@@ -104,6 +105,28 @@ import { FaGithubAlt as GitHub } from "react-icons/fa";
     >
       <div class="p-1 max-w-min border rounded-full">
         <div class="p-3 max-w-min border rounded-full text-pink-500">
+          <Intranet size={36} />
+        </div>
+      </div>
+      <div class="flex flex-col gap-2">
+        <h3 class="m-0 font-bold leading-5text-white">Intranet</h3>
+        <p class="m-0 leading-6 opacity-70">
+          To be clear, if you <i>are</i> running
+          <a
+            class="link flex gap-1.5 items-center"
+            href="https://github.com/supabase/supabase-grafana"
+            target="_blank"><GitHub /> supabase-grafana</a
+          > on the intranet, it’s still imperative to take security extremely seriously.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="flex">
+    <div
+      class="relative box-border flex flex-col gap-5 overflow-hidden dark:border-neutral-800 rounded-xl border p-8 no-underline text-black dark:text-white"
+    >
+      <div class="p-1 max-w-min border rounded-full">
+        <div class="p-3 max-w-min border rounded-full text-pink-500">
           <Alerts size={36} />
         </div>
       </div>
@@ -111,7 +134,7 @@ import { FaGithubAlt as GitHub } from "react-icons/fa";
         <h3 class="m-0 font-bold leading-5text-white">Alerts</h3>
         <p class="m-0 leading-6 opacity-70">
           Supafana observability instances come pre-configured with a working SMTP setup, ready for
-          Grafana Alerting.
+          Grafana Alerting. Alerting!
         </p>
       </div>
     </div>
