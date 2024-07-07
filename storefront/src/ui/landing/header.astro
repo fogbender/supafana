@@ -36,7 +36,7 @@ const pathname = Astro.url.pathname;
   <nav
     class="mx-auto flex h-16 max-w-[90rem] items-center justify-end gap-3 pl-[max(env(safe-area-inset-left),1.5rem)] pr-[max(env(safe-area-inset-right),1.5rem)]"
   >
-    <a title="Home" href="/" class="h-full mr-auto">
+    <a title="Home" data-astro-reload href="/" class="h-full mr-auto">
       <div class="h-full items-center flex mr-auto gap-x-4">
         <Image src={SupafanaLogo} alt="Supafana logo" width={22} height={22} />
         <SupafanaTextLogo className="mt-1 w-28 leading-0" />
