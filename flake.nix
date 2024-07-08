@@ -171,7 +171,7 @@
             profiles.system.path = deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.grafana;
           };
           grafana2 = {
-            hostname = "57.152.11.242";
+            hostname = "kczjrdfrkmmofxkbjxex.supafana.local";
             profiles.system.path = deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.grafana;
           };
         };

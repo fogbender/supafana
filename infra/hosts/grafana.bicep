@@ -1,3 +1,8 @@
+param supabaseProjectRef string
+param supabaseServiceRoleKey string
+param supafanaDomain string
+param grafanaPassword string = 'admin'
+
 param location string = resourceGroup().location
 param virtualNetworkName string = 'vNet'
 param supafanaSubnetName string = 'SupafanaSubnet'
@@ -6,11 +11,7 @@ param grafanaSubnetName string = 'GrafanaSubnet'
 param imageResourceGroupName string = 'supafana-images-rg'
 param imageGalleryName string = 'supafanasig'
 param imageName string = 'grafana'
-param imageVersion string = '0.0.1'
-
-param supabaseProjectRef string
-param supabaseServiceRoleKey string
-param supafanaDomain string
+param imageVersion string = '0.0.4'
 
 param projectId string = supabaseProjectRef
 
@@ -33,9 +34,9 @@ write_files:
     SUPABASE_SERVICE_ROLE_KEY={1}
     GF_SERVER_ROOT_URL=https://{3}/dashboard/{2}
     GF_SERVER_SERVE_FROM_SUB_PATH=true
-    GRAFANA_PASSWORD=admin
+    GRAFANA_PASSWORD={4}
   path: /var/lib/supafana/supafana.env
-''', supabaseProjectRef, supabaseServiceRoleKey, projectId, supafanaDomain)
+''', supabaseProjectRef, supabaseServiceRoleKey, projectId, supafanaDomain, grafanaPassword)
 
 resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' existing = {
   name: virtualNetworkName
@@ -152,6 +153,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2021-03-01' = {
     }
     storageProfile: {
       osDisk: {
+        name: osDiskName
         createOption: 'FromImage'
         managedDisk: {
           storageAccountType: osDiskType
