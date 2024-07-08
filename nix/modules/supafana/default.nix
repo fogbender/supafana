@@ -7,6 +7,7 @@ in
   imports = [
     ../../azure-image/common.nix
     ./nginx.nix
+    ./supafana-options.nix
   ];
 
   services.openssh.settings.PasswordAuthentication = false;
@@ -14,6 +15,12 @@ in
   security.sudo.wheelNeedsPassword = false;
   nix.settings.trusted-users = [ "@wheel" ];
   networking.search = [ "supafana.local" ];
+
+  environment.systemPackages = with pkgs; [
+    git
+    htop
+  ];
+
 
   users.users = {
     supafana = {
