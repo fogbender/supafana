@@ -17,6 +17,16 @@ defmodule Supafana.Web.Router do
 
   plug(:dispatch)
 
+  get "/organizations/:slug/members" do
+    access_token = conn.assigns[:supabase_access_token]
+
+    {:ok, members} = Supafana.Supabase.Management.organization_members(access_token, slug)
+
+    IO.inspect(members)
+
+    conn |> ok_json(members)
+  end
+
   get "/organizations" do
     access_token = conn.assigns[:supabase_access_token]
 

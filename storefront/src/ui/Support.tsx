@@ -12,7 +12,7 @@ import Project from "./Project";
 
 import { getServerUrl } from "../config";
 
-import type { Organization, Project as ProjectT } from "../types/supabase";
+import type { Organization, Member } from "../types/supabase";
 
 (JotaiProvider as any).displayName = "JotaiProvider";
 
@@ -23,14 +23,30 @@ export const Support = () => {
 
   const organization = organizations?.[0];
 
+  const { data: members } = useQuery({
+    queryKey: queryKeys.members(organization?.id),
+    queryFn: async () => {
+      return await apiServer
+        .url(`/organizations/${organization?.id}/members`)
+        .get()
+        .json<Member[]>();
+    },
+    enabled: !!organization,
+  });
+
+  console.log(members);
+
+  // get all users in organization
+  // have user select themselves
+  // confirm email
+  // continue
+
   return (
     <div className="h-full flex flex-col">
-      <Header organization={organization}/>
-      <div className="flex-1 flex items-center justify-center text-black dark:text-white">
+      <Header organization={organization} />
+      <div className="flex-1 flex justify-center text-black dark:text-white">
         {organization ? (
-          <div className="w-3/4">
-            Support
-          </div>
+          <div className="w-3/4"></div>
         ) : connecting || organizationsLoading ? (
           <span className="loading loading-ring loading-lg text-accent" />
         ) : (

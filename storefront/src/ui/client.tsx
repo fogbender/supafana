@@ -1,7 +1,7 @@
 import { QueryClient, useQuery } from "@tanstack/react-query";
 import wretch from "wretch";
 import QueryStringAddon from "wretch/addons/queryString";
-import type { Organization, } from "../types/supabase";
+import type { Organization } from "../types/supabase";
 
 import { getServerUrl } from "../config";
 
@@ -10,6 +10,7 @@ export const queryClient = new QueryClient();
 export const queryKeys = {
   organizations: () => ["organizations"],
   projects: (organizationId: string) => ["projects", organizationId],
+  members: (organizationId: string) => ["members", organizationId],
 } as any;
 
 export const apiServer = wretch(getServerUrl(), {
@@ -34,4 +35,4 @@ export const useOrganizations = () => {
     },
     retry: false,
   });
-}
+};

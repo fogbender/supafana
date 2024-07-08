@@ -35,8 +35,14 @@ const Project = ({ project }: { project: ProjectT }) => {
                 title={`Open ${project.name} in Supabase`}
               >
                 <img src={SupabaseLogo} alt="Supabase logo" width={12} height={12} />
-                {project.name} ({project.id})
+                {project.name}
               </a>
+            </td>
+          </tr>
+          <tr>
+            <RowHeader>Project&nbsp;ref</RowHeader>
+            <td>
+              <span className="font-medium">{project.id}</span>
             </td>
           </tr>
           <tr>
