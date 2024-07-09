@@ -83,12 +83,7 @@ const { image, name, company, date, text } = Astro.props as Testimonial;
         <figcaption class="flex items-center justify-between">
           <a href="https://x.com/TheMillennialVC" class="cursor-pointer hover:underline">
             <div class="group flex items-center gap-3">
-              <Image
-                class="rounded-full"
-                src={image}
-                alt={name}
-                width={72}
-              />
+              <Image class="rounded-full" src={image} alt={name} width={72} />
               <cite class="not-italic group-hover:underline">
                 <span class="text-base dark:text-zinc-200 font-bold">{name}</span>
                 <br />

@@ -94,8 +94,10 @@ const testimonials = [
   <div class="my-6 grid grid-cols-1 gap-4 rounded-xl lg:grid-cols-2 xl:grid-cols-3 items-baseline">
     {
       testimonials.map(t => {
-      const { image, name, company, date, text } = t;
-        return <TestimonialCard image={image} name={name} company={company} date={date} text={text} />;
+        const { image, name, company, date, text } = t;
+        return (
+          <TestimonialCard image={image} name={name} company={company} date={date} text={text} />
+        );
       })
     }
   </div>

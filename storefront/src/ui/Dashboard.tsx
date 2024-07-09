@@ -39,7 +39,7 @@ export const Dashboard = () => {
 
   return (
     <div className="h-full flex flex-col">
-      <Header organization={organization}/>
+      <Header organization={organization} />
       <div className="flex-1 flex items-center justify-center text-black dark:text-white">
         {organization ? (
           <div className="w-3/4">
