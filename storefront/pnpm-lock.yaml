@@ -55,6 +55,9 @@ importers:
       dayjs:
         specifier: ^1.11.11
         version: 1.11.11
+      fogbender-react:
+        specifier: ^0.4.0
+        version: 0.4.0(react@18.3.1)(typescript@5.5.2)
       jotai:
         specifier: ^2.8.4
         version: 2.8.4(@types/react@18.3.3)(react@18.3.1)
@@ -2039,6 +2042,31 @@ packages:
         integrity: sha512-+HlytyjlPKnIG8XuRG8WvmBP8xs8P71y+SKKS6ZXWoEgLuePxtDoUEiH7WkdePWrQ5JBpE6aoVqfZfJUQkjXwA==,
       }
 
+  dom-serializer@1.4.1:
+    resolution:
+      {
+        integrity: sha512-VHwB3KfrcOOkelEG2ZOfxqLZdfkil8PtJi4P8N2MMXucZq2yLp75ClViUlOVwyoHEDjYU433Aq+5zWP61+RGag==,
+      }
+
+  domelementtype@2.3.0:
+    resolution:
+      {
+        integrity: sha512-OLETBj6w0OsagBwdXnPdN0cnMfF9opN69co+7ZrbfPGrdpPVNBUj02spi6B1N7wChLQiPn4CSH/zJvXw56gmHw==,
+      }
+
+  domhandler@4.3.1:
+    resolution:
+      {
+        integrity: sha512-GrwoxYN+uWlzO8uhUXRl0P+kHE4GtVPfYzVLcUxPL7KNdHKj66vvlhiweIHqYYXWlw+T8iLMp42Lm67ghw4WMQ==,
+      }
+    engines: { node: ">= 4" }
+
+  domutils@2.8.0:
+    resolution:
+      {
+        integrity: sha512-w96Cjofp72M5IIhpjgobBimYEfoPjx1Vx0BSX9P30WBdZW2WIKU0T1Bd0kz2eNZ9ikjKgHbEyKx8BB6H1L3h3A==,
+      }
+
   dset@3.1.3:
     resolution:
       {
@@ -2080,6 +2108,12 @@ packages:
     resolution:
       {
         integrity: sha512-L18DaJsXSUk2+42pv8mLs5jJT2hqFkFE4j21wOmgbUqsZ2hL72NsUU785g9RXgo3s0ZNgVl42TiHp3ZtOv/Vyg==,
+      }
+
+  entities@2.2.0:
+    resolution:
+      {
+        integrity: sha512-p92if5Nz619I0w+akJrLZH0MX0Pb5DX39XOwQTtXSdQQOaYH03S1uIQp4mhOZtAXrxq4ViO67YTiLBo2638o9A==,
       }
 
   entities@4.5.0:
@@ -2301,6 +2335,22 @@ packages:
         integrity: sha512-9UbaD6XdAL97+k/n+N7JwX46K/M6Zc6KcFYskrYL8wbBV/Uyk0CTAMY0VT+qiK5PM7AIc9aTWYtq65U7T+aCNQ==,
       }
     engines: { node: ">=8" }
+
+  fogbender-react@0.4.0:
+    resolution:
+      {
+        integrity: sha512-hRiiLpP1qEk9hvdKqITzWEWxNdW0172SA6E9KL8J1SVj8KvqW9GubUv6a1bdlhddtqqPSiGYA/RZfhmx+aAJew==,
+      }
+    engines: { node: ">=10" }
+    peerDependencies:
+      react: ">=16.0.0"
+
+  fogbender@0.4.0:
+    resolution:
+      {
+        integrity: sha512-AhUwWcHgUg8VmVUqOqVb1fuQmOCkVz5huC7By2cSFYpY/P62FeDqup6h/f/Gk1cuRY4SNMqEfFDhQcwcBYnz9w==,
+      }
+    engines: { node: ">=10" }
 
   for-each@0.3.3:
     resolution:
@@ -2594,6 +2644,12 @@ packages:
     resolution:
       {
         integrity: sha512-bEqo66MRXsUGxWHV5IP0PUiAWwoEjba4VCzg0LjFJBpchPaTfyfCKTG6bc5F8ucKec3q5y6qOdGyYTSBEvhCrg==,
+      }
+
+  htmlparser2@6.1.0:
+    resolution:
+      {
+        integrity: sha512-gyyPk6rgonLFEDGoeRgQNaEUvdJ4ktTmmUh/h2t7s+M8oPpIPxgNACWa+6ESR57kXstwqPiCut0V8NRpcwgU7A==,
       }
 
   http-cache-semantics@4.1.1:
@@ -4295,6 +4351,13 @@ packages:
     engines: { node: ">=10" }
     hasBin: true
 
+  seroval@0.10.4:
+    resolution:
+      {
+        integrity: sha512-TdaE9JkoATjKu+vjwllieX8zWyBTUVxbgWDnOsDJFfmKbM7vLSukuCXuD3pO3kkCtX4daywOW8ps2VCdPhS8/w==,
+      }
+    engines: { node: ">=10" }
+
   set-function-length@1.2.2:
     resolution:
       {
@@ -4382,6 +4445,12 @@ packages:
         integrity: sha512-TzobUYoEft/xBtb2voRPryAUIvYguG0V7Tt3de79I1WfXgCwelqVsGuZSnu3GFGRZhXR90AeEYIM+icuB/S06Q==,
       }
     hasBin: true
+
+  solid-js@1.8.0:
+    resolution:
+      {
+        integrity: sha512-SYVRIUPwCW8K56/add1Yf7xYMOipDUcxGHIxzieRNu9tieqJpaygqcGdJOGXtrMBHSHyVEC7cSp9jz1cNZTFLA==,
+      }
 
   source-map-js@1.2.0:
     resolution:
@@ -4523,6 +4592,12 @@ packages:
         integrity: sha512-khxq+Qm3xEyZfKd/y9L3oIWQimxuc4STrQKtQn8aSDRHb8mFgpukgX1hdzfrMEW6JCjyJ8p89x+IUMVnCBI1PA==,
       }
 
+  style-vendorizer@2.2.3:
+    resolution:
+      {
+        integrity: sha512-/VDRsWvQAgspVy9eATN3z6itKTuyg+jW1q6UoTCQCFRqPDw8bi3E1hXIKnGw5LvXS2AQPuJ7Af4auTLYeBOLEg==,
+      }
+
   sucrase@3.35.0:
     resolution:
       {
@@ -4655,6 +4730,18 @@ packages:
       {
         integrity: sha512-xNvxJEOUiWPGhUuUdQgAJPKOOJfGnIyKySOc09XkKsgdUV/3E2zvwZYdejjmRgPCgcym1juLH3226yA7sEFJKQ==,
       }
+
+  twind@0.16.19:
+    resolution:
+      {
+        integrity: sha512-/9H7I/Xzji6UZ+x1V8/llcQSAI0bINqpZtvAqqTzuU/qAdzRCnrpaME8x57k8tUu2KbosjSQE85sSwcLBGD1DQ==,
+      }
+    engines: { node: ">=10.13" }
+    peerDependencies:
+      typescript: ^4.1.0
+    peerDependenciesMeta:
+      typescript:
+        optional: true
 
   type-fest@0.21.3:
     resolution:
@@ -6479,6 +6566,24 @@ snapshots:
 
   dlv@1.1.3: {}
 
+  dom-serializer@1.4.1:
+    dependencies:
+      domelementtype: 2.3.0
+      domhandler: 4.3.1
+      entities: 2.2.0
+
+  domelementtype@2.3.0: {}
+
+  domhandler@4.3.1:
+    dependencies:
+      domelementtype: 2.3.0
+
+  domutils@2.8.0:
+    dependencies:
+      dom-serializer: 1.4.1
+      domelementtype: 2.3.0
+      domhandler: 4.3.1
+
   dset@3.1.3: {}
 
   eastasianwidth@0.2.0: {}
@@ -6495,6 +6600,8 @@ snapshots:
   emoji-regex@8.0.0: {}
 
   emoji-regex@9.2.2: {}
+
+  entities@2.2.0: {}
 
   entities@4.5.0: {}
 
@@ -6691,6 +6798,20 @@ snapshots:
       pkg-dir: 4.2.0
 
   flattie@1.1.1: {}
+
+  fogbender-react@0.4.0(react@18.3.1)(typescript@5.5.2):
+    dependencies:
+      fogbender: 0.4.0(typescript@5.5.2)
+      react: 18.3.1
+    transitivePeerDependencies:
+      - typescript
+
+  fogbender@0.4.0(typescript@5.5.2):
+    dependencies:
+      solid-js: 1.8.0
+      twind: 0.16.19(typescript@5.5.2)
+    transitivePeerDependencies:
+      - typescript
 
   for-each@0.3.3:
     dependencies:
@@ -6938,6 +7059,13 @@ snapshots:
   html-escaper@3.0.3: {}
 
   html-void-elements@3.0.0: {}
+
+  htmlparser2@6.1.0:
+    dependencies:
+      domelementtype: 2.3.0
+      domhandler: 4.3.1
+      domutils: 2.8.0
+      entities: 2.2.0
 
   http-cache-semantics@4.1.1: {}
 
@@ -8142,6 +8270,8 @@ snapshots:
 
   semver@7.6.2: {}
 
+  seroval@0.10.4: {}
+
   set-function-length@1.2.2:
     dependencies:
       define-data-property: 1.1.4
@@ -8220,6 +8350,11 @@ snapshots:
 
   smartypants@0.2.2: {}
 
+  solid-js@1.8.0:
+    dependencies:
+      csstype: 3.1.3
+      seroval: 0.10.4
+
   source-map-js@1.2.0: {}
 
   source-map@0.7.4: {}
@@ -8297,6 +8432,8 @@ snapshots:
   style-to-object@1.0.6:
     dependencies:
       inline-style-parser: 0.2.3
+
+  style-vendorizer@2.2.3: {}
 
   sucrase@3.35.0:
     dependencies:
@@ -8387,6 +8524,14 @@ snapshots:
 
   tslib@2.6.3:
     optional: true
+
+  twind@0.16.19(typescript@5.5.2):
+    dependencies:
+      csstype: 3.1.3
+      htmlparser2: 6.1.0
+      style-vendorizer: 2.2.3
+    optionalDependencies:
+      typescript: 5.5.2
 
   type-fest@0.21.3: {}
 

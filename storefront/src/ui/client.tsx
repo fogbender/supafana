@@ -11,6 +11,12 @@ export const queryKeys = {
   organizations: () => ["organizations"],
   projects: (organizationId: string) => ["projects", organizationId],
   members: (organizationId: string) => ["members", organizationId],
+  email: () => ["email"],
+  fogbenderToken: (organizationId: string, email: string) => [
+    "fogbnederToken",
+    organizationId,
+    email,
+  ],
 } as any;
 
 export const apiServer = wretch(getServerUrl(), {

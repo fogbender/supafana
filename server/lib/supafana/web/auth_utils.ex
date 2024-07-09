@@ -7,8 +7,14 @@ defmodule Supafana.Web.AuthUtils do
   def handle_auth(conn, supabase_refresh_token) do
     # TODO: use existing token if not expired
 
-    {:ok, tokens} = Supafana.Supabase.OAuth.token(supabase_refresh_token)
-    handle_tokens(conn, tokens)
+    # {:ok, tokens} = Supafana.Supabase.OAuth.token(supabase_refresh_token)
+
+    supabase_access_token = Plug.Conn.get_session(conn, :supabase_access_token)
+
+    handle_tokens(conn, %{
+      "access_token" => supabase_access_token,
+      "refresh_token" => supabase_refresh_token
+    })
   end
 
   defp handle_tokens(conn, %{status: 404}) do

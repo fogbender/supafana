@@ -14,6 +14,13 @@ config :supafana,
 config :supafana,
   supafana_api_url: System.get_env("SUPAFANA_API_URL")
 
+config :supafana,
+  loops_api_key: System.get_env("LOOPS_API_KEY")
+
+config :supafana,
+  fogbender_secret: System.get_env("FOGBENDER_SECRET"),
+  fogbender_widget_id: System.get_env("FOGBENDER_WIDGET_ID")
+
 config :logger, :console,
   level: (System.get_env("SUPAFANA_LOG_LEVEL") || "debug") |> String.to_atom(),
   format: "\n$time [$level] $message $metadata\n",
