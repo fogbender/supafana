@@ -3,11 +3,20 @@ import { Provider as JotaiProvider, useAtom } from "jotai";
 import React from "react";
 import { QueryClientProvider, useQuery, useMutation } from "@tanstack/react-query";
 import wretch from "wretch";
-import { FogbenderSimpleWidget, type Token as FogbenderToken } from "fogbender-react";
+import {
+  createNewFogbender,
+  FogbenderConfig,
+  FogbenderIsConfigured,
+  FogbenderProvider,
+  // FogbenderUnreadBadge,
+  FogbenderWidget,
+  type Token as FogbenderToken,
+} from "fogbender-react";
 
 import Header from "./Header";
 import { useOrganizations, connectActionUrl, apiServer, queryClient, queryKeys } from "./client";
 import Project from "./Project";
+import { localStorageKey, getLocalStorage, type Mode as ThemeMode } from "./ReactThemeController";
 
 import { getServerUrl } from "../config";
 
@@ -16,6 +25,26 @@ import type { Organization, Member } from "../types/supabase";
 (JotaiProvider as any).displayName = "JotaiProvider";
 
 export const Support = () => {
+  const fogbender = React.useRef(createNewFogbender());
+
+  const [mode, setMode] = React.useState<ThemeMode>("dark");
+
+  React.useEffect(() => {
+    setMode(getLocalStorage(localStorageKey));
+
+    const onstorage = (event: StorageEvent) => {
+      if (event.key === localStorageKey) {
+        setMode(getLocalStorage(localStorageKey));
+      }
+    };
+
+    window.addEventListener("storage", onstorage);
+
+    return () => {
+      window.removeEventListener("storage", onstorage);
+    };
+  }, []);
+
   const { data: organizations, isLoading: organizationsLoading } = useOrganizations();
 
   const [connecting, setConnecting] = React.useState(false);
@@ -47,7 +76,7 @@ export const Support = () => {
       return await apiServer
         .url("/fogbender-token")
         .get()
-        .json<{ token: FogbenderToken; widgetId: string }>();
+        .json<{ token: { userJWT: string }; widgetId: string }>();
     },
     enabled: email !== undefined && organization?.id !== undefined,
   });
@@ -68,19 +97,26 @@ export const Support = () => {
         customerName: organization.name,
         customerId: organization.id,
         widgetId: fogbenderTokenData.widgetId,
-        userJWT: fogbenderTokenData.token?.userJWT,
+        userJWT: fogbenderTokenData.token.userJWT,
       });
     }
   }, [organization, fogbenderTokenData]);
-
-  console.log(fogbenderToken);
 
   return (
     <div className="h-full flex flex-col">
       <Header organization={organization} />
       {email && fogbenderToken ? (
         <div className="flex-1">
-          <FogbenderSimpleWidget token={fogbenderToken} />
+          <FogbenderProvider fogbender={fogbender.current}>
+            <FogbenderConfig
+              clientUrl="https://client.fogbender.com"
+              token={fogbenderToken}
+              mode={mode}
+            />
+            <FogbenderIsConfigured>
+              <FogbenderWidget />
+            </FogbenderIsConfigured>
+          </FogbenderProvider>
         </div>
       ) : organization ? (
         <div className="mt-12 flex-1 flex ml-2 md:ml-16 text-black dark:text-white">

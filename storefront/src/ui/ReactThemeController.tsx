@@ -1,16 +1,17 @@
 import React from "react";
 
-type Mode = "light" | "dark";
+export type Mode = "light" | "dark";
 
-const localStorageKey = "supafana.theme_mode";
+export const localStorageKey = "supafana.theme_mode";
 const LIGHT = "light";
 const DARK = "dark";
 
 function setLocalStorage(mode: Mode) {
   localStorage.setItem(localStorageKey, mode);
+  window.dispatchEvent(new StorageEvent("storage", { key: localStorageKey }));
 }
 
-function getLocalStorage(key: string) {
+export function getLocalStorage(key: string) {
   const mode = localStorage.getItem(key);
   return mode === DARK ? DARK : LIGHT;
 }
