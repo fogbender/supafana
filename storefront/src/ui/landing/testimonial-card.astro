@@ -1,19 +1,16 @@
 ---
+import type { ImageMetadata } from "astro";
 import { Image } from "astro:assets";
 
 type Testimonial = {
-  image: typeof Image;
+  image: ImageMetadata;
   name: string;
   company: string;
   date: string;
   text: string;
 };
 
-type Props = {
-  testimonial: Testimonial;
-};
-
-const { testimonial } = Astro.props as Props;
+const { image, name, company, date, text } = Astro.props as Testimonial;
 ---
 
 <style>
@@ -88,23 +85,23 @@ const { testimonial } = Astro.props as Props;
             <div class="group flex items-center gap-3">
               <Image
                 class="rounded-full"
-                src={testimonial.image}
-                alt={testimonial.name}
+                src={image}
+                alt={name}
                 width={72}
               />
               <cite class="not-italic group-hover:underline">
-                <span class="text-base dark:text-zinc-200 font-bold">{testimonial.name}</span>
+                <span class="text-base dark:text-zinc-200 font-bold">{name}</span>
                 <br />
-                <span class="text-base dark:text-white font-thin">{testimonial.company}</span>
+                <span class="text-base dark:text-white font-thin">{company}</span>
                 <div class="text-sm text-zinc-600 dark:text-zinc-400">
-                  <time datetime="2022-09-19T18:01:33.000Z">{testimonial.date}</time>
+                  <time datetime="2022-09-19T18:01:33.000Z">{date}</time>
                 </div>
               </cite>
             </div>
           </a>
         </figcaption>
         <p class="border-none pl-0 pt-4 text-zinc-600 dark:text-zinc-400">
-          {testimonial.text}
+          {text}
         </p>
       </figure>
     </div>

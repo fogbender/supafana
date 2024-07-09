@@ -63,7 +63,7 @@ const pathname = Astro.url.pathname;
       })
     }
     <a href="/dashboard" aria-current="false">
-      <Image src={ConnectSupabase} alt="Connect Supabase" height={24} />
+      <Image src={ConnectSupabase} alt="Connect Supabase" height="24" inferSize={true} />
     </a>
     <div class="w-6 h-6">
       <ReactThemeController client:only="react" />

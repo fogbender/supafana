@@ -7,7 +7,14 @@ const version = getVersion();
 
 <Layout title="Supafana Dashboard">
   <script data-version={version}>
-    window._supafana_version = document.currentScript?.dataset.version;
+    // fails with:
+    /*
+        src/pages/SPA.astro:10:12 - error ts(2339): Property '_supafana_version' does not exist on type 'Window & typeof globalThis'.
+
+10     window._supafana_version = document.currentScript?.dataset.version;
+              ~~~~~~~~~~~~~~~~~
+    */
+    // window._supafana_version = document.currentScript?.dataset.version;
   </script>
   <App client:only="react" />
 </Layout>

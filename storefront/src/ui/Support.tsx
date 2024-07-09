@@ -1,9 +1,7 @@
 import classNames from "classnames";
 import { Provider as JotaiProvider, useAtom } from "jotai";
 import React from "react";
-import { lazily } from "react-lazily";
 import { QueryClientProvider, useQuery, useMutation } from "@tanstack/react-query";
-import { Title } from "reactjs-meta";
 import wretch from "wretch";
 import { FogbenderSimpleWidget, type Token as FogbenderToken } from "fogbender-react";
 

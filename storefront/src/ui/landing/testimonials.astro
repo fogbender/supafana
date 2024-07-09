@@ -91,21 +91,11 @@ const testimonials = [
 
 <SectionLayout>
   <HeroText variant="small">Have you heard?</HeroText>
-  {
-    /*
-  <div class="my-6 grid grid-cols-1 gap-4 rounded-xl lg:grid-cols-2 xl:grid-cols-3">
-    {
-      [1, 2, 3, 4, 5, 6, 7, 8, 9].map(() => {
-        return <TestimonialCard />;
-      })
-    }
-  </div>
-  */
-  }
   <div class="my-6 grid grid-cols-1 gap-4 rounded-xl lg:grid-cols-2 xl:grid-cols-3 items-baseline">
     {
       testimonials.map(t => {
-        return <TestimonialCard testimonial={t} />;
+      const { image, name, company, date, text } = t;
+        return <TestimonialCard image={image} name={name} company={company} date={date} text={text} />;
       })
     }
   </div>

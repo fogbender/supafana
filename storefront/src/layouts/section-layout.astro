@@ -1,17 +1,15 @@
 ---
 import GradientDivider from "../ui/landing/gradient-divider.astro";
 import AnimateOnScroll from "./animate-on-scroll.astro";
----
 
+---
 <section class="relative overflow-hidden">
-  <GradientDivider />
-  <AnimateOnScroll>
-    <div
-      class="relative flex flex-col items-center mx-auto gap-14 px-6 py-16 md:py-24 lg:py-32 max-w-7xl"
-    >
-      <slot />
-    </div>
-    <slot name="conic-gradient" />
-    <AnimateOnScroll> <section < AnimateOnScroll></section> </AnimateOnScroll>
-  </AnimateOnScroll>
-</section>
+    <GradientDivider />
+    <AnimateOnScroll>
+      <div class="relative flex flex-col items-center mx-auto gap-14 px-6 py-16 md:py-24 lg:py-32 max-w-7xl">
+        <slot/>
+      </div>
+      <slot name="conic-gradient"/>
+    </AnimateOnScroll>
+<section>
+

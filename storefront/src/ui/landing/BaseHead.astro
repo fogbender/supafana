@@ -1,5 +1,4 @@
 ---
-import { smartypants } from "smartypants";
 import defaultImage from "../../content/blog/assets/default/social.jpg";
 
 export interface Props {
@@ -35,7 +34,7 @@ const title = Astro.props.title ? `Supafana | ${Astro.props.title}` : defaultTit
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <!-- Primary Meta Tags -->
-<title set:html={smartypants(title, 1)} />
+<title set:html={title} />
 <meta name="title" content={title} />
 <meta name="description" content={description} />
 <link rel="canonical" href={canonicalURL} />

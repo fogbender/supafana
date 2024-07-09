@@ -1,12 +1,12 @@
 import React from "react";
 
-type Modes = "light" | "dark";
+type Mode = "light" | "dark";
 
 const localStorageKey = "supafana.theme_mode";
 const LIGHT = "light";
 const DARK = "dark";
 
-function setLocalStorage(mode: Modes) {
+function setLocalStorage(mode: Mode) {
   localStorage.setItem(localStorageKey, mode);
 }
 
