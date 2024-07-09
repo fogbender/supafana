@@ -30,3 +30,5 @@ result
 supabase-grafana/run.sh
 
 local.env
+/.nix-shell/
+/.direnv/
