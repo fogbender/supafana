@@ -24,7 +24,7 @@ const Project = ({ project }: { project: ProjectT }) => {
 
   return (
     <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-md flex gap-4">
-      <table className="text-gray-200 dark:text-gray-700 bg-dots table max-w-1/2">
+      <table className="text-gray-200 dark:text-gray-700 bg-dots table">
         <tbody className="text-black dark:text-white">
           <tr>
             <RowHeader>Database</RowHeader>

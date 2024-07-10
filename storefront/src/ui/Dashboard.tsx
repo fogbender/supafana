@@ -42,7 +42,7 @@ export const Dashboard = () => {
       <Header organization={organization} />
       <div className="flex-1 flex items-center justify-center text-black dark:text-white">
         {organization ? (
-          <div className="w-3/4">
+          <div>
             {projectsLoading ? (
               <div className="flex w-52 flex-col gap-4">
                 <div className="skeleton h-4 w-full"></div>
