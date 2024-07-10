@@ -1,17 +1,72 @@
+import React from "react";
 import { useLocation } from "react-router-dom";
 import { HiExternalLink as ExternalLink } from "react-icons/hi";
+import { useQuery } from "@tanstack/react-query";
+
+import {
+  createNewFogbender,
+  FogbenderConfig,
+  FogbenderIsConfigured,
+  FogbenderProvider,
+  FogbenderHeadlessWidget,
+  FogbenderUnreadBadge,
+  type Token as FogbenderToken,
+} from "fogbender-react";
 
 import SupabaseLogo from "./landing/assets/supabase-logo-icon.svg?url";
 import SupafanaLogo from "./landing/assets/logo.svg?url";
 import ThemeController from "./ReactThemeController";
 
+import { apiServer, queryKeys } from "./client";
+
 import { getServerUrl } from "../config";
 import type { Organization } from "../types/supabase";
 
 const Header = ({ organization }: { organization: undefined | Organization }) => {
+  const fogbender = React.useRef(createNewFogbender());
+
   const signOutActionUrl = `${getServerUrl()}/auth/sign-out`;
 
   const { pathname } = useLocation();
+
+  const { data: email } = useQuery({
+    queryKey: queryKeys.email(),
+    queryFn: async () => {
+      return await apiServer.url("/email").get().json<string>();
+    },
+  });
+
+  const { data: fogbenderTokenData } = useQuery({
+    queryKey: queryKeys.fogbenderToken(organization?.id, email),
+    queryFn: async () => {
+      return await apiServer
+        .url("/fogbender-token")
+        .get()
+        .json<{ token: { userJWT: string }; widgetId: string }>();
+    },
+    enabled: !!email && !!organization?.id,
+  });
+
+  const [fogbenderToken, setFogbenderToken] = React.useState<FogbenderToken>();
+
+  React.useEffect(() => {
+    if (
+      fogbenderTokenData &&
+      organization &&
+      fogbenderTokenData.widgetId &&
+      fogbenderTokenData.token
+    ) {
+      setFogbenderToken({
+        userId: email,
+        userName: email,
+        userEmail: email,
+        customerName: organization.name,
+        customerId: organization.id,
+        widgetId: fogbenderTokenData.widgetId,
+        userJWT: fogbenderTokenData.token.userJWT,
+      });
+    }
+  }, [organization, fogbenderTokenData]);
 
   return (
     <div className="bg-transparent sticky top-0 z-20">
@@ -32,13 +87,22 @@ const Header = ({ organization }: { organization: undefined | Organization }) =>
           </a>
         )}
         {organization && pathname === "/dashboard" && (
-          <a
-            className="text-sm font-medium flex items-center gap-1.5 link link-primary dark:link-secondary no-underline"
-            href="/support"
-            title="Support"
-          >
-            Support
-          </a>
+          <span className="flex items-center gap-0.5">
+            <a
+              className="text-sm font-medium flex items-center gap-1.5 link link-primary dark:link-secondary no-underline"
+              href="/support"
+              title="Support"
+            >
+              Support
+            </a>
+            <FogbenderProvider fogbender={fogbender.current}>
+              <FogbenderConfig clientUrl="https://client.fogbender.com" token={fogbenderToken} />
+              <FogbenderIsConfigured>
+                <FogbenderHeadlessWidget />
+                <FogbenderUnreadBadge />
+              </FogbenderIsConfigured>
+            </FogbenderProvider>
+          </span>
         )}
         {organization && (
           <a
