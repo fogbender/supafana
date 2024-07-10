@@ -78,7 +78,7 @@ export const Support = () => {
         .get()
         .json<{ token: { userJWT: string }; widgetId: string }>();
     },
-    enabled: email !== undefined && organization?.id !== undefined,
+    enabled: !!email && !!organization?.id,
   });
 
   const [fogbenderToken, setFogbenderToken] = React.useState<FogbenderToken>();
