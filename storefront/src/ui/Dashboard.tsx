@@ -6,11 +6,17 @@ import { QueryClientProvider, useMutation, useQuery } from "@tanstack/react-quer
 import { Title } from "reactjs-meta";
 import wretch from "wretch";
 
+import MemberRow from "./MemberRow";
 import Header from "./Header";
-import { useOrganizations, connectActionUrl, apiServer, queryClient, queryKeys } from "./client";
+import {
+  useMembers,
+  useOrganizations,
+  connectActionUrl,
+  apiServer,
+  queryClient,
+  queryKeys,
+} from "./client";
 import Project from "./Project";
-
-import { getServerUrl } from "../config";
 
 import type { Organization, Project as ProjectT } from "../types/supabase";
 
@@ -37,12 +43,39 @@ export const Dashboard = () => {
 
   const organization = organizations?.[0];
 
+  const { data: members, isLoading: membersLoading } = useMembers({
+    enabled: !!organization,
+    organizationId: organization?.id as string,
+    showEmails: false,
+  });
+
   return (
     <div className="h-full flex flex-col">
       <Header organization={organization} />
-      <div className="flex-1 flex items-center justify-center text-black dark:text-white">
+      <div className="flex-1 flex flex-col items-center justify-center text-black dark:text-white">
         {organization ? (
-          <div>
+          <div className="w-full">
+            {/*
+            <div className="p-4 self-start">
+              <div className="font-medium">Who should get email notifications?</div>
+              {membersLoading && (
+                <div className="flex w-52 flex-col gap-4">
+                  <div className="skeleton h-4 w-full"></div>
+                  <div className="skeleton h-4 w-full"></div>
+                  <div className="skeleton h-4 w-full"></div>
+                </div>
+              )}
+              {members && (
+                <table className="text-gray-200 dark:text-gray-700 bg-dots table">
+                  <tbody>
+                    {members.map(m => (
+                      <MemberRow m={m} key={m.user_id} verifyText="Verify" />
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+            */}
             {projectsLoading ? (
               <div className="flex w-52 flex-col gap-4">
                 <div className="skeleton h-4 w-full"></div>
@@ -50,7 +83,7 @@ export const Dashboard = () => {
                 <div className="skeleton h-4 w-full"></div>
               </div>
             ) : (
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col border-y border-gray-200 dark:border-gray-700 divide-y divide-gray-200 dark:divide-gray-700">
                 {projects?.map(p => <Project key={p.id} project={p} />)}
               </div>
             )}

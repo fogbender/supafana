@@ -1,10 +1,10 @@
 defmodule Supafana.Fogbender.Api do
-  def tokens(organization_slug, email) do
+  def tokens(organization_slug, email, user_id) do
     path = "/tokens"
 
     client()
     |> Tesla.post(path, %{
-      "userId" => email,
+      "userId" => user_id,
       "email" => email,
       "userName" => email,
       "customerId" => organization_slug

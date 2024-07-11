@@ -63,7 +63,7 @@ Example: `kczjrdfrkmmofxkbjxex.supafana.local`
 Grafana instances don't have public IPs, accessible via our main servers (supafana-test.com and supafana.com).
 To simplify access add next lines to your `~/.ssh/config` file:
 
-``` 
+```
 Host *.supafana.local
   ProxyJump admin@supafana-test.com
 ```

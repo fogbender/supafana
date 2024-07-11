@@ -20,33 +20,34 @@ defmodule Supafana.Web.Router do
   get "fogbender-token" do
     conn = fetch_session(conn)
     organization_slug = get_session(conn)["organization_slug"]
-    email = get_session(conn)["email"]
+    me = get_session(conn)["me"]
     widget_id = Supafana.env(:fogbender_widget_id)
 
     {:ok, %{status: 200, body: token}} =
-      Supafana.Fogbender.Api.tokens(organization_slug, email)
+      Supafana.Fogbender.Api.tokens(organization_slug, me["email"], me["user_id"])
 
     conn |> ok_json(Map.merge(token, %{"widgetId" => widget_id}))
   end
 
-  get "/email" do
+  get "/me" do
     conn = fetch_session(conn)
-    email = get_session(conn)["email"]
-    conn |> ok_json(email)
+    me = get_session(conn)["me"]
+    conn |> ok_json(me)
   end
 
   post "/probe-email-verification-code" do
     code = conn.params["verificationCode"]
+    user_id = conn.params["userId"]
 
-    case code do
-      code when is_binary(code) ->
+    case {code, user_id} do
+      {code, user_id} when is_binary(code) and is_binary(code) ->
         conn = fetch_session(conn)
         verification_code = get_session(conn)["email_verification_code"]
 
         case verification_code do
           ^code ->
             email = get_session(conn)["email_candidate"]
-            conn = Plug.Conn.put_session(conn, :email, email)
+            conn = Plug.Conn.put_session(conn, :me, %{"email" => email, "user_id" => user_id})
             ok_no_content(conn)
 
           _ ->
@@ -105,18 +106,28 @@ defmodule Supafana.Web.Router do
 
     access_token = conn.assigns[:supabase_access_token]
 
+    show_emails = conn.params["showEmails"]
+
     {:ok, members} = Supafana.Supabase.Management.organization_members(access_token, slug)
 
-    conn |> ok_json(members |> Enum.map(&(&1 |> Map.delete("email"))))
-    # conn |> ok_json(members)
+    case show_emails do
+      "false" ->
+        conn |> ok_json(members |> Enum.map(&(&1 |> Map.delete("email"))))
+
+      _ ->
+        conn |> ok_json(members)
+    end
   end
 
   get "/organizations" do
-    access_token = conn.assigns[:supabase_access_token]
+    case conn.assigns[:supabase_access_token] do
+      nil ->
+        conn |> Supafana.Web.AuthUtils.not_authorized()
 
-    {:ok, organizations} = Supafana.Supabase.Management.organizations(access_token)
-
-    conn |> ok_json(organizations)
+      access_token ->
+        {:ok, organizations} = Supafana.Supabase.Management.organizations(access_token)
+        conn |> ok_json(organizations)
+    end
   end
 
   get "/projects" do

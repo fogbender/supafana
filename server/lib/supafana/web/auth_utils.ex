@@ -18,10 +18,7 @@ defmodule Supafana.Web.AuthUtils do
   end
 
   defp handle_tokens(conn, %{status: 404}) do
-    conn
-    |> Plug.Conn.put_resp_content_type("application/json")
-    |> Plug.Conn.send_resp(401, Jason.encode!(%{"error" => "not authorized"}))
-    |> Plug.Conn.halt()
+    conn |> not_authorized()
   end
 
   defp handle_tokens(conn, tokens) do
@@ -33,5 +30,12 @@ defmodule Supafana.Web.AuthUtils do
     conn = Plug.Conn.put_session(conn, :supabase_access_token, access_token)
     conn = Plug.Conn.put_session(conn, :supabase_refresh_token, refresh_token)
     Plug.Conn.assign(conn, :supabase_access_token, access_token)
+  end
+
+  def not_authorized(conn) do
+    conn
+    |> Plug.Conn.put_resp_content_type("application/json")
+    |> Plug.Conn.send_resp(401, Jason.encode!(%{"error" => "not authorized"}))
+    |> Plug.Conn.halt()
   end
 end

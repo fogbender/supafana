@@ -17,7 +17,7 @@ import SupabaseLogo from "./landing/assets/supabase-logo-icon.svg?url";
 import SupafanaLogo from "./landing/assets/logo.svg?url";
 import ThemeController from "./ReactThemeController";
 
-import { apiServer, queryKeys } from "./client";
+import { useMe, apiServer, queryKeys } from "./client";
 
 import { getServerUrl } from "../config";
 import type { Organization } from "../types/supabase";
@@ -29,22 +29,17 @@ const Header = ({ organization }: { organization: undefined | Organization }) =>
 
   const { pathname } = useLocation();
 
-  const { data: email } = useQuery({
-    queryKey: queryKeys.email(),
-    queryFn: async () => {
-      return await apiServer.url("/email").get().json<string>();
-    },
-  });
+  const { data: me } = useMe();
 
   const { data: fogbenderTokenData } = useQuery({
-    queryKey: queryKeys.fogbenderToken(organization?.id, email),
+    queryKey: queryKeys.fogbenderToken(organization?.id, me?.user_id),
     queryFn: async () => {
       return await apiServer
         .url("/fogbender-token")
         .get()
         .json<{ token: { userJWT: string }; widgetId: string }>();
     },
-    enabled: !!email && !!organization?.id,
+    enabled: !!me && !!organization?.id,
   });
 
   const [fogbenderToken, setFogbenderToken] = React.useState<FogbenderToken>();
@@ -54,12 +49,14 @@ const Header = ({ organization }: { organization: undefined | Organization }) =>
       fogbenderTokenData &&
       organization &&
       fogbenderTokenData.widgetId &&
-      fogbenderTokenData.token
+      fogbenderTokenData.token &&
+      me?.user_id &&
+      me?.email
     ) {
       setFogbenderToken({
-        userId: email,
-        userName: email,
-        userEmail: email,
+        userId: me.user_id,
+        userName: me.email,
+        userEmail: me.email,
         customerName: organization.name,
         customerId: organization.id,
         widgetId: fogbenderTokenData.widgetId,
@@ -67,6 +64,8 @@ const Header = ({ organization }: { organization: undefined | Organization }) =>
       });
     }
   }, [organization, fogbenderTokenData]);
+
+  console.log({ me });
 
   return (
     <div className="bg-transparent sticky top-0 z-20">
