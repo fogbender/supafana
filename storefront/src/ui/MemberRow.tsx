@@ -5,8 +5,19 @@ import { useMutation } from "@tanstack/react-query";
 import { apiServer, queryClient, queryKeys } from "./client";
 
 import type { Member } from "../types/supabase";
+import type { Me } from "../types/supafana";
 
-const MemberRow = ({ m, verifyText }: { m: Member; verifyText: string }) => {
+const MemberRow = ({
+  m,
+  me,
+  verifyText,
+  children,
+}: {
+  m: Member;
+  me: null | Me;
+  verifyText: string;
+  children?: JSX.Element;
+}) => {
   const [email, setEmail] = React.useState(m.user_name.includes("@") ? m.user_name : "");
   const [isConfirmed, setIsConfirmed] = React.useState(false);
   const [badEmail, setBadEmail] = React.useState(false);
@@ -33,15 +44,29 @@ const MemberRow = ({ m, verifyText }: { m: Member; verifyText: string }) => {
     },
   });
 
+  const myself = me?.user_id === m.user_id;
+
   return (
     <tr>
       <td>
-        <span className="text-gray-700 dark:text-gray-300 font-medium">{m.user_name}</span>
+        <div className="flex flex-col">
+          <span className="text-gray-700 dark:text-gray-300 font-medium">{m.user_name}</span>
+          <span className="flex gap-1.5 items-center">
+            <span className="text-gray-700 dark:text-gray-300 text-xs font-light">
+              {m.role_name}
+            </span>
+            {myself && (
+              <span className="text-white px-1 rounded-full text-[9px] font-bold bg-success">
+                You!
+              </span>
+            )}
+          </span>
+        </div>
       </td>
       <td>
         <span className="text-gray-700 dark:text-gray-300">
           {(() => {
-            if (isConfirmed) {
+            if (isConfirmed || me) {
               return email;
             } else {
               return (
@@ -93,26 +118,30 @@ const MemberRow = ({ m, verifyText }: { m: Member; verifyText: string }) => {
         </span>
       </td>
       <td className="text-black dark:text-white">
-        <button
-          className="btn btn-accent btn-xs w-28"
-          disabled={!m.email && email === ""}
-          onClick={() => {
-            setVerificationCode("");
-            sendVerificationCodeMutation.mutate();
-          }}
-        >
-          {sendVerificationCodeMutation.isPending ? (
-            <span className="text-black loading loading-ring loading-xs h-3"></span>
-          ) : (
-            <span className="leading-none">
-              {sendVerificationCodeMutation.isSuccess ? (
-                <span>Send new code</span>
-              ) : (
-                <span>{verifyText}</span>
-              )}
-            </span>
-          )}
-        </button>
+        {me ? (
+          children || null
+        ) : (
+          <button
+            className="btn btn-accent btn-xs w-28"
+            disabled={!m.email && email === ""}
+            onClick={() => {
+              setVerificationCode("");
+              sendVerificationCodeMutation.mutate();
+            }}
+          >
+            {sendVerificationCodeMutation.isPending ? (
+              <span className="text-black loading loading-ring loading-xs h-3"></span>
+            ) : (
+              <span className="leading-none">
+                {sendVerificationCodeMutation.isSuccess ? (
+                  <span>Send new code</span>
+                ) : (
+                  <span>{verifyText}</span>
+                )}
+              </span>
+            )}
+          </button>
+        )}
       </td>
     </tr>
   );

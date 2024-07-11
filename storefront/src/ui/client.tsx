@@ -2,6 +2,7 @@ import { QueryClient, useQuery } from "@tanstack/react-query";
 import wretch from "wretch";
 import QueryStringAddon from "wretch/addons/queryString";
 import type { Organization, Member } from "../types/supabase";
+import type { Me } from "../types/supafana";
 
 import { getServerUrl } from "../config";
 
@@ -69,7 +70,7 @@ export const useMe = () => {
   return useQuery({
     queryKey: queryKeys.me(),
     queryFn: async () => {
-      return await apiServer.url("/me").get().json<{ email: string; user_id: string } | null>();
+      return await apiServer.url("/me").get().json<Me | null>();
     },
     initialData: null,
   });

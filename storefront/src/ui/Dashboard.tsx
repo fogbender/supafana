@@ -9,6 +9,7 @@ import wretch from "wretch";
 import MemberRow from "./MemberRow";
 import Header from "./Header";
 import {
+  useMe,
   useMembers,
   useOrganizations,
   connectActionUrl,
@@ -49,15 +50,17 @@ export const Dashboard = () => {
     showEmails: false,
   });
 
+  const { data: me } = useMe();
+
   return (
     <div className="h-full flex flex-col">
       <Header organization={organization} />
       <div className="flex-1 flex flex-col items-center justify-center text-black dark:text-white">
         {organization ? (
           <div className="w-full">
-            {/*
             <div className="p-4 self-start">
               <div className="font-medium">Who should get email notifications?</div>
+              {!me && <div className="font-medium">Please verify your email to continue</div>}
               {membersLoading && (
                 <div className="flex w-52 flex-col gap-4">
                   <div className="skeleton h-4 w-full"></div>
@@ -69,13 +72,18 @@ export const Dashboard = () => {
                 <table className="text-gray-200 dark:text-gray-700 bg-dots table">
                   <tbody>
                     {members.map(m => (
-                      <MemberRow m={m} key={m.user_id} verifyText="Verify" />
+                      <MemberRow m={m} me={me} key={m.user_id} verifyText="Verify">
+                        <input
+                          type="checkbox"
+                          defaultChecked
+                          className="checkbox checkbox-info checkbox-sm"
+                        />
+                      </MemberRow>
                     ))}
                   </tbody>
                 </table>
               )}
             </div>
-            */}
             {projectsLoading ? (
               <div className="flex w-52 flex-col gap-4">
                 <div className="skeleton h-4 w-full"></div>

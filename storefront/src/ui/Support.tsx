@@ -138,7 +138,7 @@ export const Support = () => {
               <table className="mt-8 text-gray-200 dark:text-gray-700 bg-dots table">
                 <tbody>
                   {members.map(m => (
-                    <MemberRow m={m} key={m.user_id} verifyText="That’s me!" />
+                    <MemberRow m={m} me={me} key={m.user_id} verifyText="That’s me!" />
                   ))}
                 </tbody>
               </table>
