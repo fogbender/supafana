@@ -11,6 +11,7 @@ defmodule Supafana.Application do
       [
         # Starts a worker by calling: Supafana.Worker.start_link(arg)
         # {Supafana.Worker, arg}
+        Supafana.Repo,
         Registry.child_spec(keys: :unique, name: Registry.Supafana),
         cowboy(),
         {Finch,

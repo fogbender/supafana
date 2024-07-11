@@ -34,7 +34,7 @@ let
     nodePackages.pnpm
   ];
 
-in with pkgs; mkShell {
+in with pkgs; mkShell ({
   buildInputs = [
     glibcLocales
     gnumake git which nix-universal-prefetch cacert
@@ -47,6 +47,8 @@ in with pkgs; mkShell {
     azure-cli bicep azure-storage-azcopy
     deploy-rs
     corepack_18
+    semgrep
+    postgresql
   ]
   ++ file-notifier
   ++ elixir_libs
@@ -64,4 +66,4 @@ in with pkgs; mkShell {
   . local.env
   fi
   '';
-}
+} // (import ./env.nix))
