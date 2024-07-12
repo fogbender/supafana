@@ -15,7 +15,8 @@ defmodule Supafana do
     [
       current_directory: File.cwd!(),
       supafana_ip: env(:supafana_ip),
-      supafana_port: env(:supafana_port)
+      supafana_port: env(:supafana_port),
+      database: env(Supafana.Repo)[:database]
     ]
     |> info_pp()
   end

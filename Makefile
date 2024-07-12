@@ -76,6 +76,19 @@ supafana-bump:
 	git commit -m "supafana $$(cat server/VERSION)"
 	git tag -a "supafana-$$(cat server/VERSION)" -m "supafana version bump"
 
+supafana-test: db-start
+	cd server && MIX_ENV=test mix do ecto.create --quiet, ecto.migrate && mix test ${TEST_FILE}
+
+supafana-test-watch: db-start
+	cd server && MIX_ENV=test mix do ecto.create --quiet, ecto.migrate && mix test.watch
+
+supafana-test-no-deps-check: db-start
+	cd server && MIX_ENV=test mix ecto.migrate --no-deps-check && mix test --trace --no-deps-check
+
+supafana-test-wip-watch: db-start
+	cd server && MIX_ENV=test mix do ecto.create --quiet, ecto.migrate && mix test.watch --only wip
+
+
 clean: supafana-clean
 
 web-format:

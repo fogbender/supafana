@@ -21,6 +21,19 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: org; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.org (
+    id uuid NOT NULL,
+    supabase_id character varying(255) NOT NULL,
+    name text,
+    inserted_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -28,6 +41,14 @@ CREATE TABLE public.schema_migrations (
     version bigint NOT NULL,
     inserted_at timestamp(0) without time zone
 );
+
+
+--
+-- Name: org org_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.org
+    ADD CONSTRAINT org_pkey PRIMARY KEY (id);
 
 
 --
@@ -39,6 +60,14 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
+-- Name: org_supabase_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX org_supabase_id_index ON public.org USING btree (supabase_id);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
+INSERT INTO public."schema_migrations" (version) VALUES (20240710152810);

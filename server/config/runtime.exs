@@ -58,3 +58,10 @@ config :tesla, :adapter, Tesla.Adapter.Hackney
 
 # Disable timezone updates
 config :tzdata, :autoupdate, :disabled
+
+# Test mode settings
+if config_env() == :test do
+  config :supafana, Supafana.Repo,
+    database: System.get_env("PG_DB") <> "_test",
+    pool: Ecto.Adapters.SQL.Sandbox
+end
