@@ -55,8 +55,6 @@ const MemberRow = ({
 
   const myself = me?.user_id === m.user_id;
 
-  console.log({ verifyingUserId });
-
   return (
     <tr>
       <td>
