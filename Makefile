@@ -95,3 +95,6 @@ web-format:
 	cd storefront && pnpm fmt
 
 format: web-format supafana-format
+
+web-start:
+	cd storefront && pnpm install && pnpm dev
