@@ -47,7 +47,7 @@ export const Dashboard = () => {
   const { data: members, isLoading: membersLoading } = useMembers({
     enabled: !!organization,
     organizationId: organization?.id as string,
-    showEmails: false,
+    showEmails: true,
   });
 
   const { data: me } = useMe();
@@ -55,12 +55,18 @@ export const Dashboard = () => {
   return (
     <div className="h-full flex flex-col">
       <Header organization={organization} />
-      <div className="flex-1 flex flex-col items-center justify-center text-black dark:text-white">
+      <div className="mt-4 flex-1 flex flex-col items-center justify-center text-black dark:text-white">
         {organization ? (
-          <div className="w-full">
-            <div className="p-4 self-start">
-              <div className="font-medium">Who should get email notifications?</div>
-              {!me && <div className="font-medium">Please verify your email to continue</div>}
+          <div className="w-full flex flex-col gap-4">
+            <div className="self-start">
+              <div className="ml-4 font-medium">
+                Who should get email notifications from Supafana?
+              </div>
+              {!me && (
+                <div className="ml-4 text-sm text-gray-500 font-medium">
+                  Please verify your email below to configure
+                </div>
+              )}
               {membersLoading && (
                 <div className="flex w-52 flex-col gap-4">
                   <div className="skeleton h-4 w-full"></div>
@@ -69,20 +75,26 @@ export const Dashboard = () => {
                 </div>
               )}
               {members && (
-                <table className="text-gray-200 dark:text-gray-700 bg-dots table">
-                  <tbody>
-                    {members.map(m => (
-                      <MemberRow m={m} me={me} key={m.user_id} verifyText="Verify">
-                        <input
-                          type="checkbox"
-                          defaultChecked
-                          className="checkbox checkbox-info checkbox-sm"
-                        />
-                      </MemberRow>
-                    ))}
-                  </tbody>
-                </table>
+                <div className="p-4">
+                  <table className="text-gray-200 dark:text-gray-700 bg-dots table">
+                    <tbody>
+                      {members.map(m => (
+                        <MemberRow m={m} me={me} key={m.user_id} verifyText="Verify">
+                          <input
+                            type="checkbox"
+                            defaultChecked
+                            className="checkbox checkbox-info checkbox-sm"
+                          />
+                        </MemberRow>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               )}
+            </div>
+            <div className="ml-4">
+              <div className="font-medium">Billing</div>
+              <div>this is billing</div>
             </div>
             {projectsLoading ? (
               <div className="flex w-52 flex-col gap-4">
@@ -91,8 +103,12 @@ export const Dashboard = () => {
                 <div className="skeleton h-4 w-full"></div>
               </div>
             ) : (
-              <div className="flex flex-col border-y border-gray-200 dark:border-gray-700 divide-y divide-gray-200 dark:divide-gray-700">
-                {projects?.map(p => <Project key={p.id} project={p} />)}
+              <div>
+                <div className="ml-4 font-medium">Databases and monitoring instances</div>
+                {/*<div className="flex flex-col border-y border-gray-200 dark:border-gray-700 divide-y divide-gray-200 dark:divide-gray-700">*/}
+                <div className="flex flex-col">
+                  {projects?.map(p => <Project key={p.id} project={p} />)}
+                </div>
               </div>
             )}
           </div>

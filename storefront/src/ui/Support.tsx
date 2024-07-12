@@ -123,7 +123,7 @@ export const Support = () => {
             <p>
               The Supabase integration flow reveals the name and slug of your organization (
               {organization.name}), but we can’t tell who you are. Before rendering the support
-              widget, we’ll need sort this out.
+              widget, we’ll need to sort this out.
             </p>
             <br />
             <p>Please select your user below to continue:</p>

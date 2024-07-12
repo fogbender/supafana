@@ -22,9 +22,14 @@ const MemberRow = ({
   const [isConfirmed, setIsConfirmed] = React.useState(false);
   const [badEmail, setBadEmail] = React.useState(false);
   const [verificationCode, setVerificationCode] = React.useState("");
+  const [verifyingUserId, setVerifyingUserId] = React.useState<string>();
+  const [codeProbeError, setCodeProbeError] = React.useState(false);
 
   const sendVerificationCodeMutation = useMutation({
-    mutationFn: () => apiServer.url("/send-email-verification-code").post({ email }).text(),
+    mutationFn: () => {
+      setVerifyingUserId(m.user_id);
+      return apiServer.url("/send-email-verification-code").post({ email }).text();
+    },
     onError: error => {
       if (error.message === "Invalid email address") {
         setBadEmail(true);
@@ -33,18 +38,24 @@ const MemberRow = ({
   });
 
   const probeVerificationCodeMutation = useMutation({
-    mutationFn: () =>
-      apiServer
+    mutationFn: () => {
+      return apiServer
         .url("/probe-email-verification-code")
         .post({ verificationCode, userId: m.user_id })
-        .text(),
+        .text();
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.me() });
       setIsConfirmed(true);
     },
+    onError: () => {
+      setCodeProbeError(true);
+    },
   });
 
   const myself = me?.user_id === m.user_id;
+
+  console.log({ verifyingUserId });
 
   return (
     <tr>
@@ -68,6 +79,8 @@ const MemberRow = ({
           {(() => {
             if (isConfirmed || me) {
               return email;
+            } else if (m.email && !isConfirmed && verifyingUserId !== m.user_id) {
+              return m.email;
             } else {
               return (
                 <div className="flex flex-col gap-1.5">
@@ -97,7 +110,7 @@ const MemberRow = ({
                         className={classNames(
                           "bg-white dark:bg-gray-600",
                           "border rounded px-2 py-1",
-                          "border-gray-500"
+                          codeProbeError ? "border border-error" : "border-gray-500"
                         )}
                         placeholder="Enter verification code"
                       />
