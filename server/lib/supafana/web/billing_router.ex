@@ -68,6 +68,8 @@ defmodule Supafana.Web.BillingRouter do
   get "/subscriptions" do
     {:ok, conn, subscriptions} = subscriptions(conn)
 
+    Process.sleep(2000)
+
     conn |> ok_json(subscriptions)
   end
 

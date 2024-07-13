@@ -5,6 +5,7 @@ import { lazily } from "react-lazily";
 import { QueryClientProvider, useMutation, useQuery } from "@tanstack/react-query";
 import { Title } from "reactjs-meta";
 import wretch from "wretch";
+import { GiDragonSpiral as Dragon } from "react-icons/gi";
 
 import MemberRow from "./MemberRow";
 import Header from "./Header";
@@ -58,11 +59,9 @@ export const Dashboard = () => {
       <Header organization={organization} />
       <div className="mt-4 flex-1 flex flex-col items-center justify-center text-black dark:text-white">
         {organization ? (
-          <div className="w-full flex flex-col gap-4">
+          <div className="pl-4 w-full flex flex-col gap-10">
             <div className="self-start">
-              <div className="ml-4 font-medium">
-                Who should get email notifications from Supafana?
-              </div>
+              <SectionHeader text="Who should get email notifications from Supafana?" />
               {!me && (
                 <div className="ml-4 text-sm text-gray-500 font-medium">
                   Please verify your email below to configure
@@ -76,7 +75,7 @@ export const Dashboard = () => {
                 </div>
               )}
               {members && (
-                <div className="p-4">
+                <div className="mt-4 mx-4">
                   <table className="text-gray-200 dark:text-gray-700 bg-dots table">
                     <tbody>
                       {members.map(m => (
@@ -95,8 +94,8 @@ export const Dashboard = () => {
                 </div>
               )}
             </div>
-            <div className="ml-4">
-              <div className="font-medium">Billing</div>
+            <div>
+              <SectionHeader text="Billing" />
               <Billing organization={organization} />
             </div>
             {projectsLoading ? (
@@ -107,7 +106,7 @@ export const Dashboard = () => {
               </div>
             ) : (
               <div>
-                <div className="ml-4 font-medium">Databases and monitoring instances</div>
+                <SectionHeader text="Databases and Grafana instances" />
                 {/*<div className="flex flex-col border-y border-gray-200 dark:border-gray-700 divide-y divide-gray-200 dark:divide-gray-700">*/}
                 <div className="flex flex-col">
                   {projects?.map(p => <Project key={p.id} project={p} />)}
@@ -138,6 +137,14 @@ export const Dashboard = () => {
           </form>
         )}
       </div>
+    </div>
+  );
+};
+
+const SectionHeader = ({ text }: { text: string }) => {
+  return (
+    <div className="flex items-center gap-2 font-medium text-xl">
+      <Dragon size={32} /> <span>{text}</span>
     </div>
   );
 };

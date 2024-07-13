@@ -7,7 +7,7 @@ import { apiServer, queryKeys, queryClient } from "./client";
 import qs, { type ParseOptions } from "query-string";
 
 import type { Organization } from "../types/supabase";
-import type { StripeCustomer } from "../types/supafana";
+import type { StripeCustomer, Billing as BillingT } from "../types/supafana";
 
 function getQueryParam(query: string, key: string, options?: ParseOptions) {
   const value = qs.parse(query, options)[key];
@@ -55,24 +55,38 @@ const Billing = ({ organization }: { organization: Organization }) => {
     }
   }, [stripeSessionId]);
 
-  const { data: billing } = useQuery({
+  const { data: billing, isLoading: billingLoading } = useQuery({
     queryKey: queryKeys.billing(organization.id),
     queryFn: async () => {
-      return await apiServer
-        .url("/billing/subscriptions")
-        .get()
-        .json<{ signatures: { userJWT: string }; widgetId: string }>();
+      return await apiServer.url("/billing/subscriptions").get().json<BillingT>();
     },
   });
 
+  const isFree = billing?.subscriptions?.length === 0;
+
   return (
     <div>
-      <div>
-        Your current plan is <span className="font-medium">Jr. SW Engineer</span> (free)
-      </div>
-      <button className="btn" type="button" onClick={() => createCheckoutSessionMutation.mutate()}>
-        Upgrade to Sr.
-      </button>
+      {billingLoading ? (
+        <span className="loading loading-ring loading-lg text-accent" />
+      ) : isFree ? (
+        <div className="flex flex-col gap-2">
+          <div>
+            You are on the <span className="font-bold">Hobby</span> plan
+          </div>
+          <button
+            className="w-32 btn btn-accent btn-sm"
+            type="button"
+            onClick={() => createCheckoutSessionMutation.mutate()}
+          >
+            Upgrade to Pro
+          </button>
+          <a className="text-sm link link-primary dark:link-secondary no-underline" href="/pricing">
+            See pricing options
+          </a>
+        </div>
+      ) : (
+        <></>
+      )}
     </div>
   );
 };
