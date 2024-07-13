@@ -18,6 +18,7 @@ export const queryKeys = {
     organizationId,
     userId,
   ],
+  billing: (organizationId: string) => ["billing", organizationId],
 } as any;
 
 export const apiServer = wretch(getServerUrl(), {

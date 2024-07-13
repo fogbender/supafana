@@ -1,0 +1,80 @@
+import React from "react";
+
+import { useMutation, useQuery } from "@tanstack/react-query";
+
+import { apiServer, queryKeys, queryClient } from "./client";
+
+import qs, { type ParseOptions } from "query-string";
+
+import type { Organization } from "../types/supabase";
+import type { StripeCustomer } from "../types/supafana";
+
+function getQueryParam(query: string, key: string, options?: ParseOptions) {
+  const value = qs.parse(query, options)[key];
+  return typeof value === "string" ? value : undefined;
+}
+
+const Billing = ({ organization }: { organization: Organization }) => {
+  const createCheckoutSessionMutation = useMutation({
+    mutationFn: () => {
+      return apiServer
+        .url(`/billing/create-checkout-session`)
+        .post({
+          instances: 1,
+        })
+        .json<{ url: string }>();
+    },
+    onSuccess: res => {
+      const { url } = res;
+
+      console.log({ url });
+
+      window.location.href = url;
+    },
+  });
+
+  const stripeSessionId = getQueryParam(location.search, "session_id");
+
+  const setStripeSessionIdMutation = useMutation({
+    mutationFn: async (session_id: string) => {
+      return apiServer
+        .url(`/billing/set-stripe-session-id`)
+        .post({
+          session_id,
+        })
+        .json<StripeCustomer>();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.billing(organization.id) });
+    },
+  });
+
+  React.useEffect(() => {
+    if (stripeSessionId) {
+      setStripeSessionIdMutation.mutate(stripeSessionId);
+    }
+  }, [stripeSessionId]);
+
+  const { data: billing } = useQuery({
+    queryKey: queryKeys.billing(organization.id),
+    queryFn: async () => {
+      return await apiServer
+        .url("/billing/subscriptions")
+        .get()
+        .json<{ signatures: { userJWT: string }; widgetId: string }>();
+    },
+  });
+
+  return (
+    <div>
+      <div>
+        Your current plan is <span className="font-medium">Jr. SW Engineer</span> (free)
+      </div>
+      <button className="btn" type="button" onClick={() => createCheckoutSessionMutation.mutate()}>
+        Upgrade to Sr.
+      </button>
+    </div>
+  );
+};
+
+export default Billing;

@@ -29,7 +29,7 @@ config :supafana,
 
 config :supafana,
   supafana_api_url: System.get_env("SUPAFANA_API_URL"),
-  supafana_storefront_url: System.get_env("SUPAFANA_STOREFONT_URL")
+  supafana_storefront_url: System.get_env("SUPAFANA_STOREFRONT_URL")
 
 config :supafana,
   loops_api_key: System.get_env("LOOPS_API_KEY")

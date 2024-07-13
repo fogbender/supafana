@@ -7,17 +7,17 @@ import Testimonials from "../ui/landing/testimonials.astro";
 import WhySupafana from "../ui/landing/why-supafana.astro";
 
 const pricing = {
-  plans: ["Free", "Pro"],
+  plans: ["Jr. SW Engineer", "Sr. SW Engineer"],
   features: [
     {
       name: "Price per month",
       tiers: [
         {
-          plan: "Free",
+          plan: "Jr. SW Engineer",
           value: "Free",
         },
         {
-          plan: "Pro",
+          plan: "Sr. SW Engineer",
           value: "$100 per project",
         },
       ],
@@ -26,11 +26,11 @@ const pricing = {
       name: "Supafana instance paused",
       tiers: [
         {
-          plan: "Free",
+          plan: "Jr. SW Engineer",
           value: "After 8 hours",
         },
         {
-          plan: "Pro",
+          plan: "Sr. SW Engineer",
           value: "Never",
         },
       ],
@@ -39,11 +39,11 @@ const pricing = {
       name: "Support",
       tiers: [
         {
-          plan: "Free",
+          plan: "Jr. SW Engineer",
           value: "Reluctant",
         },
         {
-          plan: "Pro",
+          plan: "Sr. SW Engineer",
           value: "Fanatical",
         },
       ],
@@ -52,11 +52,11 @@ const pricing = {
       name: "Alerts",
       tiers: [
         {
-          plan: "Free",
+          plan: "Jr. SW Engineer",
           value: "When not paused",
         },
         {
-          plan: "Pro",
+          plan: "Sr. SW Engineer",
           value: "Yes",
         },
       ],
@@ -67,7 +67,7 @@ const pricing = {
 
 <Main meta={{ title: "Supafana pricing" }}>
   <div class="min-h-3/4 my-24 w-full flex px-4 md:px-24 gap-6">
-    <table class="mt-8 text-gray-200 dark:text-gray-700 bg-dots table max-w-xl m-auto">
+    <table class="mt-8 text-gray-200 dark:text-gray-700 bg-dots table max-w-3xl m-auto">
       <thead>
         <tr>
           <th></th>

@@ -1,5 +1,6 @@
 defmodule Supafana.Plug.Session do
   import Plug.Conn
+  import Supafana.Web.Utils
 
   def session() do
     Plug.Session.init(
@@ -42,9 +43,21 @@ defmodule Supafana.Plug.Session do
     end
   end
 
-  defp require_login(conn, _opts) do
+  defp require_login(conn, opts) do
     conn = fetch_session(conn)
     supabase_refresh_token = get_session(conn, :supabase_refresh_token)
+
     Supafana.Web.AuthUtils.handle_auth(conn, supabase_refresh_token)
+    |> require_org_id(opts)
+  end
+
+  defp require_org_id(conn, _opts) do
+    org_id = conn.assigns[:org_id]
+
+    if org_id do
+      conn
+    else
+      conn |> not_authorized()
+    end
   end
 end

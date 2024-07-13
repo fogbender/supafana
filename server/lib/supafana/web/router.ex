@@ -1,4 +1,6 @@
 defmodule Supafana.Web.Router do
+  import Supafana.Web.Utils
+
   require Logger
 
   use Plug.Router
@@ -17,16 +19,19 @@ defmodule Supafana.Web.Router do
 
   plug(:dispatch)
 
-  get "fogbender-token" do
+  get "/fogbender-signatures" do
     conn = fetch_session(conn)
     organization_slug = get_session(conn)["organization_slug"]
     me = get_session(conn)["me"]
     widget_id = Supafana.env(:fogbender_widget_id)
 
-    {:ok, %{status: 200, body: token}} =
+    {:ok, %{status: 200, body: signatures}} =
       Supafana.Fogbender.Api.tokens(organization_slug, me["email"], me["user_id"])
 
-    conn |> ok_json(Map.merge(token, %{"widgetId" => widget_id}))
+    # Fogbender API has bad naming -
+    # should be /signatures instead of /token,
+    # should return "signatures" => ... instead of "token => ...
+    conn |> ok_json(%{"signatures" => signatures["token"], "widgetId" => widget_id})
   end
 
   get "/me" do
@@ -122,7 +127,7 @@ defmodule Supafana.Web.Router do
   get "/organizations" do
     case conn.assigns[:supabase_access_token] do
       nil ->
-        conn |> Supafana.Web.AuthUtils.not_authorized()
+        conn |> not_authorized()
 
       access_token ->
         {:ok, organizations} = Supafana.Supabase.Management.organizations(access_token)
@@ -156,15 +161,5 @@ defmodule Supafana.Web.Router do
     IO.inspect(api_keys)
 
     conn |> ok_json(projects)
-  end
-
-  defp ok_json(conn, data) do
-    conn
-    |> put_resp_content_type("application/json")
-    |> send_resp(200, data |> Jason.encode!(pretty: true))
-  end
-
-  defp ok_no_content(conn) do
-    conn |> send_resp(204, "")
   end
 end

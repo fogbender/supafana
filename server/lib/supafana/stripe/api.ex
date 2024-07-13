@@ -14,14 +14,13 @@ defmodule Supafana.Stripe.Api do
     end
   end
 
-  def create_checkout_session(seats) do
-    # TODO: add vendorId instead of "-" for faster navigation
+  def create_checkout_session(quantity) do
     r =
       post(
         "/v1/checkout/sessions",
         %{
           "line_items[0][price]" => Supafana.env(:stripe_price_id),
-          "line_items[0][quantity]" => seats,
+          "line_items[0][quantity]" => quantity,
           "mode" => "subscription",
           "success_url" =>
             "#{Supafana.env(:supafana_storefront_url)}/dashboard?session_id={CHECKOUT_SESSION_ID}",

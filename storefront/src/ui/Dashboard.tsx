@@ -8,6 +8,7 @@ import wretch from "wretch";
 
 import MemberRow from "./MemberRow";
 import Header from "./Header";
+import Billing from "./Billing";
 import {
   useMe,
   useMembers,
@@ -82,7 +83,9 @@ export const Dashboard = () => {
                         <MemberRow m={m} me={me} key={m.user_id} verifyText="Verify">
                           <input
                             type="checkbox"
-                            defaultChecked
+                            onChange={() => {}}
+                            value={me?.email || m.email ? "checked" : "not checked"}
+                            checked={me?.email || m.email ? true : false}
                             className="checkbox checkbox-info checkbox-sm"
                           />
                         </MemberRow>
@@ -94,7 +97,7 @@ export const Dashboard = () => {
             </div>
             <div className="ml-4">
               <div className="font-medium">Billing</div>
-              <div>this is billing</div>
+              <Billing organization={organization} />
             </div>
             {projectsLoading ? (
               <div className="flex w-52 flex-col gap-4">

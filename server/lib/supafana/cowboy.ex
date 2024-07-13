@@ -14,6 +14,7 @@ defmodule Supafana.Cowboy do
   plug(:dispatch)
 
   forward("/auth", to: Supafana.Web.AuthRouter)
+  forward("/billing", to: Supafana.Web.BillingRouter)
   forward("/", to: Supafana.Web.Router)
 
   # match _ do

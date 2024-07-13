@@ -27,7 +27,20 @@ SET default_table_access_method = heap;
 CREATE TABLE public.org (
     id uuid NOT NULL,
     supabase_id character varying(255) NOT NULL,
+    free_instances integer DEFAULT 0,
     name text,
+    inserted_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: org_stripe_customer; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.org_stripe_customer (
+    org_id uuid NOT NULL,
+    stripe_customer_id text NOT NULL,
     inserted_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
@@ -60,6 +73,13 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
+-- Name: org_stripe_customer_org_id_stripe_customer_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX org_stripe_customer_org_id_stripe_customer_id_index ON public.org_stripe_customer USING btree (org_id, stripe_customer_id);
+
+
+--
 -- Name: org_supabase_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -71,3 +91,4 @@ CREATE UNIQUE INDEX org_supabase_id_index ON public.org USING btree (supabase_id
 --
 
 INSERT INTO public."schema_migrations" (version) VALUES (20240710152810);
+INSERT INTO public."schema_migrations" (version) VALUES (20240713193345);

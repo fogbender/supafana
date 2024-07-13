@@ -5,6 +5,7 @@ defmodule Supafana.Data.Org do
   schema "org" do
     field(:supabase_id, :string)
     field(:name, :string)
+    field(:free_instances, :integer, default: 0)
     timestamps()
   end
 

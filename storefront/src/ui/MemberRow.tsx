@@ -18,7 +18,19 @@ const MemberRow = ({
   verifyText: string;
   children?: JSX.Element;
 }) => {
-  const [email, setEmail] = React.useState(m.user_name.includes("@") ? m.user_name : "");
+  const [email, setEmail] = React.useState(
+    (() => {
+      if (!m.email) {
+        if (m.user_name.includes("@")) {
+          return m.user_name;
+        } else {
+          return "";
+        }
+      } else {
+        return "";
+      }
+    })()
+  );
   const [isConfirmed, setIsConfirmed] = React.useState(false);
   const [badEmail, setBadEmail] = React.useState(false);
   const [verificationCode, setVerificationCode] = React.useState("");
@@ -55,6 +67,61 @@ const MemberRow = ({
 
   const myself = me?.user_id === m.user_id;
 
+  const emailElement = (() => {
+    if (isConfirmed && myself) {
+      return email;
+    } else if (m.email && !isConfirmed && verifyingUserId !== m.user_id) {
+      return m.email;
+    } else {
+      return (
+        <div className="flex flex-col gap-1.5">
+          <input
+            type="email"
+            value={email}
+            onChange={e => {
+              setBadEmail(false);
+              setEmail(e.target.value);
+            }}
+            className={classNames(
+              "bg-white dark:bg-gray-600",
+              "border rounded px-2 py-1",
+              badEmail ? "border-red-500" : "border-gray-500"
+            )}
+            placeholder="Enter your email"
+          />
+          {sendVerificationCodeMutation.isSuccess && (
+            <div className="flex items-center gap-1.5">
+              <input
+                type="text"
+                value={verificationCode}
+                disabled={probeVerificationCodeMutation.isPending}
+                onChange={e => {
+                  setVerificationCode(e.target.value);
+                }}
+                className={classNames(
+                  "bg-white dark:bg-gray-600",
+                  "border rounded px-2 py-1",
+                  codeProbeError ? "border border-error" : "border-gray-500"
+                )}
+                placeholder="Enter verification code"
+              />
+              <button
+                type="button"
+                disabled={verificationCode === ""}
+                className="btn btn-xs btn-accent"
+                onClick={() => probeVerificationCodeMutation.mutate()}
+              >
+                Go
+              </button>
+            </div>
+          )}
+        </div>
+      );
+    }
+  })();
+
+  console.log(emailElement);
+
   return (
     <tr>
       <td>
@@ -73,60 +140,7 @@ const MemberRow = ({
         </div>
       </td>
       <td>
-        <span className="text-gray-700 dark:text-gray-300">
-          {(() => {
-            if (isConfirmed || me) {
-              return email;
-            } else if (m.email && !isConfirmed && verifyingUserId !== m.user_id) {
-              return m.email;
-            } else {
-              return (
-                <div className="flex flex-col gap-1.5">
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={e => {
-                      setBadEmail(false);
-                      setEmail(e.target.value);
-                    }}
-                    className={classNames(
-                      "bg-white dark:bg-gray-600",
-                      "border rounded px-2 py-1",
-                      badEmail ? "border-red-500" : "border-gray-500"
-                    )}
-                    placeholder="Enter your email"
-                  />
-                  {sendVerificationCodeMutation.isSuccess && (
-                    <div className="flex items-center gap-1.5">
-                      <input
-                        type="text"
-                        value={verificationCode}
-                        disabled={probeVerificationCodeMutation.isPending}
-                        onChange={e => {
-                          setVerificationCode(e.target.value);
-                        }}
-                        className={classNames(
-                          "bg-white dark:bg-gray-600",
-                          "border rounded px-2 py-1",
-                          codeProbeError ? "border border-error" : "border-gray-500"
-                        )}
-                        placeholder="Enter verification code"
-                      />
-                      <button
-                        type="button"
-                        disabled={verificationCode === ""}
-                        className="btn btn-xs btn-accent"
-                        onClick={() => probeVerificationCodeMutation.mutate()}
-                      >
-                        Go
-                      </button>
-                    </div>
-                  )}
-                </div>
-              );
-            }
-          })()}
-        </span>
+        <span className="text-gray-700 dark:text-gray-300">{emailElement}</span>
       </td>
       <td className="text-black dark:text-white">
         {me ? (

@@ -1,4 +1,10 @@
 defmodule Supafana.Web.AuthUtils do
+  import Ecto.Query, only: [from: 2]
+
+  import Supafana.Web.Utils
+
+  alias Supafana.{Data, Repo}
+
   def handle_auth(conn, code, redirect_uri, code_verifier) do
     {:ok, tokens} = Supafana.Supabase.OAuth.tokens(code, redirect_uri, code_verifier)
     handle_tokens(conn, tokens)
@@ -29,13 +35,25 @@ defmodule Supafana.Web.AuthUtils do
 
     conn = Plug.Conn.put_session(conn, :supabase_access_token, access_token)
     conn = Plug.Conn.put_session(conn, :supabase_refresh_token, refresh_token)
-    Plug.Conn.assign(conn, :supabase_access_token, access_token)
-  end
 
-  def not_authorized(conn) do
-    conn
-    |> Plug.Conn.put_resp_content_type("application/json")
-    |> Plug.Conn.send_resp(401, Jason.encode!(%{"error" => "not authorized"}))
-    |> Plug.Conn.halt()
+    {:ok, orgs} = Supafana.Supabase.Management.organizations(access_token)
+
+    [org] = orgs
+    supabase_org_id = org["id"]
+
+    Data.Org.new(%{
+      supabase_id: supabase_org_id
+    })
+    |> Repo.insert!(on_conflict: :nothing)
+
+    %Data.Org{id: org_id} =
+      from(
+        o in Data.Org,
+        where: o.supabase_id == ^supabase_org_id
+      )
+      |> Repo.one()
+
+    conn = Plug.Conn.assign(conn, :supabase_access_token, access_token)
+    Plug.Conn.assign(conn, :org_id, org_id)
   end
 end

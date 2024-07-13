@@ -17,7 +17,7 @@ import SupabaseLogo from "./landing/assets/supabase-logo-icon.svg?url";
 import SupafanaLogo from "./landing/assets/logo.svg?url";
 import ThemeController from "./ReactThemeController";
 
-import { useMe, apiServer, queryKeys } from "./client";
+import { useMe, apiServer, queryKeys, queryClient } from "./client";
 
 import { getServerUrl } from "../config";
 import type { Organization } from "../types/supabase";
@@ -35,9 +35,9 @@ const Header = ({ organization }: { organization: undefined | Organization }) =>
     queryKey: queryKeys.fogbenderToken(organization?.id, me?.user_id),
     queryFn: async () => {
       return await apiServer
-        .url("/fogbender-token")
+        .url("/fogbender-signatures")
         .get()
-        .json<{ token: { userJWT: string }; widgetId: string }>();
+        .json<{ signatures: { userJWT: string }; widgetId: string }>();
     },
     enabled: !!me && !!organization?.id,
   });
@@ -49,7 +49,7 @@ const Header = ({ organization }: { organization: undefined | Organization }) =>
       fogbenderTokenData &&
       organization &&
       fogbenderTokenData.widgetId &&
-      fogbenderTokenData.token &&
+      fogbenderTokenData.signatures &&
       me?.user_id &&
       me?.email
     ) {
@@ -60,7 +60,7 @@ const Header = ({ organization }: { organization: undefined | Organization }) =>
         customerName: organization.name,
         customerId: organization.id,
         widgetId: fogbenderTokenData.widgetId,
-        userJWT: fogbenderTokenData.token.userJWT,
+        userJWT: fogbenderTokenData.signatures.userJWT,
       });
     }
   }, [organization, fogbenderTokenData]);
@@ -118,6 +118,8 @@ const Header = ({ organization }: { organization: undefined | Organization }) =>
           <form
             onClick={e => {
               if (e.target instanceof HTMLElement) {
+                queryClient.removeQueries();
+
                 const form = e.target.closest("form");
 
                 if (form) {

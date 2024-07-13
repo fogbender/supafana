@@ -71,9 +71,9 @@ export const Support = () => {
     queryKey: queryKeys.fogbenderToken(organization?.id, me?.user_id),
     queryFn: async () => {
       return await apiServer
-        .url("/fogbender-token")
+        .url("/fogbender-signatures")
         .get()
-        .json<{ token: { userJWT: string }; widgetId: string }>();
+        .json<{ signatures: { userJWT: string }; widgetId: string }>();
     },
     enabled: !!me && !!organization?.id,
   });
@@ -85,7 +85,7 @@ export const Support = () => {
       fogbenderTokenData &&
       organization &&
       fogbenderTokenData.widgetId &&
-      fogbenderTokenData.token &&
+      fogbenderTokenData.signatures &&
       me?.user_id &&
       me?.email
     ) {
@@ -96,7 +96,7 @@ export const Support = () => {
         customerName: organization.name,
         customerId: organization.id,
         widgetId: fogbenderTokenData.widgetId,
-        userJWT: fogbenderTokenData.token.userJWT,
+        userJWT: fogbenderTokenData.signatures.userJWT,
       });
     }
   }, [organization, fogbenderTokenData]);
