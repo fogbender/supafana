@@ -39,6 +39,8 @@ const Billing = ({ organization }: { organization: Organization }) => {
 
   const [pollSubscriptions, setPollSubscriptions] = React.useState(false);
 
+  console.log({ pollSubscriptions });
+
   const setStripeSessionIdMutation = useMutation({
     mutationFn: async (session_id: string) => {
       return apiServer
@@ -123,7 +125,7 @@ const Subscription = ({ s }: { s: StripeCustomer }) => {
         </tr>
         <tr>
           <RowHeader>Number of Grafana instances</RowHeader>
-          <RowBody>{s.quantity}</RowBody>
+          <RowBody>{`${s.quantity}`}</RowBody>
         </tr>
         <tr>
           <RowHeader>Status</RowHeader>
