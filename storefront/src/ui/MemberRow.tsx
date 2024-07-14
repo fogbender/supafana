@@ -27,7 +27,7 @@ const MemberRow = ({
           return "";
         }
       } else {
-        return "";
+        return m.email;
       }
     })()
   );
