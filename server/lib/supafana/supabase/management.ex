@@ -32,15 +32,7 @@ defmodule Supafana.Supabase.Management do
 
   def organizations(token) do
     path = "/v1/organizations"
-
-    r =
-      client(token)
-      |> Tesla.get(path)
-
-    case r do
-      {:ok, %Tesla.Env{status: 200, body: body}} ->
-        {:ok, body}
-    end
+    client(token) |> Tesla.get(path)
   end
 
   def client(token) do

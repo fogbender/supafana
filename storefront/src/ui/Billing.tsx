@@ -77,7 +77,7 @@ const Billing = ({ organization }: { organization: Organization }) => {
   });
 
   React.useEffect(() => {
-    if (billing) {
+    if (pollSubscriptions && billing?.subscriptions.length) {
       setPollSubscriptions(false);
     }
   }, [billing]);
@@ -94,7 +94,7 @@ const Billing = ({ organization }: { organization: Organization }) => {
             You are on the <span className="font-bold">Hobby</span> plan
           </div>
           <button
-            className="w-32 btn btn-accent btn-sm"
+            className="w-48 btn btn-accent btn-sm"
             type="button"
             onClick={() => createCheckoutSessionMutation.mutate()}
           >

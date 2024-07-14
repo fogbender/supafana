@@ -55,7 +55,7 @@ export const Dashboard = () => {
   const { data: me } = useMe();
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="min-h-screen flex flex-col">
       <Header organization={organization} />
       <div className="mt-4 flex-1 flex flex-col items-center justify-center text-black dark:text-white">
         {organization ? (
@@ -118,6 +118,7 @@ export const Dashboard = () => {
           <span className="loading loading-ring loading-lg text-accent" />
         ) : (
           <form
+            className=""
             onClick={e => {
               if (e.target instanceof HTMLElement) {
                 const form = e.target.closest("form");

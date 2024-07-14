@@ -130,8 +130,13 @@ defmodule Supafana.Web.Router do
         conn |> not_authorized()
 
       access_token ->
-        {:ok, organizations} = Supafana.Supabase.Management.organizations(access_token)
-        conn |> ok_json(organizations)
+        case Supafana.Supabase.Management.organizations(access_token) do
+          {:ok, %Tesla.Env{status: 200, body: organizations}} ->
+            conn |> ok_json(organizations)
+
+          {:ok, %Tesla.Env{status: 500, body: %{"message" => "Unauthorized"}}} ->
+            Supafana.Web.AuthUtils.sign_out(conn)
+        end
     end
   end
 

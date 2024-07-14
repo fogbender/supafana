@@ -34,13 +34,7 @@ defmodule Supafana.Web.AuthRouter do
   end
 
   post "/sign-out" do
-    conn = fetch_session(conn)
-    return_url = get_session(conn)["return_url"]
-
-    conn
-    |> configure_session(drop: true)
-    |> resp(:found, "")
-    |> put_resp_header("location", return_url)
+    Supafana.Web.AuthUtils.sign_out(conn)
   end
 
   post "/supabase-connect" do
