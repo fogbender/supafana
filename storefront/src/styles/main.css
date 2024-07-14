@@ -4,6 +4,11 @@
 @tailwind utilities;
 
 .bg-dots {
-  background-image: radial-gradient(currentColor 1px, transparent 1px);
+  background-image: radial-gradient(theme("colors.zinc.300") 1px, transparent 1px);
+  background-size: 5px 5px;
+}
+
+.dark .bg-dots {
+  background-image: radial-gradient(theme("colors.zinc.800") 1px, transparent 1px);
   background-size: 5px 5px;
 }
