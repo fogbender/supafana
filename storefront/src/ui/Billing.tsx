@@ -86,7 +86,7 @@ const Billing = ({ organization }: { organization: Organization }) => {
 
   return (
     <div className="p-4">
-      {billingLoading ? (
+      {billingLoading || pollSubscriptions ? (
         <span className="loading loading-ring loading-lg text-accent" />
       ) : isFree ? (
         <div className="flex flex-col gap-2">
@@ -105,13 +105,15 @@ const Billing = ({ organization }: { organization: Organization }) => {
           </a>
         </div>
       ) : (
-        billing?.subscriptions.map(s => <Subscription s={s} key={s.id} />)
+        billing?.subscriptions.map(s => (
+          <Subscription s={s} price={billing.price_per_instance} key={s.id} />
+        ))
       )}
     </div>
   );
 };
 
-const Subscription = ({ s }: { s: StripeCustomer }) => {
+const Subscription = ({ s, price }: { s: StripeCustomer; price: number }) => {
   return (
     <table className="text-gray-200 dark:text-gray-700 bg-dots table">
       <tbody>
@@ -128,7 +130,13 @@ const Subscription = ({ s }: { s: StripeCustomer }) => {
           <RowBody>{`${s.quantity}`}</RowBody>
         </tr>
         <tr>
-          <RowHeader>Status</RowHeader>
+          <RowHeader>Cost per month</RowHeader>
+          <RowBody>
+            <span>${`${(price / 100) * s.quantity}`}</span>
+          </RowBody>
+        </tr>
+        <tr>
+          <RowHeader>Subscription status</RowHeader>
           <RowBody>{s.status}</RowBody>
         </tr>
         <tr>
