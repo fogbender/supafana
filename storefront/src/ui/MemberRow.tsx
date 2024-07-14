@@ -120,8 +120,6 @@ const MemberRow = ({
     }
   })();
 
-  console.log(emailElement);
-
   return (
     <tr>
       <td>

@@ -78,7 +78,7 @@ defmodule Supafana.Stripe.Api do
         "/v1/billing_portal/sessions",
         %{
           "customer" => customer_id,
-          "return_url" => "#{Supafana.env(:supafana_storefront_url)}/admin/-/billing"
+          "return_url" => "#{Supafana.env(:supafana_storefront_url)}/dashboard"
         }
       )
 

@@ -1,4 +1,8 @@
 import React from "react";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+
+dayjs.extend(relativeTime);
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 
@@ -27,13 +31,13 @@ const Billing = ({ organization }: { organization: Organization }) => {
     onSuccess: res => {
       const { url } = res;
 
-      console.log({ url });
-
       window.location.href = url;
     },
   });
 
   const stripeSessionId = getQueryParam(location.search, "session_id");
+
+  const [pollSubscriptions, setPollSubscriptions] = React.useState(false);
 
   const setStripeSessionIdMutation = useMutation({
     mutationFn: async (session_id: string) => {
@@ -46,6 +50,7 @@ const Billing = ({ organization }: { organization: Organization }) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.billing(organization.id) });
+      setPollSubscriptions(true);
     },
   });
 
@@ -60,12 +65,25 @@ const Billing = ({ organization }: { organization: Organization }) => {
     queryFn: async () => {
       return await apiServer.url("/billing/subscriptions").get().json<BillingT>();
     },
+    refetchInterval: () => {
+      if (pollSubscriptions) {
+        return 2000;
+      } else {
+        return false;
+      }
+    },
   });
+
+  React.useEffect(() => {
+    if (billing) {
+      setPollSubscriptions(false);
+    }
+  }, [billing]);
 
   const isFree = billing?.subscriptions?.length === 0;
 
   return (
-    <div>
+    <div className="p-4">
       {billingLoading ? (
         <span className="loading loading-ring loading-lg text-accent" />
       ) : isFree ? (
@@ -85,9 +103,103 @@ const Billing = ({ organization }: { organization: Organization }) => {
           </a>
         </div>
       ) : (
-        <></>
+        billing?.subscriptions.map(s => <Subscription s={s} key={s.id} />)
       )}
     </div>
+  );
+};
+
+const Subscription = ({ s }: { s: StripeCustomer }) => {
+  return (
+    <table className="text-gray-200 dark:text-gray-700 bg-dots table">
+      <tbody>
+        <tr>
+          <RowHeader>Email</RowHeader>
+          <RowBody>{s.email}</RowBody>
+        </tr>
+        <tr>
+          <RowHeader>Name</RowHeader>
+          <RowBody>{s.name}</RowBody>
+        </tr>
+        <tr>
+          <RowHeader>Number of Grafana instances</RowHeader>
+          <RowBody>{s.quantity}</RowBody>
+        </tr>
+        <tr>
+          <RowHeader>Status</RowHeader>
+          <RowBody>{s.status}</RowBody>
+        </tr>
+        <tr>
+          <RowHeader>Customer since</RowHeader>
+          <RowBody>
+            <>
+              {dayjs(s.created_ts_sec * 1000).fromNow()} (
+              {dayjs(s.created_ts_sec * 1000).format("YYYY-MM-DD hh:mm:ss")})
+            </>
+          </RowBody>
+        </tr>
+        {!s.cancel_at_ts_sec && (
+          <tr>
+            <RowHeader>Renews</RowHeader>
+            <RowBody>
+              <>
+                {dayjs(s.period_end_ts_sec * 1000).fromNow()} (
+                {dayjs(s.period_end_ts_sec * 1000).format("YYYY-MM-DD hh:mm:ss")})
+              </>
+            </RowBody>
+          </tr>
+        )}
+        {s.canceled_at_ts_sec && (
+          <tr>
+            <RowHeader>Subscription cancelled</RowHeader>
+            <RowBody>
+              <>
+                {dayjs(s.canceled_at_ts_sec * 1000).fromNow()} (
+                {dayjs(s.canceled_at_ts_sec * 1000).format("YYYY-MM-DD hh:mm:ss")})
+              </>
+            </RowBody>
+          </tr>
+        )}
+        {s.cancel_at_ts_sec && (
+          <tr>
+            <RowHeader>Subscription expires</RowHeader>
+            <RowBody>
+              <>
+                {dayjs(s.cancel_at_ts_sec * 1000).fromNow()} (
+                {dayjs(s.cancel_at_ts_sec * 1000).format("YYYY-MM-DD hh:mm:ss")})
+              </>
+            </RowBody>
+          </tr>
+        )}
+        <tr>
+          <td>
+            <a
+              target="_blank"
+              className="break-all text-sm font-medium link link-primary dark:link-secondary no-underline"
+              href={s.portal_session_url}
+            >
+              Manage subscription
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  );
+};
+
+const RowHeader = ({ children }: { children: JSX.Element | string }) => {
+  return (
+    <td>
+      <span className="text-gray-500 dark:text-gray-300">{children}</span>
+    </td>
+  );
+};
+
+const RowBody = ({ children }: { children: JSX.Element | string }) => {
+  return (
+    <td>
+      <span className="text-black dark:text-white font-medium">{children}</span>
+    </td>
   );
 };
 
