@@ -31,6 +31,9 @@ defmodule Supafana.Supabase.OAuth do
     case r do
       {:ok, %Tesla.Env{status: 201, body: body}} ->
         {:ok, body}
+
+      _ ->
+        r
     end
   end
 
