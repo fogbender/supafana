@@ -26,6 +26,8 @@ defmodule Supafana.Application do
     opts = [strategy: :one_for_one, name: Supafana.Supervisor]
     res = Supervisor.start_link(children, opts)
 
+    :azure_token_cache = :ets.new(:azure_token_cache, [:public, :named_table])
+
     IO.puts("Supafana service started with configuration:")
     IO.puts(Supafana.info())
     res
