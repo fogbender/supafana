@@ -19,6 +19,10 @@ defmodule Supafana.Web.Router do
 
   plug(:dispatch)
 
+  get "/favicon.ico" do
+    ok_no_content(conn)
+  end
+
   get "/fogbender-signatures" do
     conn = fetch_session(conn)
     organization_slug = get_session(conn)["organization_slug"]
