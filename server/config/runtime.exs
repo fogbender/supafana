@@ -43,6 +43,13 @@ config :supafana,
   stripe_secret_key: System.get_env("STRIPE_SECRET_KEY"),
   stripe_price_id: System.get_env("STRIPE_PRICE_ID")
 
+config :supafana,
+  azure_client_id: System.get_env("AZURE_CLIENT_ID"),
+  azure_client_secret: System.get_env("AZURE_CLIENT_SECRET"),
+  azure_tenant_id: System.get_env("AZURE_TENANT_ID"),
+  azure_resource_group: System.get_env("AZURE_RESOURCE_GROUP"),
+  azure_subscription_id: System.get_env("AZURE_SUBSCRIPTION_ID")
+
 config :logger, :console,
   level: (System.get_env("SUPAFANA_LOG_LEVEL") || "debug") |> String.to_atom(),
   format: "\n$time [$level] $message $metadata\n",
