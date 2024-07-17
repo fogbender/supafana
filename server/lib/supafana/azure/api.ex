@@ -55,6 +55,7 @@ defmodule Supafana.Azure.Api do
     deployment_name = "grafana-deployment-#{project_ref}"
 
     template_file_url = "https://biceps.blob.core.windows.net/biceps/grafana.json"
+
     template_file_query_string =
       "sp=r&st=2024-07-14T16:19:06Z&se=2027-01-01T01:19:06Z&spr=https&sv=2022-11-02&sr=c&sig=LOuF6bWvwEm37sDVLphqlQMiII19N6i6G%2F8NNXiPbuA%3D"
 
@@ -97,13 +98,13 @@ defmodule Supafana.Azure.Api do
          status: 401,
          body: %{
            "error" => %{
-             "code" => "InvalidAuthenticationToken",
-             "message" => "Access token has expired or is not yet valid."
+             "code" => code
            }
          }
-       }} ->
+       }}
+      when code in ["ExpiredAuthenticationToken", "InvalidAuthenticationToken"] ->
         {:ok, _} = get_graph_access_token(:renew)
-        create_deployment()
+        create_deployment(project_ref, service_role_key, supafana_domain)
     end
   end
 
