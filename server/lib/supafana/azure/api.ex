@@ -1,8 +1,6 @@
 defmodule Supafana.Azure.Api do
   require Logger
 
-  # @blob_url "https://biceps.blob.core.windows.net/biceps?sp=r&st=2024-07-14T16:19:06Z&se=2027-01-01T01:19:06Z&spr=https&sv=2022-11-02&sr=c&sig=LOuF6bWvwEm37sDVLphqlQMiII19N6i6G%2F8NNXiPbuA%3D"
-
   def clear_access_token() do
     tenant_id = Supafana.env(:azure_tenant_id)
 
@@ -91,6 +89,9 @@ defmodule Supafana.Azure.Api do
 
     case r do
       {:ok, %Tesla.Env{status: 201, body: body}} ->
+        {:ok, body}
+
+      {:ok, %Tesla.Env{status: 200, body: body}} ->
         {:ok, body}
 
       {:ok,
