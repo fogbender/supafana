@@ -21,6 +21,7 @@ in
     htop
   ];
 
+  programs.mosh.enable = true;
 
   users.users = {
     supafana = {

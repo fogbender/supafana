@@ -49,6 +49,7 @@ in with pkgs; mkShell ({
     corepack_18
     semgrep
     postgresql
+    sops mosh
   ]
   ++ file-notifier
   ++ elixir_libs

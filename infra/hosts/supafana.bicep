@@ -75,6 +75,23 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2020-06-01' = {
           }
       }
       {
+           name: 'MOSH'
+           properties : {
+               protocol : 'Udp'
+               sourcePortRange :  '*'
+               destinationPortRange :  '60000-61000'
+               sourceAddressPrefix :  '*'
+               destinationAddressPrefix: '*'
+               access:  'Allow'
+               priority : 1050
+               direction : 'Inbound'
+               sourcePortRanges : []
+               destinationPortRanges : []
+               sourceAddressPrefixes : []
+               destinationAddressPrefixes : []
+          }
+      }
+      {
            name : 'HTTPS'
            properties : {
                protocol :  'Tcp'
