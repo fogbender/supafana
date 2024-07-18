@@ -8,10 +8,10 @@ param virtualNetworkName string = 'vNet'
 param supafanaSubnetName string = 'SupafanaSubnet'
 param grafanaSubnetName string = 'GrafanaSubnet'
 
-param imageResourceGroupName string = 'supafana-images-rg'
+param imageResourceGroupName string = 'supafana-common-rg'
 param imageGalleryName string = 'supafanasig'
 param imageName string = 'grafana'
-param imageVersion string = '0.0.4'
+param imageVersion string = '0.0.5'
 
 param projectId string = supabaseProjectRef
 

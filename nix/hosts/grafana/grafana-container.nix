@@ -7,9 +7,10 @@ in
   networking.firewall.allowedTCPPorts = [ 8080 9090];
 
   virtualisation.oci-containers.containers.grafana = {
-    image = "supafanastgcr.azurecr.io/supafana-image:2024.07.08";
-    login.registry = "https://supafanastgcr.azurecr.io";
-    login.username = "supafanastgcr";
+    image = "supafanacr.azurecr.io/supabase-grafana:2024.07.18";
+    login.registry = "https://supafanacr.azurecr.io";
+    # readonly principal
+    login.username = "df1f34b8-bc26-4606-b4cc-c1e08511e709";
     # TODO move acr password to sops file
     login.passwordFile = "${passFile}";
     environmentFiles = [ "/var/lib/supafana/supafana.env" ];

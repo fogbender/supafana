@@ -2,7 +2,7 @@ param location string = resourceGroup().location
 param virtualNetworkName string = 'vNet'
 param supafanaSubnetName string = 'SupafanaSubnet'
 
-param imageResourceGroupName string = 'supafana-images-rg'
+param imageResourceGroupName string = 'supafana-common-rg'
 param imageGalleryName string = 'supafanasig'
 param imageName string = 'supafana'
 param imageVersion string = '0.0.1'

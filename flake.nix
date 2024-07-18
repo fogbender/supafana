@@ -166,12 +166,8 @@
             hostname = "172.214.29.22";
             profiles.system.path = deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.supafana-test;
           };
-          grafana1 = {
-            hostname = "4.255.124.68";
-            profiles.system.path = deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.grafana;
-          };
-          grafana2 = {
-            hostname = "kczjrdfrkmmofxkbjxex.supafana.local";
+          grafana-mk = {
+            hostname = "iclisqzkhfgcvlrvqbal.supafana.local";
             profiles.system.path = deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.grafana;
           };
         };
