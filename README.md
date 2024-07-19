@@ -10,7 +10,7 @@ docker tag supabase-grafana supafanacr.azurecr.io/supabase-grafana:<VERSION>
 docker push supafanacr.azurecr.io/supabase-grafana:<VERSION> 
 ```
 
-- Update VM grafana image  with new <VERSION> in file `nix/hosts/grafana/grafana-container.nix`. 
+- Update VM grafana image with new <VERSION> in file `nix/hosts/grafana/grafana-container.nix`. 
 - Upload new VM grafana image version (see next section).
 
 ## NixOS Azure image creation/upload
