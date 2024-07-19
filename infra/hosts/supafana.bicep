@@ -2,10 +2,12 @@ param location string = resourceGroup().location
 param virtualNetworkName string = 'vNet'
 param supafanaSubnetName string = 'SupafanaSubnet'
 
+param keyVaultName string = concat(resourceGroup().name, '-vault')
+
 param imageResourceGroupName string = 'supafana-common-rg'
 param imageGalleryName string = 'supafanasig'
 param imageName string = 'supafana'
-param imageVersion string = '0.0.1'
+param imageVersion string = '0.0.2'
 
 param vmName string = 'supafana'
 param vmSize string = 'Standard_B2s'
@@ -204,8 +206,19 @@ resource vm 'Microsoft.Compute/virtualMachines@2021-03-01' = {
       }
     }
   }
+  identity: {
+    type: 'SystemAssigned'
+  }
 }
 
+module roleAssignment './role-assignment.bicep' = {
+  name: 'role-assignment'
+  params: {
+    keyVaultName: keyVaultName
+    roleName: 'Key Vault Crypto User'
+    principalId: vm.identity.principalId
+  }
+}
 
 output publicIPAddress string = publicIP.properties.ipAddress
 output privateIPAddress string = nic.properties.ipConfigurations[0].properties.privateIPAddress

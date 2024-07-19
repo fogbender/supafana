@@ -4,15 +4,16 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
 
-    utils.url = "github:numtide/flake-utils";
-
     gitignore.url = "github:hercules-ci/gitignore.nix";
     gitignore.inputs.nixpkgs.follows = "nixpkgs";
 
     deploy-rs.url = "github:serokell/deploy-rs";
+
+    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
+    sops-nix.url = "github:Mic92/sops-nix";
   };
 
-  outputs = { self, nixpkgs, utils, gitignore, deploy-rs }:
+  outputs = inputs@{ self, nixpkgs, gitignore, deploy-rs, sops-nix }:
     let
       system = "x86_64-linux";
       inherit (nixpkgs.lib) filterAttrs const;
@@ -34,6 +35,21 @@
             overlay
           ];
         }
+      );
+
+      nixosSystem = (system: args:
+        let
+          pkgs = sysPkgs system;
+        in
+          nixpkgs.lib.nixosSystem ({
+            inherit pkgs system;
+            specialArgs = { inherit inputs; };
+          } // args)
+      );
+
+      azureImage = (system: args:
+        let img = nixosSystem system args;
+        in img.config.system.build.azureImage
       );
 
       deployPkgs = import nixpkgs {
@@ -77,52 +93,13 @@
           }
       );
 
-      echoDockerImage = (system:
-        let
-          pkgs = sysPkgs system;
-          caddyPort = "80";
-          caddyConf = pkgs.writeTextDir "Caddyfile" ''
-          :${caddyPort} {
-              respond "Hello World from {$SUPAFANA_PROJECT_ID}"
-          }
-          '';
-        in
-          pkgs.dockerTools.buildLayeredImage {
-            name = "caddy-container";
-            tag = "latest";
-            contents = [
-              pkgs.caddy
-            ];
-            config = {
-              Cmd = [ "caddy" "run" "--config" "${caddyConf}/Caddyfile" ];
-              ExposedPorts = {
-                "${caddyPort}/tcp" = {};
-              };
-            };
-          });
+      supafanaAzureImage = system: azureImage system {
+        modules = [ nix/modules/azure-image/image.nix nix/modules/supafana-base ];
+      };
 
-
-      supafanaAzureImage = (system:
-        let
-          pkgs = sysPkgs system;
-          img = nixpkgs.lib.nixosSystem {
-	          inherit pkgs system;
-            modules = [ nix/azure-image/image.nix nix/hosts/supafana-test.nix ];
-          };
-        in
-        img.config.system.build.azureImage
-      );
-
-      grafanaAzureImage = (system:
-        let
-          pkgs = sysPkgs system;
-          img = nixpkgs.lib.nixosSystem {
-	          inherit pkgs system;
-            modules = [ nix/azure-image/image.nix nix/hosts/grafana ];
-          };
-        in
-        img.config.system.build.azureImage
-      );
+      grafanaAzureImage = system: azureImage system {
+        modules = [ nix/modules/azure-image/image.nix nix/hosts/grafana ];
+      };
 
     in
     {
@@ -141,20 +118,13 @@
 
       packages.x86_64-linux.supafana-image = supafanaAzureImage "x86_64-linux";
       packages.x86_64-linux.grafana-image = grafanaAzureImage "x86_64-linux";
-      packages.x86_64-linux.echo-docker-image = echoDockerImage "x86_64-linux";
 
       nixosConfigurations = {
-        supafana-test = nixpkgs.lib.nixosSystem {
-          inherit system;
-          modules = [
-            nix/hosts/supafana-test.nix
-          ];
+        supafana-test = nixosSystem system {
+          modules = [ nix/hosts/supafana-test.nix ];
         };
-        grafana = nixpkgs.lib.nixosSystem {
-          inherit system;
-          modules = [
-            nix/hosts/grafana
-          ];
+        grafana = nixosSystem system {
+          modules = [ nix/hosts/grafana ];
         };
       };
 
@@ -163,7 +133,7 @@
         user = "root";
         nodes = {
           supafana-test = {
-            hostname = "172.214.29.22";
+            hostname = "supafana-test.com";
             profiles.system.path = deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.supafana-test;
           };
           grafana-mk = {
