@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.26",
-      "templateHash": "477015973764321003"
+      "templateHash": "12986897267146911651"
     }
   },
   "parameters": {
@@ -40,7 +40,7 @@
     },
     "imageResourceGroupName": {
       "type": "string",
-      "defaultValue": "supafana-images-rg"
+      "defaultValue": "supafana-common-rg"
     },
     "imageGalleryName": {
       "type": "string",
@@ -52,7 +52,7 @@
     },
     "imageVersion": {
       "type": "string",
-      "defaultValue": "0.0.4"
+      "defaultValue": "0.0.5"
     },
     "projectId": {
       "type": "string",
