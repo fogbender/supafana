@@ -1,9 +1,11 @@
 .PHONY=all \
 	db-status db-start db-stop db-clean db-repl \
 	supafana-deps supafana-compile supafana-repl supafana-clean \
-	clean clean-all
+	clean clean-all \
+    proxy-start proxy-stop
 
 PG_DATA=.nix-shell/db
+PROXY_DATA=.nix-shell/proxy
 
 PG_CTL=pg_ctl -D ${PG_DATA} -l "${PG_DATA}/server.log" -o "-h ${PG_HOST} -p ${PG_PORT} -k ."
 
@@ -88,7 +90,6 @@ supafana-test-no-deps-check: db-start
 supafana-test-wip-watch: db-start
 	cd server && MIX_ENV=test mix do ecto.create --quiet, ecto.migrate && mix test.watch --only wip
 
-
 clean: supafana-clean
 
 web-format:
@@ -98,3 +99,15 @@ format: web-format supafana-format
 
 web-start:
 	cd storefront && pnpm install && pnpm dev
+
+# Local web proxy
+proxy-start: ${PROXY_DATA}/caddy.pid
+
+${PROXY_DATA}/caddy.pid: ${PROXY_DATA}
+	caddy start -c nix/shells/dev/Caddyfile -a caddyfile --pidfile ${PROXY_DATA}/caddy.pid > ${PROXY_DATA}/caddy.log 2>&1
+
+${PROXY_DATA}:
+	mkdir -p ${PROXY_DATA}
+
+proxy-stop:
+	caddy stop

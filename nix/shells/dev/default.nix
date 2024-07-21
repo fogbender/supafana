@@ -50,6 +50,7 @@ in with pkgs; mkShell ({
     semgrep
     postgresql
     sops mosh
+    caddy
   ]
   ++ file-notifier
   ++ elixir_libs
