@@ -19,8 +19,8 @@
     "fetcher": "hex",
     "name": "briefly",
     "pkg": "briefly",
-    "sha256": "sha256-Yc8JDKN8JP9Dq6Dgx3wS+01gJT07LSaJU/OtSdxZzms=",
-    "version": "0.5.0"
+    "sha256": "sha256-vWhKqSrYt7Tg2SwxIAmTxLwUafxozW1fFRRAQb0Vy1c=",
+    "version": "0.5.1"
   },
   "castore": {
     "builder": "mix",
@@ -78,8 +78,8 @@
     "fetcher": "hex",
     "name": "cowboy",
     "pkg": "cowboy",
-    "sha256": "sha256-Ov3Mtxg8xvFDyxTTz1H6AOU9ueyAzc1SVIL16ZvEHWs=",
-    "version": "2.10.0"
+    "sha256": "sha256-inq+bRgzcs6yHKonCb7JKKsrcuGKORGqF3Fjm++CZR4=",
+    "version": "2.12.0"
   },
   "cowboy_telemetry": {
     "builder": "rebar3",
@@ -90,8 +90,8 @@
     "fetcher": "hex",
     "name": "cowboy_telemetry",
     "pkg": "cowboy_telemetry",
-    "sha256": "sha256-Om79M2YTDquEyjcsvUp9PDqXvfz7SREjOwNdEXBj8K8=",
-    "version": "0.3.1"
+    "sha256": "sha256-fZi6we5FZdMbYtWfiCPf2DVqFp5/y7g4MbilOXQEyd4=",
+    "version": "0.4.0"
   },
   "cowlib": {
     "builder": "rebar3",
@@ -99,8 +99,8 @@
     "fetcher": "hex",
     "name": "cowlib",
     "pkg": "cowlib",
-    "sha256": "sha256-Fjtz9jZ6c0GzPHlMTojn2/5kmKxC3Nae9ExbxVB8jbA=",
-    "version": "2.12.1"
+    "sha256": "sha256-4eEoTcP8Awpksa0Ng4KufpnaRsMka4FTGKS4SIc4AKQ=",
+    "version": "2.13.0"
   },
   "crontab": {
     "builder": "mix",
@@ -130,8 +130,8 @@
     "fetcher": "hex",
     "name": "db_connection",
     "pkg": "db_connection",
-    "sha256": "sha256-wvmS0Vcl5yHsf7wRidTs24r+92ZIx0ao4crTXjuKNfM=",
-    "version": "2.6.0"
+    "sha256": "sha256-3PCPMbJwH4V9/Hh/uteCI9YaMiBPIX8V6IHdk+S90/8=",
+    "version": "2.7.0"
   },
   "decimal": {
     "builder": "mix",
@@ -152,8 +152,8 @@
     "fetcher": "hex",
     "name": "ecto",
     "pkg": "ecto",
-    "sha256": "sha256-69PTdyzQ382NdyZZ5B7VJ8KLKoveSwD+A+BGPaDxmDs=",
-    "version": "3.11.1"
+    "sha256": "sha256-PDi8osb42AI/IUUybMioAQDD/+TcvZhC/4Z/f8YVbGU=",
+    "version": "3.11.2"
   },
   "ecto_sql": {
     "builder": "mix",
@@ -168,8 +168,8 @@
     "fetcher": "hex",
     "name": "ecto_sql",
     "pkg": "ecto_sql",
-    "sha256": "sha256-zhQGOrNRRCQnbn42AQitbCMI9tiBZKB2qsijh+H+pjQ=",
-    "version": "3.11.1"
+    "sha256": "sha256-5fNuPXNrmcf+4+YxMzuDlK3kuv6dltNWafyi2Bwr6Sg=",
+    "version": "3.11.3"
   },
   "expo": {
     "builder": "mix",
@@ -177,8 +177,8 @@
     "fetcher": "hex",
     "name": "expo",
     "pkg": "expo",
-    "sha256": "sha256-aKQjOwZYo9Eu4A0n032FaxukhgfnziD9N2lY0Lps6Ss=",
-    "version": "0.5.1"
+    "sha256": "sha256-jJv6BsoBfJy0Ag+r6YC8f9sarsBZ/QBMKrO/8DscWZw=",
+    "version": "0.5.2"
   },
   "finch": {
     "builder": "mix",
@@ -239,8 +239,8 @@
     "fetcher": "hex",
     "name": "hpax",
     "pkg": "hpax",
-    "sha256": "sha256-LIeEPVoj9fFnSOvneWmIDimAlYDv2szWFc077WKKjBM=",
-    "version": "0.1.2"
+    "sha256": "sha256-fxMUcx1xHiyl/cf9NhKWWT/CVCVwsxBVlbsLxtD61gE=",
+    "version": "1.0.0"
   },
   "idna": {
     "builder": "rebar3",
@@ -261,8 +261,8 @@
     "fetcher": "hex",
     "name": "jason",
     "pkg": "jason",
-    "sha256": "sha256-+7Aezf1WW1YmEwL34fzCfE+48y1W6rdNtiH8FUYEp6E=",
-    "version": "1.4.1"
+    "sha256": "sha256-mpDoaJJ/fHd2ibqhbYb00OCG2WjbXAXZF8z/bUQ+WKM=",
+    "version": "1.4.3"
   },
   "joken": {
     "builder": "mix",
@@ -272,8 +272,8 @@
     "fetcher": "hex",
     "name": "joken",
     "pkg": "joken",
-    "sha256": "sha256-WpWwWnHNC1Sr01N4rrHUh6I6UsMk+n79/8UStlW1qqc=",
-    "version": "2.6.0"
+    "sha256": "sha256-qyYSLEALPSVM59hu0GbWr60n5wQW35R83LAeE6c4Lmg=",
+    "version": "2.6.1"
   },
   "joken_jwks": {
     "builder": "mix",
@@ -295,8 +295,8 @@
     "fetcher": "hex",
     "name": "jose",
     "pkg": "jose",
-    "sha256": "sha256-YnXLdVBPnB5g7qy3ca3+7kkFqeGCEDqlm1P+1lH/lzg=",
-    "version": "1.11.6"
+    "sha256": "sha256-DWzTb/i6F02ykUj8EStYQhhraKkM6fwrPsOv52WT5hQ=",
+    "version": "1.11.10"
   },
   "metrics": {
     "builder": "rebar3",
@@ -313,8 +313,8 @@
     "fetcher": "hex",
     "name": "mime",
     "pkg": "mime",
-    "sha256": "sha256-2g1ko2XEW8mTXMXIp/xeSaDg+ZMqdhxV1sUrFCeAoFw=",
-    "version": "2.0.5"
+    "sha256": "sha256-yZRTY6aybXRziarDZD+ODgnTBJmhOK1k/o/R0T2bFT4=",
+    "version": "2.0.6"
   },
   "mimerl": {
     "builder": "rebar3",
@@ -322,8 +322,8 @@
     "fetcher": "hex",
     "name": "mimerl",
     "pkg": "mimerl",
-    "sha256": "sha256-8nhYVlCqWBmGJkY46/aY+LsZ3yl/Zq2RsYkQ38bhkyM=",
-    "version": "1.2.0"
+    "sha256": "sha256-oeFaUNGIchfelfC5sHk+MoU/fCWKXNInZQiJs4g5/p0=",
+    "version": "1.3.0"
   },
   "mint": {
     "builder": "mix",
@@ -334,8 +334,8 @@
     "fetcher": "hex",
     "name": "mint",
     "pkg": "mint",
-    "sha256": "sha256-132enOTrNZQZB/HT3zjY91DDV4ZTU+IdM1vc322JKgI=",
-    "version": "1.5.2"
+    "sha256": "sha256-XuRB3/wYkvGuWRJ/dK/o/YL9plh3lCeNkk5NkOo9Y/k=",
+    "version": "1.6.2"
   },
   "nimble_options": {
     "builder": "mix",
@@ -343,8 +343,8 @@
     "fetcher": "hex",
     "name": "nimble_options",
     "pkg": "nimble_options",
-    "sha256": "sha256-i7uzlBrzyprMeDX1ZV6gYhEcnCe8rFPgBEYN/RkAipk=",
-    "version": "1.1.0"
+    "sha256": "sha256-ghskcMqUQsS2mEiC/puwOJNxuN3sTUWpUE8Apm9lC0Q=",
+    "version": "1.1.1"
   },
   "nimble_pool": {
     "builder": "mix",
@@ -374,8 +374,8 @@
     "fetcher": "hex",
     "name": "plug",
     "pkg": "plug",
-    "sha256": "sha256-AnMfoMLcsD2NIaHZQb276ZwpRsDbCY7uMQCOBMYoNhU=",
-    "version": "1.15.2"
+    "sha256": "sha256-oT/2uQBrA9fjOHSUWydVJThBsjjDQHHthbDoYFf4zdw=",
+    "version": "1.16.1"
   },
   "plug_cowboy": {
     "builder": "mix",
@@ -387,8 +387,8 @@
     "fetcher": "hex",
     "name": "plug_cowboy",
     "pkg": "plug_cowboy",
-    "sha256": "sha256-3jbhoh9FGhi3kPN3ZdsZgHXCWHXGSDS8yC2QswnrZhM=",
-    "version": "2.6.1"
+    "sha256": "sha256-AtvV+atXG4ZK45QY23gRYYUGJW9tE7SkUDfl/njcXeM=",
+    "version": "2.7.1"
   },
   "plug_crypto": {
     "builder": "mix",
@@ -396,8 +396,22 @@
     "fetcher": "hex",
     "name": "plug_crypto",
     "pkg": "plug_crypto",
-    "sha256": "sha256-U2lbrlfMTlRWbZk+sBB05NiUtlo3ZvHEPixhobD0Xqk=",
-    "version": "2.0.0"
+    "sha256": "sha256-ExIWpLAwuPjODyYDi8RCGuYOS7lcXPU5XhQhQ3gkxPo=",
+    "version": "2.1.0"
+  },
+  "postgrex": {
+    "builder": "mix",
+    "deps": {
+      "db_connection": false,
+      "decimal": false,
+      "jason": true,
+      "table": true
+    },
+    "fetcher": "hex",
+    "name": "postgrex",
+    "pkg": "postgrex",
+    "sha256": "sha256-oEKYm6G8HMpzg+u55GE5jj+J+GjJLOZnH+t+8TKiUtE=",
+    "version": "0.18.0"
   },
   "quantum": {
     "builder": "mix",
@@ -410,8 +424,8 @@
     "fetcher": "hex",
     "name": "quantum",
     "pkg": "quantum",
-    "sha256": "sha256-yrc30dl3n0PLHXAfRt0F6lgUb9liONkcng2mYsGYK7Y=",
-    "version": "3.5.0"
+    "sha256": "sha256-UA/T+nfc1yPtn3ZtShdbaEkZ/3trjP2dfQVk1Y66hzQ=",
+    "version": "3.5.3"
   },
   "ranch": {
     "builder": "rebar3",
@@ -428,8 +442,8 @@
     "fetcher": "hex",
     "name": "recon",
     "pkg": "recon",
-    "sha256": "sha256-6asBrH/IVy5B61k4Xv6z+w/1vwIQOBZTW6yu3zJ9AmM=",
-    "version": "2.5.4"
+    "sha256": "sha256-YypvRH33zMGkoQvc/OcVFEErFmYP5Z3soPzwqjwFRAQ=",
+    "version": "2.5.5"
   },
   "snowflake": {
     "builder": "mix",
@@ -464,8 +478,8 @@
     "fetcher": "hex",
     "name": "telemetry",
     "pkg": "telemetry",
-    "sha256": "sha256-63K4Nl/9pb7WimINHaiFJeMmy4KnXuYTVPwkuER2gEE=",
-    "version": "0.4.3"
+    "sha256": "sha256-2tnOnY7/xiFwj5nqxTjvHL4F1qh03XQd4uaJxH/q/tU=",
+    "version": "1.2.1"
   },
   "telemetry_registry": {
     "builder": "mix",
@@ -475,8 +489,8 @@
     "fetcher": "hex",
     "name": "telemetry_registry",
     "pkg": "telemetry_registry",
-    "sha256": "sha256-QiHO+8rdCz5wdpYDOSI3Qtlz8Tcbwg84Jq9kAle8NpA=",
-    "version": "0.2.1"
+    "sha256": "sha256-5+0ZHrHRFaMDSvjh415OY9U0iFHVVmRtRso9G04Wurk=",
+    "version": "0.3.2"
   },
   "tesla": {
     "builder": "mix",
@@ -532,5 +546,15 @@
     "pkg": "unicode_util_compat",
     "sha256": "sha256-Je7m1n32GWDPanlCOVZlmbCeF+Zo03ACR7xJhjgVJSE=",
     "version": "0.7.0"
+  },
+  "zbang": {
+    "builder": "mix",
+    "deps": {},
+    "fetcher": "git",
+    "name": "zbang",
+    "rev": "4ea9368934aa81c47625e23db8efa4ec0fd0631c",
+    "sha256": "sha256-jPxvEzDgEgPL2m1R3GoazS3GYWjetNtFUzqeAKjH8ns=",
+    "url": "https://github.com/abs/zbang.git",
+    "version": "git"
   }
 }
