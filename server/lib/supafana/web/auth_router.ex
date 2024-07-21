@@ -47,7 +47,7 @@ defmodule Supafana.Web.AuthRouter do
       URI.encode_query(
         %{
           client_id: Supafana.env(:supabase_client_id),
-          redirect_uri: "#{Supafana.env(:supafana_api_url)}/auth/supabase",
+          redirect_uri: redirect_uri(),
           response_type: "code",
           code_challenge: challenge,
           code_challenge_method: "S256"
@@ -57,9 +57,13 @@ defmodule Supafana.Web.AuthRouter do
 
     url = URI.parse("https://api.supabase.com/v1/oauth/authorize?#{search}") |> to_string()
 
-    conn
-    |> resp(:found, "")
-    |> put_resp_header("location", url)
+    if conn.state == :sent do
+      conn
+    else
+      conn
+      |> resp(:found, "")
+      |> put_resp_header("location", url)
+    end
   end
 
   get "/supabase" do
@@ -68,12 +72,18 @@ defmodule Supafana.Web.AuthRouter do
     code_verifier = get_session(conn)["supabase_verifier"]
 
     code = conn.query_params["code"]
-    redirect_uri = "#{Supafana.env(:supafana_api_url)}/auth/supabase"
+    redirect_uri = redirect_uri()
 
     conn = Supafana.Web.AuthUtils.handle_auth(conn, code, redirect_uri, code_verifier)
 
-    conn
-    |> resp(:found, "")
-    |> put_resp_header("location", return_url)
+    if conn.state == :sent do
+      conn
+    else
+      conn
+      |> resp(:found, "")
+      |> put_resp_header("location", return_url)
+    end
   end
+
+  defp redirect_uri(), do: "#{Supafana.env(:supafana_api_url)}/api/auth/supabase"
 end
