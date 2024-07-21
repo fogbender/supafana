@@ -21,6 +21,21 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: grafana; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.grafana (
+    id uuid NOT NULL,
+    supabase_id character varying(255) NOT NULL,
+    org_id uuid NOT NULL,
+    plan character varying(255) DEFAULT 'free'::character varying,
+    state character varying(255) DEFAULT 'initial'::character varying,
+    inserted_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: org; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -57,6 +72,14 @@ CREATE TABLE public.schema_migrations (
 
 
 --
+-- Name: grafana grafana_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.grafana
+    ADD CONSTRAINT grafana_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: org org_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -70,6 +93,13 @@ ALTER TABLE ONLY public.org
 
 ALTER TABLE ONLY public.schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: grafana_supabase_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX grafana_supabase_id_index ON public.grafana USING btree (supabase_id);
 
 
 --
@@ -92,3 +122,4 @@ CREATE UNIQUE INDEX org_supabase_id_index ON public.org USING btree (supabase_id
 
 INSERT INTO public."schema_migrations" (version) VALUES (20240710152810);
 INSERT INTO public."schema_migrations" (version) VALUES (20240713193345);
+INSERT INTO public."schema_migrations" (version) VALUES (20240720230903);

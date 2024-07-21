@@ -1,10 +1,17 @@
 defmodule Supafana.Web.Utils do
   import Plug.Conn
 
-  def ok_json(conn, data) do
+  def ok_json(conn, data, should_encode \\ :encode) do
+    out =
+      if should_encode == :encode do
+        data |> Jason.encode!(pretty: true)
+      else
+        data
+      end
+
     conn
     |> put_resp_content_type("application/json")
-    |> send_resp(200, data |> Jason.encode!(pretty: true))
+    |> send_resp(200, out)
   end
 
   def ok_no_content(conn) do

@@ -11,7 +11,8 @@ import { apiServer, queryKeys, queryClient } from "./client";
 import qs, { type ParseOptions } from "query-string";
 
 import type { Organization } from "../types/supabase";
-import type { StripeCustomer, Billing as BillingT } from "../types/supafana";
+
+import type { Subscription as StripeCustomer, Billing as BillingT } from "../types/z_types";
 
 function getQueryParam(query: string, key: string, options?: ParseOptions) {
   const value = qs.parse(query, options)[key];

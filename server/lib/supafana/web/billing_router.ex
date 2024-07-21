@@ -70,7 +70,7 @@ defmodule Supafana.Web.BillingRouter do
 
     Process.sleep(2000)
 
-    conn |> ok_json(subscriptions)
+    conn |> ok_json(subscriptions, :no_encode)
   end
 
   defp is_stripe_configured() do
@@ -135,7 +135,7 @@ defmodule Supafana.Web.BillingRouter do
                   "quantity" => quantity
                 } = subscription
 
-                %{
+                %Supafana.Z.Subscription{
                   id: subscription_id,
                   email: email,
                   name: name,
@@ -185,17 +185,19 @@ defmodule Supafana.Web.BillingRouter do
 
     {:ok, %{"unit_amount" => price_per_instance}} = Supafana.Stripe.Api.get_price()
 
-    subscriptions = %{
-      delinquent: delinquent,
-      unpaid_instances: unpaid_instances,
-      paid_instances: paid_instances,
-      free_instances: free_instances,
-      used_instances: used_instances,
-      price_per_instance: price_per_instance,
-      subscriptions: subscriptions
-    }
+    billing =
+      %Supafana.Z.Billing{
+        delinquent: delinquent,
+        unpaid_instances: unpaid_instances,
+        paid_instances: paid_instances,
+        free_instances: free_instances,
+        used_instances: used_instances,
+        price_per_instance: price_per_instance,
+        subscriptions: subscriptions
+      }
+      |> Supafana.Z.Billing.to_json!()
 
-    {:ok, conn, subscriptions}
+    {:ok, conn, billing}
   end
 
   defp count_used_instances(_org_id) do

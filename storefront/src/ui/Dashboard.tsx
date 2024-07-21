@@ -60,13 +60,16 @@ export const Dashboard = () => {
       <div className="mt-4 flex-1 flex flex-col items-center justify-center text-black dark:text-white">
         {organization ? (
           <div className="pl-4 w-full flex flex-col gap-10">
-            <div className="self-start">
-              <SectionHeader text="Who should get email notifications from Supafana?" />
-              {!me && (
-                <div className="ml-4 text-sm text-gray-500 font-medium">
-                  Please verify your email below to configure
-                </div>
-              )}
+            <div className="self-start w-full">
+              <SectionHeader text="Who should get email notifications from Supafana?">
+                <>
+                  {!me && (
+                    <div className="text-sm text-gray-500 font-medium">
+                      Please verify your email below to configure
+                    </div>
+                  )}
+                </>
+              </SectionHeader>
               {membersLoading && (
                 <div className="flex w-52 flex-col gap-4">
                   <div className="skeleton h-4 w-full"></div>
@@ -142,10 +145,20 @@ export const Dashboard = () => {
   );
 };
 
-const SectionHeader = ({ text }: { text: string }) => {
+const SectionHeader = ({
+  text,
+  children = null,
+}: {
+  text: string;
+  children?: null | JSX.Element;
+}) => {
   return (
-    <div className="flex items-center gap-2 font-medium text-xl">
-      <Dragon size={32} /> <span>{text}</span>
+    <div className="flex items-center gap-3 font-medium text-xl">
+      <Dragon size={32} />
+      <div className="flex flex-col">
+        <span>{text}</span>
+        {children}
+      </div>
     </div>
   );
 };

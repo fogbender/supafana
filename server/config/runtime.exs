@@ -28,6 +28,7 @@ config :supafana,
   secret_key_base: System.get_env("SUPAFANA_SECRET_KEY_BASE")
 
 config :supafana,
+  supafana_domain: System.get_env("SUPAFANA_DOMAIN"),
   supafana_api_url: System.get_env("SUPAFANA_API_URL"),
   supafana_storefront_url: System.get_env("SUPAFANA_STOREFRONT_URL")
 

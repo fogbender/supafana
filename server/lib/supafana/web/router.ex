@@ -1,9 +1,12 @@
 defmodule Supafana.Web.Router do
   import Supafana.Web.Utils
+  import Ecto.Query, only: [from: 2]
 
   require Logger
 
   use Plug.Router
+
+  alias Supafana.{Data, Repo, Z}
 
   plug(:match)
 
@@ -170,5 +173,20 @@ defmodule Supafana.Web.Router do
     IO.inspect(api_keys)
 
     conn |> ok_json(projects)
+  end
+
+  get "/grafanas" do
+    org_id = conn.assigns[:org_id]
+
+    IO.inspect(org_id)
+
+    grafanas =
+      from(
+        g in Data.Grafana,
+        where: g.id == ^org_id
+      )
+      |> Repo.all()
+
+    conn |> ok_json(grafanas |> Z.Grafana.to_json!(), :no_encode)
   end
 end

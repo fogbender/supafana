@@ -121,8 +121,8 @@ export const Support = () => {
         <div className="mt-12 flex-1 flex ml-2 md:ml-16 text-black dark:text-white">
           <div className="max-w-xl">
             <p>
-              The Supabase integration flow reveals the name and slug of your organization (
-              {organization.name}), but we can’t tell who you are. Before rendering the support
+              The Supabase integration flow reveals the name and slug of your Supabase organization
+              ({organization.name}), but we can’t tell who you are. Before rendering the support
               widget, we’ll need to sort this out.
             </p>
             <br />

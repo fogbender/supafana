@@ -13,9 +13,9 @@ defmodule Supafana.Cowboy do
   plug(:match)
   plug(:dispatch)
 
-  forward("/auth", to: Supafana.Web.AuthRouter)
-  forward("/billing", to: Supafana.Web.BillingRouter)
-  forward("/", to: Supafana.Web.Router)
+  forward("/api/auth", to: Supafana.Web.AuthRouter)
+  forward("/api/billing", to: Supafana.Web.BillingRouter)
+  forward("/api", to: Supafana.Web.Router)
 
   # match _ do
   #  send_resp(conn, 404, "Nothing here... yet")

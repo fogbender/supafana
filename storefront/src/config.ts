@@ -1,12 +1,12 @@
 const config = {
   prod: {
-    apiUrl: "https://api.supafana.com",
+    apiUrl: "https://supafana.com/api",
   },
   staging: {
-    apiUrl: "https://api.supafana-test.com",
+    apiUrl: "https://supafana-test.com/api",
   },
   dev: {
-    apiUrl: "http://localhost:9080",
+    apiUrl: "http://localhost:9080/api",
   },
 };
 
