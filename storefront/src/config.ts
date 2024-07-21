@@ -6,7 +6,7 @@ const config = {
     apiUrl: "https://supafana-test.com/api",
   },
   dev: {
-    apiUrl: "http://localhost:9080/api",
+    apiUrl: "http://localhost:3901/api",
   },
 };
 
