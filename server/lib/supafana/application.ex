@@ -18,7 +18,8 @@ defmodule Supafana.Application do
          name: AzureFinch,
          pools: %{
            :default => [size: 32, count: 8]
-         }}
+         }},
+        Supafana.Scheduler
       ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

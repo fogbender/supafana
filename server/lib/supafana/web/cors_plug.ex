@@ -36,6 +36,9 @@ defmodule Supafana.CORS do
       {"http", "localhost", 3900} ->
         true
 
+      {"http", "localhost", 3901} ->
+        true
+
       {"https", hostname, 443} ->
         check_origin_hostname(hostname)
 

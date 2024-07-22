@@ -124,7 +124,9 @@ const MemberRow = ({
     <tr>
       <td>
         <div className="flex flex-col">
-          <span className="text-gray-700 dark:text-gray-300 font-medium">{m.user_name}</span>
+          <span className="text-gray-700 dark:text-gray-300 font-medium break-all">
+            {m.user_name}
+          </span>
           <span className="flex gap-1.5 items-center">
             <span className="text-gray-700 dark:text-gray-300 text-xs font-light">
               {m.role_name}
@@ -138,7 +140,7 @@ const MemberRow = ({
         </div>
       </td>
       <td>
-        <span className="text-gray-700 dark:text-gray-300">{emailElement}</span>
+        <span className="text-gray-700 dark:text-gray-300 break-all">{emailElement}</span>
       </td>
       <td className="text-black dark:text-white">
         {me ? (

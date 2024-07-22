@@ -2,18 +2,24 @@ import React from "react";
 import classNames from "classnames";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { useQuery, useMutation } from "@tanstack/react-query";
+
 import { HiExternalLink as ExternalLink } from "react-icons/hi";
+import { SiDungeonsanddragons as DividerGlyph } from "react-icons/si";
+
+import { apiServer, queryClient, queryKeys } from "./client";
 
 import SupabaseLogo from "./landing/assets/supabase-logo-icon.svg?url";
 import SupafanaLogo from "./landing/assets/logo.svg?url";
 
 import type { Project as ProjectT } from "../types/supabase";
+import type { Grafana as GrafanaT } from "../types/z_types";
 
 dayjs.extend(relativeTime);
 
 type ProvisioningStatus = "initial" | "provisioning" | "provisioned" | "error";
 
-const Project = ({ project }: { project: ProjectT }) => {
+const Project = ({ project, grafana }: { project: ProjectT; grafana: GrafanaT | undefined }) => {
   const [provisioningStatus, setProvisioningStatus] = React.useState<ProvisioningStatus>("initial");
 
   React.useEffect(() => {
@@ -24,36 +30,15 @@ const Project = ({ project }: { project: ProjectT }) => {
     }
   }, [provisioningStatus]);
 
+  const dividerSize = 32;
+
   return (
-    <div className="p-4 flex gap-4">
+    <div className="p-4 m-4 flex gap-4 border rounded-lg flex-col sm:flex-row">
       <SupabaseProject project={project} />
-      <SupafanaProject project={project} />
-      {/*
-      <div className="min-h-full w-full flex items-center justify-center">
-        {provisioningStatus === "initial" && (
-          <button className="btn" onClick={() => setProvisioningStatus("provisioning")}>
-            Provision observability dashboard
-          </button>
-        )}
-        {provisioningStatus === "provisioning" && (
-          <div className="flex gap-1">
-            <span>Provisioning in progress</span>
-            <span className="text-gray-700 dark:text-gray-300 self-end loading loading-dots loading-xs"></span>
-          </div>
-        )}
-        {provisioningStatus === "provisioned" && (
-          <div className="flex flex-col items-center">
-            <a
-              href={`https://supafana.com/dashboard/${project.id}`}
-              target="_blank"
-              className="break-all font-medium text-sm link link-primary dark:link-secondary"
-            >
-              https://supafana.com/dashboard/{project.id}
-            </a>
-          </div>
-        )}
+      <div className="self-center flex flex-col gap-4 text-base">
+        <DividerGlyph size={dividerSize} />
       </div>
-      */}
+      <SupafanaProject project={project} grafana={grafana} />
     </div>
   );
 };
@@ -63,12 +48,15 @@ const SupabaseProject = ({ project }: { project: ProjectT }) => {
     <table className="text-gray-200 dark:text-gray-700 bg-dots table">
       <tbody className="text-black dark:text-white">
         <tr>
-          <RowHeader>Database</RowHeader>
+          <RowHeader>
+            <span className="font-bold">Database</span>
+          </RowHeader>
           <td>
             <a
               className="inline-flex items-center gap-1.5 font-medium link link-primary dark:link-secondary"
               href={`https://supabase.com/dashboard/project/${project.id}`}
               title={`Open ${project.name} in Supabase`}
+              target="_blank"
             >
               <img src={SupabaseLogo} alt="Supabase logo" width={12} height={12} />
               {project.name}
@@ -126,17 +114,73 @@ const SupabaseProject = ({ project }: { project: ProjectT }) => {
   );
 };
 
-const SupafanaProject = ({ project }: { project: ProjectT }) => {
+const SupafanaProject = ({
+  project,
+  grafana,
+}: {
+  project: ProjectT;
+  grafana: GrafanaT | undefined;
+}) => {
+  const state = grafana?.state ?? "Ready";
+  const plan = grafana?.plan ?? "Hobby";
+  const created = grafana?.inserted_at ? dayjs(grafana.inserted_at).fromNow() : null;
+
+  const provisionGrafanaMutation = useMutation({
+    mutationFn: () => {
+      return apiServer.url(`/grafanas/${project.id}`).put().text();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.grafanas(project.organization_id) });
+    },
+  });
+
+  const deleteGrafanaMutation = useMutation({
+    mutationFn: () => {
+      return apiServer.url(`/grafanas/${project.id}`).delete().text();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.grafanas(project.organization_id) });
+    },
+  });
+
+  React.useEffect(() => {
+    if (!deleteGrafanaMutation.isIdle) {
+      queryClient.invalidateQueries({ queryKey: queryKeys.grafanas(project.organization_id) });
+    }
+  }, [deleteGrafanaMutation]);
+
+  if (!grafana) {
+    return (
+      <div className="flex items-center justify-center bg-dots rounded-xl w-64">
+        {provisionGrafanaMutation.isPending || !provisionGrafanaMutation.isIdle ? (
+          <span className="loading loading-ring loading-lg text-accent" />
+        ) : (
+          <button
+            onClick={() => {
+              provisionGrafanaMutation.mutate();
+            }}
+            className="btn btn-xs btn-error"
+          >
+            Provision Grafana
+          </button>
+        )}
+      </div>
+    );
+  }
+
   return (
     <table className="text-gray-200 dark:text-gray-700 bg-dots table">
       <tbody className="text-black dark:text-white">
         <tr>
-          <RowHeader>Grafana</RowHeader>
+          <RowHeader>
+            <span className="font-bold">Grafana</span>
+          </RowHeader>
           <td>
             <a
               className="inline-flex items-center gap-1.5 font-medium link link-primary dark:link-secondary"
-              href={`https://supabase.com/dashboard/project/${project.id}`}
+              href={`/dashboard/${project.id}/`}
               title={`Open ${project.name} in Supafana`}
+              target="_blank"
             >
               <img src={SupafanaLogo} alt="Supabase logo" width={12} height={12} />
               {project.name}
@@ -145,29 +189,65 @@ const SupafanaProject = ({ project }: { project: ProjectT }) => {
           </td>
         </tr>
         <tr>
-          <RowHeader>Status</RowHeader>
+          <RowHeader>State</RowHeader>
           <td>
-            <span className="font-medium break-all">RUNNING</span>
+            <span className="font-medium break-all">{state}</span>
           </td>
+          {state === "Running" && (
+            <td>
+              <button
+                onClick={() => {
+                  deleteGrafanaMutation.mutate();
+                }}
+                className="btn btn-xs btn-info w-20"
+              >
+                {deleteGrafanaMutation.isPending || !deleteGrafanaMutation.isIdle ? (
+                  <span className="loading loading-ring loading-xs text-black h-3" />
+                ) : (
+                  <span>Delete</span>
+                )}
+              </button>
+            </td>
+          )}
+          {state === "Deleted" && (
+            <td>
+              <button
+                onClick={() => {
+                  provisionGrafanaMutation.mutate();
+                }}
+                className="btn btn-xs btn-info w-20"
+              >
+                {provisionGrafanaMutation.isPending || !provisionGrafanaMutation.isIdle ? (
+                  <span className="loading loading-ring loading-xs text-black h-3" />
+                ) : (
+                  <span>Provision</span>
+                )}
+              </button>
+            </td>
+          )}
         </tr>
         <tr>
-          <RowHeader>Billing plan</RowHeader>
+          <RowHeader>Plan</RowHeader>
           <td>
-            <span className="font-medium break-all">supafana-billing</span>
+            <span className="font-medium break-all">{plan}</span>
           </td>
         </tr>
+        {/*
         <tr>
           <RowHeader>Version</RowHeader>
           <td>
             <span className="font-medium">supafana-version</span>
           </td>
         </tr>
-        <tr>
-          <RowHeader>Created</RowHeader>
-          <td>
-            <span className="font-medium">supafana-created-at</span>
-          </td>
-        </tr>
+        */}
+        {created && (
+          <tr>
+            <RowHeader>Created</RowHeader>
+            <td>
+              <span className="font-medium">{created}</span>
+            </td>
+          </tr>
+        )}
       </tbody>
     </table>
   );

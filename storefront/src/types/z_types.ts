@@ -16,6 +16,7 @@ export type Grafana = {
   org_id: string;
   plan: string;
   state: string;
+  inserted_at: number;
 };
 
 export type Subscription = {
@@ -30,4 +31,3 @@ export type Subscription = {
   status: string;
   quantity: number;
 };
-
