@@ -1,6 +1,6 @@
 defmodule Supafana.Data.Grafana do
   use Supafana.Data
-  alias Supafana.{Org}
+  alias Supafana.Data.{Org}
 
   @primary_key {:id, Ecto.UUID, autogenerate: true}
   schema "grafana" do
@@ -8,8 +8,8 @@ defmodule Supafana.Data.Grafana do
 
     belongs_to(:org, Org, type: Ecto.UUID)
 
-    field(:plan, :string, default: "free")
-    field(:state, :string, default: "initial")
+    field(:plan, :string, default: "Hobby")
+    field(:state, :string, default: "Initial")
 
     timestamps()
   end

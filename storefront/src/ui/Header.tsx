@@ -131,7 +131,7 @@ const Header = ({ organization }: { organization: undefined | Organization }) =>
             action={signOutActionUrl}
           >
             <button className="btn btn-xs" type="submit">
-              Sign out
+              Sign&nbsp;out
             </button>
           </form>
         )}

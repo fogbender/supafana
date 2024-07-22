@@ -3,10 +3,12 @@ defmodule Supafana.CheckVmsJob do
 
   alias Supafana.{Azure, Data, Repo}
 
-  @unstable_states ["Initializing", "Deleting"]
+  @unstable_states ["Provisioning", "Deleting", "Starting", "Creating", "Unknown"]
 
   def run(ts \\ nil) do
     _ts = ts || DateTime.utc_now()
+
+    IO.inspect("HI")
 
     _unstable_grafanas =
       from(
@@ -16,32 +18,69 @@ defmodule Supafana.CheckVmsJob do
       |> Repo.all()
       |> Enum.each(fn %{supabase_id: project_ref, state: state, org_id: org_id} ->
         next_state =
-          case Azure.Api.check_vm(project_ref) do
-            {:error, :not_found} ->
-              case state do
-                "Initial" ->
-                  "Initial"
+          case Azure.Api.check_deployment(project_ref) do
+            {:ok, %{"properties" => %{"provisioningState" => "Failed"}}} ->
+              "Failed"
 
-                "Deleting" ->
-                  "Deleted"
-              end
+            {:ok, %{"properties" => %{"provisioningState" => provisioning_state}}} ->
+              IO.inspect({:provisioning_state, provisioning_state})
 
-            {:ok, %{"statuses" => statuses}} ->
-              case statuses |> Enum.find(&(&1["code"] == "ProvisioningState/succeeded")) do
-                nil ->
+              case Azure.Api.check_vm(project_ref) do
+                {:error, :not_found} ->
+                  case state do
+                    "Initial" ->
+                      "Initial"
+
+                    "Provisioning" ->
+                      "Provisioning"
+
+                    "Deleting" ->
+                      "Deleted"
+                  end
+
+                {:ok, %{"statuses" => statuses}} ->
+                  parse_statuses(statuses)
+
+                x ->
+                  IO.inspect({:x, x})
                   "Unknown"
-
-                %{"code" => "ProvisioningState/succeeded"} ->
-                  "Running"
               end
-
-            _ ->
-              "Unknown"
           end
+
+        IO.inspect({:next_state, next_state})
 
         %Data.Grafana{} = Repo.Grafana.set_grafana_state(project_ref, org_id, next_state)
       end)
 
     :ok
+  end
+
+  defp parse_statuses([]) do
+    "Unknown"
+  end
+
+  defp parse_statuses([%{"code" => "PowerState/running"} | _]) do
+    "Running"
+  end
+
+  defp parse_statuses([%{"code" => "ProvisioningState/deleting"} | _]) do
+    "Deleting"
+  end
+
+  defp parse_statuses([%{"code" => "ProvisioningState/creating"} | _]) do
+    "Creating"
+  end
+
+  defp parse_statuses([%{"code" => "PowerState/creating"} | _]) do
+    "Creating"
+  end
+
+  defp parse_statuses([%{"code" => "PowerState/starting"} | _]) do
+    "Starting"
+  end
+
+  defp parse_statuses([s | t]) do
+    IO.inspect({:s, s})
+    parse_statuses(t)
   end
 end

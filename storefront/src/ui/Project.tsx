@@ -17,28 +17,20 @@ import type { Grafana as GrafanaT } from "../types/z_types";
 
 dayjs.extend(relativeTime);
 
-type ProvisioningStatus = "initial" | "provisioning" | "provisioned" | "error";
-
 const Project = ({ project, grafana }: { project: ProjectT; grafana: GrafanaT | undefined }) => {
-  const [provisioningStatus, setProvisioningStatus] = React.useState<ProvisioningStatus>("initial");
-
-  React.useEffect(() => {
-    if (provisioningStatus === "provisioning") {
-      setTimeout(() => {
-        setProvisioningStatus("provisioned");
-      }, 5000);
-    }
-  }, [provisioningStatus]);
-
   const dividerSize = 32;
 
   return (
     <div className="p-4 m-4 flex gap-4 border rounded-lg flex-col sm:flex-row">
       <SupabaseProject project={project} />
-      <div className="self-center flex flex-col gap-4 text-base">
-        <DividerGlyph size={dividerSize} />
-      </div>
-      <SupafanaProject project={project} grafana={grafana} />
+      {(!grafana || ["ACTIVE_HEALTHY", "ACTIVE_UNHEALTHY"].includes(project.status)) && (
+        <>
+          <div className="self-center flex flex-col gap-4 text-base">
+            <DividerGlyph size={dividerSize} />
+          </div>
+          <SupafanaProject project={project} grafana={grafana} />
+        </>
+      )}
     </div>
   );
 };
@@ -149,6 +141,20 @@ const SupafanaProject = ({
     }
   }, [deleteGrafanaMutation]);
 
+  const intervalRef = React.useRef<ReturnType<typeof setTimeout>>();
+
+  React.useEffect(() => {
+    if (grafana) {
+      if (["Provisioning", "Deleting", "Creating", "Starting", "Unknown"].includes(grafana.state)) {
+        intervalRef.current = setInterval(() => {
+          queryClient.invalidateQueries({ queryKey: queryKeys.grafanas(project.organization_id) });
+        }, 9000);
+      } else {
+        clearInterval(intervalRef.current);
+      }
+    }
+  }, [grafana]);
+
   if (!grafana) {
     return (
       <div className="flex items-center justify-center bg-dots rounded-xl w-64">
@@ -201,7 +207,7 @@ const SupafanaProject = ({
                 }}
                 className="btn btn-xs btn-info w-20"
               >
-                {deleteGrafanaMutation.isPending || !deleteGrafanaMutation.isIdle ? (
+                {deleteGrafanaMutation.isPending ? (
                   <span className="loading loading-ring loading-xs text-black h-3" />
                 ) : (
                   <span>Delete</span>
@@ -209,7 +215,7 @@ const SupafanaProject = ({
               </button>
             </td>
           )}
-          {state === "Deleted" && (
+          {["Failed", "Deleted"].includes(state) && (
             <td>
               <button
                 onClick={() => {
@@ -217,7 +223,7 @@ const SupafanaProject = ({
                 }}
                 className="btn btn-xs btn-info w-20"
               >
-                {provisionGrafanaMutation.isPending || !provisionGrafanaMutation.isIdle ? (
+                {provisionGrafanaMutation.isPending ? (
                   <span className="loading loading-ring loading-xs text-black h-3" />
                 ) : (
                   <span>Provision</span>

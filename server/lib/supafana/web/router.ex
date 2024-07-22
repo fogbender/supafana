@@ -201,7 +201,18 @@ defmodule Supafana.Web.Router do
         forbid(conn, "Project #{project_ref} does not belong to your Supabase organization")
 
       {:ok, service_key} ->
-        Repo.Grafana.set_grafana_state(project_ref, org_id, "Provisioning")
+        case Supafana.Azure.Api.check_deployment(project_ref) do
+          {:ok, %{"properties" => %{"provisioningState" => "Failed"}}} ->
+            :ok = Supafana.Azure.Api.delete_vm(project_ref)
+
+          _ ->
+            :ok
+        end
+
+        %Data.Grafana{state: state} =
+          Repo.Grafana.set_grafana_state(project_ref, org_id, "Provisioning")
+
+        IO.inspect(state)
 
         case Supafana.Azure.Api.create_deployment(project_ref, service_key) do
           {:ok, %{"properties" => %{"provisioningState" => "Accepted"}}} ->
@@ -212,26 +223,6 @@ defmodule Supafana.Web.Router do
             IO.inspect("DeploymentActive")
             :ok
         end
-
-        state =
-          case Supafana.Azure.Api.check_vm(project_ref) do
-            {:error, :not_found} ->
-              "Initializing"
-
-            {:ok, %{"statuses" => statuses}} ->
-              case statuses |> Enum.find(&(&1["code"] == "ProvisioningState/succeeded")) do
-                nil ->
-                  "Unknown"
-
-                %{"code" => "ProvisioningState/succeeded"} ->
-                  "Running"
-              end
-
-            _ ->
-              "Unknown"
-          end
-
-        Repo.Grafana.set_grafana_state(project_ref, org_id, state)
 
         ok_no_content(conn)
     end
@@ -249,10 +240,11 @@ defmodule Supafana.Web.Router do
       {:ok, _} ->
         Repo.Grafana.set_grafana_state(project_ref, org_id, "Deleting")
 
-        case Supafana.Azure.Api.delete_vm(project_ref) do
-          :ok ->
-            Repo.Grafana.set_grafana_state(project_ref, org_id, "Deleted")
-        end
+        Supafana.Web.Task.schedule(
+          operation: :delete_vm,
+          project_ref: project_ref,
+          org_id: org_id
+        )
 
         ok_no_content(conn)
     end
