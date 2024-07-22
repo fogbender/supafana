@@ -17,6 +17,17 @@ defmodule Supafana.Supabase.Management do
     client(token) |> Tesla.get(path)
   end
 
+  def project_health(token, project_ref) do
+    path = "/v1/projects/#{project_ref}/health"
+
+    client(token)
+    |> Tesla.get(path,
+      query: [
+        services: ["db"]
+      ]
+    )
+  end
+
   def projects(token) do
     path = "/v1/projects"
 

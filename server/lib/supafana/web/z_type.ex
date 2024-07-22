@@ -120,6 +120,7 @@ defmodule Supafana.Z.Grafana do
     field(:org_id, :string, [:required])
     field(:plan, :string, [:required])
     field(:state, :string, [:required])
+    field(:inserted_at, :integer, [:required])
   end
 end
 

@@ -28,8 +28,8 @@ CREATE TABLE public.grafana (
     id uuid NOT NULL,
     supabase_id character varying(255) NOT NULL,
     org_id uuid NOT NULL,
-    plan character varying(255) DEFAULT 'free'::character varying,
-    state character varying(255) DEFAULT 'initial'::character varying,
+    plan character varying(255) DEFAULT 'Hobby'::character varying,
+    state character varying(255) DEFAULT 'Initial'::character varying,
     inserted_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );

@@ -73,3 +73,11 @@ if config_env() == :test do
     database: System.get_env("PG_DB") <> "_test",
     pool: Ecto.Adapters.SQL.Sandbox
 end
+
+# Scheduler
+config :supafana, Supafana.Scheduler,
+  jobs:
+    [
+      {{:extended, "*/30 * * * *"}, {Supafana.CheckVmsJob, :run, []}}
+    ]
+    |> Enum.reject(&is_nil/1)

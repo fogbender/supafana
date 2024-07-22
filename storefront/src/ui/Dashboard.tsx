@@ -23,6 +23,8 @@ import Project from "./Project";
 
 import type { Organization, Project as ProjectT } from "../types/supabase";
 
+import type { Grafana as GrafanaT } from "../types/z_types";
+
 (JotaiProvider as any).displayName = "JotaiProvider";
 
 export const Dashboard = () => {
@@ -40,7 +42,13 @@ export const Dashboard = () => {
     enabled: !!organizationId,
   });
 
-  console.log(organizationId, organizations);
+  const { data: grafanas, isLoading: grafanasLoading } = useQuery({
+    queryKey: queryKeys.grafanas(organizationId),
+    queryFn: async () => {
+      return await apiServer.url(`/grafanas`).get().json<GrafanaT[]>();
+    },
+    enabled: !!organizationId && !!projects,
+  });
 
   const [connecting, setConnecting] = React.useState(false);
 
@@ -60,6 +68,29 @@ export const Dashboard = () => {
       <div className="mt-4 flex-1 flex flex-col items-center justify-center text-black dark:text-white">
         {organization ? (
           <div className="pl-4 w-full flex flex-col gap-10">
+            {projectsLoading || grafanasLoading ? (
+              <div className="flex w-52 flex-col gap-4">
+                <div className="skeleton h-4 w-full"></div>
+                <div className="skeleton h-4 w-full"></div>
+                <div className="skeleton h-4 w-full"></div>
+              </div>
+            ) : (
+              <div>
+                <SectionHeader text="Databases and Grafana instances" />
+                {/*<div className="flex flex-col border-y border-gray-200 dark:border-gray-700 divide-y divide-gray-200 dark:divide-gray-700">*/}
+                <div className="flex flex-col">
+                  {projects
+                    ?.sort((p0, p1) => (p0.status === "ACTIVE_HEALTHY" ? -1 : 1))
+                    .map(p => (
+                      <Project
+                        key={p.id}
+                        project={p}
+                        grafana={grafanas?.find(g => g.supabase_id === p.id)}
+                      />
+                    ))}
+                </div>
+              </div>
+            )}
             <div className="self-start w-full">
               <SectionHeader text="Who should get email notifications from Supafana?">
                 <>
@@ -101,21 +132,6 @@ export const Dashboard = () => {
               <SectionHeader text="Billing" />
               <Billing organization={organization} />
             </div>
-            {projectsLoading ? (
-              <div className="flex w-52 flex-col gap-4">
-                <div className="skeleton h-4 w-full"></div>
-                <div className="skeleton h-4 w-full"></div>
-                <div className="skeleton h-4 w-full"></div>
-              </div>
-            ) : (
-              <div>
-                <SectionHeader text="Databases and Grafana instances" />
-                {/*<div className="flex flex-col border-y border-gray-200 dark:border-gray-700 divide-y divide-gray-200 dark:divide-gray-700">*/}
-                <div className="flex flex-col">
-                  {projects?.map(p => <Project key={p.id} project={p} />)}
-                </div>
-              </div>
-            )}
           </div>
         ) : connecting || organizationsLoading ? (
           <span className="loading loading-ring loading-lg text-accent" />

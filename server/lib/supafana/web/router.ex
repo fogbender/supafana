@@ -6,7 +6,7 @@ defmodule Supafana.Web.Router do
 
   use Plug.Router
 
-  alias Supafana.{Data, Repo, Z}
+  alias Supafana.{Data, Repo, Utils, Z}
 
   plug(:match)
 
@@ -178,15 +178,102 @@ defmodule Supafana.Web.Router do
   get "/grafanas" do
     org_id = conn.assigns[:org_id]
 
-    IO.inspect(org_id)
-
     grafanas =
       from(
         g in Data.Grafana,
-        where: g.id == ^org_id
+        where: g.org_id == ^org_id
       )
       |> Repo.all()
+      |> Enum.map(fn g ->
+        grafana_to_z_grafana(g)
+      end)
 
-    conn |> ok_json(grafanas |> Z.Grafana.to_json!(), :no_encode)
+    conn |> ok_json(grafanas)
+  end
+
+  put "/grafanas/:project_ref" do
+    access_token = conn.assigns[:supabase_access_token]
+    org_id = conn.assigns[:org_id]
+
+    # NOTE we need to make sure this org actually owns project with project_ref
+    case ensure_own_project(access_token, project_ref) do
+      false ->
+        forbid(conn, "Project #{project_ref} does not belong to your Supabase organization")
+
+      {:ok, service_key} ->
+        case Supafana.Azure.Api.check_deployment(project_ref) do
+          {:ok, %{"properties" => %{"provisioningState" => "Failed"}}} ->
+            :ok = Supafana.Azure.Api.delete_vm(project_ref)
+
+          _ ->
+            :ok
+        end
+
+        %Data.Grafana{state: state} =
+          Repo.Grafana.set_grafana_state(project_ref, org_id, "Provisioning")
+
+        IO.inspect(state)
+
+        case Supafana.Azure.Api.create_deployment(project_ref, service_key) do
+          {:ok, %{"properties" => %{"provisioningState" => "Accepted"}}} ->
+            IO.inspect("Accepted")
+            :ok
+
+          {:error, %{"error" => %{"code" => "DeploymentActive"}}} ->
+            IO.inspect("DeploymentActive")
+            :ok
+        end
+
+        ok_no_content(conn)
+    end
+  end
+
+  delete "/grafanas/:project_ref" do
+    access_token = conn.assigns[:supabase_access_token]
+    org_id = conn.assigns[:org_id]
+
+    # NOTE we need to make sure this org actually owns project with project_ref
+    case ensure_own_project(access_token, project_ref) do
+      false ->
+        forbid(conn, "Project #{project_ref} does not belong to your Supabase organization")
+
+      {:ok, _} ->
+        Repo.Grafana.set_grafana_state(project_ref, org_id, "Deleting")
+
+        Supafana.Web.Task.schedule(
+          operation: :delete_vm,
+          project_ref: project_ref,
+          org_id: org_id
+        )
+
+        ok_no_content(conn)
+    end
+  end
+
+  defp ensure_own_project(access_token, project_ref) do
+    case Supafana.Supabase.Management.project_api_keys(access_token, project_ref) do
+      {:ok, %{status: 200, body: keys}} ->
+        service_key = (keys |> Enum.find(&(&1["name"] == "service_role")))["api_key"]
+        {:ok, service_key}
+
+      _ ->
+        false
+    end
+  end
+
+  defp to_unix(nil), do: nil
+  defp to_unix(us), do: Utils.to_unix(us)
+
+  defp grafana_to_z_grafana(g) do
+    %Z.Grafana{
+      id: g.id,
+      supabase_id: g.supabase_id,
+      org_id: g.org_id,
+      plan: g.plan,
+      state: g.state,
+      inserted_at: to_unix(g.inserted_at)
+    }
+    |> Z.Grafana.to_json!()
+    |> Z.Grafana.from_json!()
   end
 end

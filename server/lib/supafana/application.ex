@@ -13,12 +13,15 @@ defmodule Supafana.Application do
         # {Supafana.Worker, arg}
         Supafana.Repo,
         Registry.child_spec(keys: :unique, name: Registry.Supafana),
+        {Task.Supervisor, name: Supafana.TaskSupervisor},
+        Supafana.Web.Task.child_spec(),
         cowboy(),
         {Finch,
          name: AzureFinch,
          pools: %{
            :default => [size: 32, count: 8]
-         }}
+         }},
+        Supafana.Scheduler
       ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
