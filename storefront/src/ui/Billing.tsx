@@ -138,14 +138,18 @@ const Subscription = ({ s, price }: { s: StripeCustomer; price: number }) => {
         </tr>
         <tr>
           <RowHeader>Subscription status</RowHeader>
-          <RowBody>{s.status}</RowBody>
+          <RowBody>
+            <span className="inline-block first-letter:capitalize">{s.status}</span>
+          </RowBody>
         </tr>
         <tr>
           <RowHeader>Customer since</RowHeader>
           <RowBody>
             <>
-              {dayjs(s.created_ts_sec * 1000).fromNow()} (
-              {dayjs(s.created_ts_sec * 1000).format("YYYY-MM-DD hh:mm:ss")})
+              <span className="inline-block first-letter:capitalize">
+                {dayjs(s.created_ts_sec * 1000).fromNow()}
+              </span>{" "}
+              ({dayjs(s.created_ts_sec * 1000).format("YYYY-MM-DD hh:mm:ss")})
             </>
           </RowBody>
         </tr>
@@ -154,8 +158,10 @@ const Subscription = ({ s, price }: { s: StripeCustomer; price: number }) => {
             <RowHeader>Renews</RowHeader>
             <RowBody>
               <>
-                {dayjs(s.period_end_ts_sec * 1000).fromNow()} (
-                {dayjs(s.period_end_ts_sec * 1000).format("YYYY-MM-DD hh:mm:ss")})
+                <span className="inline-block first-letter:capitalize">
+                  {dayjs(s.period_end_ts_sec * 1000).fromNow()}
+                </span>{" "}
+                ({dayjs(s.period_end_ts_sec * 1000).format("YYYY-MM-DD hh:mm:ss")})
               </>
             </RowBody>
           </tr>
