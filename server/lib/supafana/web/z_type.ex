@@ -121,6 +121,7 @@ defmodule Supafana.Z.Grafana do
     field(:plan, :string, [:required])
     field(:state, :string, [:required])
     field(:inserted_at, :integer, [:required])
+    field(:password, :string, [:required])
   end
 end
 

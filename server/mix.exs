@@ -59,7 +59,8 @@ defmodule Supafana.MixProject do
       {:timex, "~> 3.7"},
       {:bamboo, "~> 2.0"},
       {:zbang,
-       git: "https://github.com/abs/zbang.git", ref: "49206577592d44f49230ba9f5e793189343aa2cc"}
+       git: "https://github.com/abs/zbang.git", ref: "49206577592d44f49230ba9f5e793189343aa2cc"},
+      {:random_password, "~> 1.2"}
     ]
   end
 

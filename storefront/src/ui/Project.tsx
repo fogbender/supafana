@@ -21,7 +21,7 @@ const Project = ({ project, grafana }: { project: ProjectT; grafana: GrafanaT | 
   const dividerSize = 32;
 
   return (
-    <div className="p-4 m-4 flex gap-4 border rounded-lg flex-col sm:flex-row">
+    <div className="p-4 m-4 flex gap-4 border rounded-lg flex-col md:flex-row">
       <SupabaseProject project={project} />
       {(!grafana || ["ACTIVE_HEALTHY", "ACTIVE_UNHEALTHY"].includes(project.status)) && (
         <>
@@ -98,7 +98,9 @@ const SupabaseProject = ({ project }: { project: ProjectT }) => {
         <tr>
           <RowHeader>Created</RowHeader>
           <td>
-            <span className="font-medium">{dayjs(project.created_at).fromNow()}</span>
+            <span className="inline-block font-medium first-letter:capitalize">
+              {dayjs(project.created_at).fromNow()}
+            </span>
           </td>
         </tr>
       </tbody>
@@ -135,22 +137,21 @@ const SupafanaProject = ({
     },
   });
 
-  React.useEffect(() => {
-    if (!deleteGrafanaMutation.isIdle) {
-      queryClient.invalidateQueries({ queryKey: queryKeys.grafanas(project.organization_id) });
-    }
-  }, [deleteGrafanaMutation]);
-
   const intervalRef = React.useRef<ReturnType<typeof setTimeout>>();
 
   React.useEffect(() => {
     if (grafana) {
       if (["Provisioning", "Deleting", "Creating", "Starting", "Unknown"].includes(grafana.state)) {
-        intervalRef.current = setInterval(() => {
-          queryClient.invalidateQueries({ queryKey: queryKeys.grafanas(project.organization_id) });
-        }, 9000);
+        if (!intervalRef.current) {
+          intervalRef.current = setInterval(() => {
+            queryClient.invalidateQueries({
+              queryKey: queryKeys.grafanas(project.organization_id),
+            });
+          }, 9000);
+        }
       } else {
         clearInterval(intervalRef.current);
+        intervalRef.current = undefined;
       }
     }
   }, [grafana]);
@@ -173,6 +174,16 @@ const SupafanaProject = ({
       </div>
     );
   }
+
+  const [passwordCopied, setPasswordCopied] = React.useState(false);
+
+  React.useEffect(() => {
+    if (passwordCopied) {
+      setTimeout(() => {
+        setPasswordCopied(false);
+      }, 500);
+    }
+  }, [passwordCopied]);
 
   return (
     <table className="text-gray-200 dark:text-gray-700 bg-dots table">
@@ -250,10 +261,26 @@ const SupafanaProject = ({
           <tr>
             <RowHeader>Created</RowHeader>
             <td>
-              <span className="font-medium">{created}</span>
+              <span className="inline-block font-medium first-letter:capitalize">{created}</span>
             </td>
           </tr>
         )}
+        <tr>
+          <RowHeader>User/password</RowHeader>
+          <td>
+            <div className="flex gap-2 items-center">
+              <span className="font-medium">
+                <code>admin</code>
+              </span>
+              <button
+                onClick={() => copyTextToClipboard(grafana.password, () => setPasswordCopied(true))}
+                className={classNames("btn btn-xs", passwordCopied && "btn-success")}
+              >
+                Copy&nbsp;password
+              </button>
+            </div>
+          </td>
+        </tr>
       </tbody>
     </table>
   );
@@ -264,6 +291,19 @@ const RowHeader = ({ children }: { children: JSX.Element | string }) => {
     <td>
       <span className="text-gray-500 dark:text-gray-300">{children}</span>
     </td>
+  );
+};
+
+const copyTextToClipboard = (text: string, onSuccess: () => void, onError?: () => void) => {
+  navigator.clipboard.writeText(text).then(
+    () => {
+      onSuccess();
+    },
+    err => {
+      if (onError) {
+        onError();
+      }
+    }
   );
 };
 

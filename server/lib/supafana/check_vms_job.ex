@@ -8,8 +8,6 @@ defmodule Supafana.CheckVmsJob do
   def run(ts \\ nil) do
     _ts = ts || DateTime.utc_now()
 
-    IO.inspect("HI")
-
     _unstable_grafanas =
       from(
         g in Data.Grafana,
@@ -19,6 +17,9 @@ defmodule Supafana.CheckVmsJob do
       |> Enum.each(fn %{supabase_id: project_ref, state: state, org_id: org_id} ->
         next_state =
           case Azure.Api.check_deployment(project_ref) do
+            {:ok, %{status: 404}} ->
+              "Deleted"
+
             {:ok, %{"properties" => %{"provisioningState" => "Failed"}}} ->
               "Failed"
 
@@ -49,7 +50,7 @@ defmodule Supafana.CheckVmsJob do
 
         IO.inspect({:next_state, next_state})
 
-        %Data.Grafana{} = Repo.Grafana.set_grafana_state(project_ref, org_id, next_state)
+        %Data.Grafana{} = Repo.Grafana.set_state(project_ref, org_id, next_state)
       end)
 
     :ok

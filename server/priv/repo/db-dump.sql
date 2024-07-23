@@ -30,6 +30,7 @@ CREATE TABLE public.grafana (
     org_id uuid NOT NULL,
     plan character varying(255) DEFAULT 'Hobby'::character varying,
     state character varying(255) DEFAULT 'Initial'::character varying,
+    password character varying(255),
     inserted_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );

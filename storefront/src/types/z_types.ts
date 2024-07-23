@@ -17,6 +17,7 @@ export type Grafana = {
   plan: string;
   state: string;
   inserted_at: number;
+  password: string;
 };
 
 export type Subscription = {

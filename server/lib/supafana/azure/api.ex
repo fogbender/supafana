@@ -240,7 +240,7 @@ defmodule Supafana.Azure.Api do
     end
   end
 
-  def create_deployment(project_ref, service_role_key) do
+  def create_deployment(project_ref, service_role_key, password) do
     supafana_domain = Supafana.env(:supafana_domain)
 
     template_file_url = "https://biceps.blob.core.windows.net/biceps/grafana.json"
@@ -257,6 +257,9 @@ defmodule Supafana.Azure.Api do
       },
       "supafanaDomain" => %{
         "value" => supafana_domain
+      },
+      "grafanaPassword" => %{
+        "value" => password
       }
     }
 
@@ -298,7 +301,7 @@ defmodule Supafana.Azure.Api do
        }}
       when code in ["ExpiredAuthenticationToken", "InvalidAuthenticationToken"] ->
         {:ok, _} = get_graph_access_token(:renew)
-        create_deployment(project_ref, service_role_key)
+        create_deployment(project_ref, service_role_key, password)
     end
   end
 

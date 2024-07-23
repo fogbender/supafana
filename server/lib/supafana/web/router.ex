@@ -209,12 +209,15 @@ defmodule Supafana.Web.Router do
             :ok
         end
 
-        %Data.Grafana{state: state} =
-          Repo.Grafana.set_grafana_state(project_ref, org_id, "Provisioning")
+        %Data.Grafana{} =
+          Repo.Grafana.set_state(project_ref, org_id, "Provisioning")
 
-        IO.inspect(state)
+        password = Supafana.Password.generate()
 
-        case Supafana.Azure.Api.create_deployment(project_ref, service_key) do
+        %Data.Grafana{} =
+          Repo.Grafana.set_password(project_ref, org_id, password)
+
+        case Supafana.Azure.Api.create_deployment(project_ref, service_key, password) do
           {:ok, %{"properties" => %{"provisioningState" => "Accepted"}}} ->
             IO.inspect("Accepted")
             :ok
@@ -238,7 +241,7 @@ defmodule Supafana.Web.Router do
         forbid(conn, "Project #{project_ref} does not belong to your Supabase organization")
 
       {:ok, _} ->
-        Repo.Grafana.set_grafana_state(project_ref, org_id, "Deleting")
+        Repo.Grafana.set_state(project_ref, org_id, "Deleting")
 
         Supafana.Web.Task.schedule(
           operation: :delete_vm,
@@ -271,7 +274,8 @@ defmodule Supafana.Web.Router do
       org_id: g.org_id,
       plan: g.plan,
       state: g.state,
-      inserted_at: to_unix(g.inserted_at)
+      inserted_at: to_unix(g.inserted_at),
+      password: g.password
     }
     |> Z.Grafana.to_json!()
     |> Z.Grafana.from_json!()

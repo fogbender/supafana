@@ -92,6 +92,11 @@ const MemberRow = ({
           {sendVerificationCodeMutation.isSuccess && (
             <div className="flex items-center gap-1.5">
               <input
+                onKeyUp={e => {
+                  if (e.key === "Enter" || e.keyCode === 13) {
+                    probeVerificationCodeMutation.mutate();
+                  }
+                }}
                 type="text"
                 value={verificationCode}
                 disabled={probeVerificationCodeMutation.isPending}

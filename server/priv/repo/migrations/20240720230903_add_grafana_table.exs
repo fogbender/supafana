@@ -8,6 +8,7 @@ defmodule Supafana.Repo.Migrations.AddGrafanaTable do
       add(:org_id, :uuid, null: false)
       add(:plan, :string, default: "Hobby")
       add(:state, :string, default: "Initial")
+      add(:password, :string)
 
       timestamps()
     end

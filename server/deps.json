@@ -413,6 +413,15 @@
     "sha256": "sha256-oEKYm6G8HMpzg+u55GE5jj+J+GjJLOZnH+t+8TKiUtE=",
     "version": "0.18.0"
   },
+  "puid": {
+    "builder": "mix",
+    "deps": {},
+    "fetcher": "hex",
+    "name": "puid",
+    "pkg": "puid",
+    "sha256": "sha256-RQcKuHN5mRS3g3yaywBI9PY67t77hQW3RkzYTQGFLTQ=",
+    "version": "2.3.0"
+  },
   "quantum": {
     "builder": "mix",
     "deps": {
@@ -435,6 +444,17 @@
     "pkg": "ranch",
     "sha256": "sha256-SfvP02gvqx9dEJNRthJXZ22hov2+KVkEF21eUhot3+U=",
     "version": "1.8.0"
+  },
+  "random_password": {
+    "builder": "mix",
+    "deps": {
+      "puid": false
+    },
+    "fetcher": "hex",
+    "name": "random_password",
+    "pkg": "random_password",
+    "sha256": "sha256-BsOIq7W9Nju1aEE5Bh/P8yXAo2tQA3KEHYOBw1oQja8=",
+    "version": "1.2.0"
   },
   "recon": {
     "builder": "mix",
@@ -552,8 +572,8 @@
     "deps": {},
     "fetcher": "git",
     "name": "zbang",
-    "rev": "4ea9368934aa81c47625e23db8efa4ec0fd0631c",
-    "sha256": "sha256-jPxvEzDgEgPL2m1R3GoazS3GYWjetNtFUzqeAKjH8ns=",
+    "rev": "49206577592d44f49230ba9f5e793189343aa2cc",
+    "sha256": "sha256-YHNPisKpK/LF0nSQlxmehSHkEcmk1d2V9lNb0Al0Z/c=",
     "url": "https://github.com/abs/zbang.git",
     "version": "git"
   }
