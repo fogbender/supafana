@@ -214,7 +214,9 @@ const SupafanaProject = ({
             <td>
               <button
                 onClick={() => {
-                  deleteGrafanaMutation.mutate();
+                  if (window.confirm("Are you sure?") === true) {
+                    deleteGrafanaMutation.mutate();
+                  }
                 }}
                 className="btn btn-xs btn-info w-20"
               >
@@ -268,17 +270,17 @@ const SupafanaProject = ({
         <tr>
           <RowHeader>User/password</RowHeader>
           <td>
-            <div className="flex gap-2 items-center">
-              <span className="font-medium">
-                <code>admin</code>
-              </span>
-              <button
-                onClick={() => copyTextToClipboard(grafana.password, () => setPasswordCopied(true))}
-                className={classNames("btn btn-xs", passwordCopied && "btn-success")}
-              >
-                Copy&nbsp;password
-              </button>
-            </div>
+            <span className="font-medium">
+              <code>admin</code>
+            </span>
+          </td>
+          <td>
+            <button
+              onClick={() => copyTextToClipboard(grafana.password, () => setPasswordCopied(true))}
+              className={classNames("btn btn-xs", passwordCopied && "btn-success")}
+            >
+              Copy&nbsp;password
+            </button>
           </td>
         </tr>
       </tbody>

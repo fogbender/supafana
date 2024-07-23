@@ -40,7 +40,21 @@ defmodule Supafana.CheckVmsJob do
                   end
 
                 {:ok, %{"statuses" => statuses}} ->
-                  parse_statuses(statuses)
+                  case parse_statuses(statuses) do
+                    "Running" ->
+                      case Tesla.get(
+                             "https://#{Supafana.env(:supafana_domain)}/dashboard/jbxacdyzczwlmrzwapkp/"
+                           ) do
+                        {:ok, %{status: 302}} ->
+                          "Running"
+
+                        _ ->
+                          "Starting"
+                      end
+
+                    state ->
+                      state
+                  end
 
                 x ->
                   IO.inspect({:x, x})
