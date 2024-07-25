@@ -158,7 +158,7 @@ const SupafanaProject = ({
 
   if (!grafana) {
     return (
-      <div className="flex items-center justify-center bg-dots rounded-xl w-64">
+      <div className="flex items-center justify-center bg-dots rounded-xl w-full md:w-64 py-8 md:py-0">
         {provisionGrafanaMutation.isPending || !provisionGrafanaMutation.isIdle ? (
           <span className="loading loading-ring loading-lg text-accent" />
         ) : (
