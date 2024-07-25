@@ -24,8 +24,8 @@ defmodule Supafana.Web.Utils do
 
   def not_authorized(conn) do
     conn
-    |> Plug.Conn.put_resp_content_type("application/json")
-    |> Plug.Conn.send_resp(401, Jason.encode!(%{"error" => "not authorized"}))
-    |> Plug.Conn.halt()
+    |> put_resp_content_type("application/json")
+    |> send_resp(401, Jason.encode!(%{"error" => "not authorized"}))
+    |> halt()
   end
 end

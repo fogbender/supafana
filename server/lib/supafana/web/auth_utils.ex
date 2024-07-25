@@ -1,14 +1,17 @@
 defmodule Supafana.Web.AuthUtils do
+  require Logger
+
   import Ecto.Query, only: [from: 2]
 
   import Plug.Conn
-
-  import Supafana.Web.Utils
 
   alias Supafana.{Data, Repo}
 
   def handle_auth(conn, code, redirect_uri, code_verifier) do
     {:ok, tokens} = Supafana.Supabase.OAuth.tokens(code, redirect_uri, code_verifier)
+
+    IO.inspect({:tokens, tokens})
+
     handle_tokens(conn, tokens)
   end
 
@@ -26,7 +29,11 @@ defmodule Supafana.Web.AuthUtils do
   end
 
   defp handle_tokens(conn, %{status: 404}) do
-    conn |> not_authorized()
+    location = Supafana.env(:supafana_storefront_url)
+    conn
+    |> resp(:found, "Not authorized")
+    |> put_resp_header("location", location)
+    |> halt()
   end
 
   defp handle_tokens(conn, tokens) do
@@ -68,17 +75,19 @@ defmodule Supafana.Web.AuthUtils do
 
   def sign_out(conn) do
     conn = fetch_session(conn)
-    return_url = get_session(conn)["return_url"]
 
-    conn =
-      conn
-      |> configure_session(drop: true)
-      |> resp(:found, "")
+    return_url =
+      case get_session(conn)["return_url"] do
+        nil ->
+          Supafana.env(:supafana_storefront_url)
 
-    if return_url do
-      conn |> put_resp_header("location", return_url)
-    else
-      conn
-    end
+        url ->
+          url
+      end
+
+    conn
+    |> configure_session(drop: true)
+    |> put_resp_header("location", return_url)
+    |> resp(:found, "")
   end
 end

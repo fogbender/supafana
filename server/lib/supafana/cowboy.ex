@@ -17,9 +17,9 @@ defmodule Supafana.Cowboy do
   forward("/api/billing", to: Supafana.Web.BillingRouter)
   forward("/api", to: Supafana.Web.Router)
 
-  # match _ do
-  #  send_resp(conn, 404, "Nothing here... yet")
-  # end
+  match _ do
+    send_resp(conn, 404, "Nothing here... yet")
+  end
 
   def handle_errors(conn, %{kind: kind, reason: reason, stack: stack}) do
     send_resp(

@@ -48,7 +48,12 @@ defmodule Supafana.Plug.Session do
     supabase_refresh_token = get_session(conn, :supabase_refresh_token)
 
     conn = Supafana.Web.AuthUtils.handle_auth(conn, supabase_refresh_token)
-    conn |> require_org_id(opts)
+
+    if conn.state == :sent do
+      conn
+    else
+      conn |> require_org_id(opts)
+    end
   end
 
   defp require_org_id(conn, _opts) do
