@@ -68,13 +68,16 @@ defmodule Supafana.Web.AuthRouter do
 
   get "/supabase" do
     conn = fetch_session(conn)
-    return_url = case get_session(conn)["return_url"] do
-      nil ->
-        "#{Supafana.env(:supafana_storefront_url)}/dashboard"
 
-      url ->
-        url
-    end
+    return_url =
+      case get_session(conn)["return_url"] do
+        nil ->
+          "#{Supafana.env(:supafana_storefront_url)}/dashboard"
+
+        url ->
+          url
+      end
+
     code_verifier = get_session(conn)["supabase_verifier"]
 
     code = conn.query_params["code"]

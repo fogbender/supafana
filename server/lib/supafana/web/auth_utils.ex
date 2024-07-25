@@ -30,6 +30,7 @@ defmodule Supafana.Web.AuthUtils do
 
   defp handle_tokens(conn, %{status: 404}) do
     location = Supafana.env(:supafana_storefront_url)
+
     conn
     |> resp(:found, "Not authorized")
     |> put_resp_header("location", location)
