@@ -237,6 +237,9 @@ defmodule Supafana.Azure.Api do
       when code in ["ExpiredAuthenticationToken", "InvalidAuthenticationToken"] ->
         {:ok, _} = get_graph_access_token(:renew)
         check_deployment(project_ref)
+
+      resp ->
+        resp
     end
   end
 
