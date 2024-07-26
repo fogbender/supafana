@@ -1,17 +1,15 @@
+import {groups} from 'groups.bicep'
+
 param location string = resourceGroup().location
 param virtualNetworkName string = 'vNet'
 param supafanaSubnetName string = 'SupafanaSubnet'
 
-param dbName string = 'supafana-db'
+param dbName string = 'supafana-test-db'
 param dbVersion string = '15'
 param dbSkuName string = 'Standard_B1ms'
 
-param dbAdminName string = 'postgres'
-
-@secure()
-param dbAdminPassword string = 'init'
-
-param dbAdminGroupName string = 'SupafanaTestDbAdmins'
+param dbAdminGroupName string = 'supafana_test_db_admin'
+param dbDatabaseName string = 'supafana_test'
 
 @allowed([
   'Burstable'
@@ -49,8 +47,6 @@ resource server 'Microsoft.DBforPostgreSQL/flexibleServers@2023-12-01-preview' =
     tier: dbSkuTier
   }
   properties: {
-    administratorLogin: dbAdminName
-    administratorLoginPassword: dbAdminPassword
     version: dbVersion
     storage: {
       storageSizeGB: dbDiskSizeGb
@@ -68,10 +64,21 @@ resource server 'Microsoft.DBforPostgreSQL/flexibleServers@2023-12-01-preview' =
   }
 }
 
-resource dbAdminGroup 'Microsoft.Graph/groups@1.0' existing = {
-  displayName: dbAdminGroupName
+resource dbAdminGroup 'Microsoft.DBforPostgreSQL/flexibleServers/administrators@2022-12-01' = {
+  name: concat(dbName, '/', groups[dbAdminGroupName].objectId)
+  dependsOn: [
+    server
+  ]
+  properties: {
+    tenantId: subscription().tenantId
+    principalType: 'Group'
+    principalName: dbAdminGroupName
+  }
 }
 
-
+resource dbDatabase 'Microsoft.DBforPostgreSQL/flexibleServers/databases@2023-12-01-preview' = {
+  name: dbDatabaseName
+  parent: server
+}
 
 output dbHost string = dbHost

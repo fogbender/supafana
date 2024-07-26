@@ -72,7 +72,7 @@ resource nic 'Microsoft.Network/networkInterfaces@2020-06-01' = {
 }
 
 // Security group
-resource nsg 'Microsoft.Network/networkSecurityGroups@2020-06-01' = {
+resource nsg 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
   name: networkSecurityGroupName
   location: location
   properties: {
