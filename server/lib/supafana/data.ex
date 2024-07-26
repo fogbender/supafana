@@ -24,9 +24,9 @@ defmodule Supafana.Data do
 
   Or update:
 
-      old = Supafana.Repo.all(Fog.Data.SomeModel) |> Enum.at(0)
+      old = Supafana.Repo.all(Supafana.Data.SomeModel) |> Enum.at(0)
       Supafana.Data.SomeModel.update(old, some_field: "newvalue")
-      |> Fog.Repo.update!()
+      |> Supafana.Repo.update!()
   """
   @doc false
   defmacro __using__(_opts) do

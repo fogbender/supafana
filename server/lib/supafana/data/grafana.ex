@@ -1,6 +1,6 @@
 defmodule Supafana.Data.Grafana do
   use Supafana.Data
-  alias Supafana.Data.{Org}
+  alias Data.Org
 
   @primary_key {:id, Ecto.UUID, autogenerate: true}
   schema "grafana" do
