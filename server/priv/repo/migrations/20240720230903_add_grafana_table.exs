@@ -6,7 +6,7 @@ defmodule Supafana.Repo.Migrations.AddGrafanaTable do
       add(:id, :uuid, primary_key: true, null: false)
       add(:supabase_id, :string, null: false)
       add(:org_id, :uuid, null: false)
-      add(:plan, :string, default: "Hobby")
+      add(:plan, :string, default: "Trial")
       add(:state, :string, default: "Initial")
       add(:password, :string)
 

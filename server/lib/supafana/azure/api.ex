@@ -197,6 +197,10 @@ defmodule Supafana.Azure.Api do
         Logger.info("Resource #{id} has dependencies, deleting others first")
         delete_resources(t ++ [h])
 
+      {:ok, %Tesla.Env{status: status}} when status in [409] ->
+        Logger.info("Resource #{id} has dependencies, deleting others first")
+        delete_resources(t ++ [h])
+
       {:ok,
        %Tesla.Env{
          status: 401,

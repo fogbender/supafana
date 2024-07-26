@@ -92,7 +92,7 @@ const Billing = ({ organization }: { organization: Organization }) => {
       ) : isFree ? (
         <div className="flex flex-col gap-2">
           <div>
-            You are on the <span className="font-bold">Hobby</span> plan
+            You are on the <span className="font-bold">Trial</span> plan
           </div>
           <button
             className="w-48 btn btn-accent btn-sm"

@@ -8,7 +8,7 @@ defmodule Supafana.Repo.Grafana do
       state: state
     })
     |> Repo.insert!(
-      on_conflict: {:replace, [:state]},
+      on_conflict: {:replace, [:state, :updated_at]},
       conflict_target: [:supabase_id]
     )
   end

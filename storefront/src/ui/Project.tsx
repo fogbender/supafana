@@ -116,7 +116,7 @@ const SupafanaProject = ({
   grafana: GrafanaT | undefined;
 }) => {
   const state = grafana?.state ?? "Ready";
-  const plan = grafana?.plan ?? "Hobby";
+  const plan = grafana?.plan ?? "Trial";
   const created = grafana?.inserted_at ? dayjs(grafana.inserted_at).fromNow() : null;
 
   const provisionGrafanaMutation = useMutation({
@@ -148,6 +148,14 @@ const SupafanaProject = ({
               queryKey: queryKeys.grafanas(project.organization_id),
             });
           }, 9000);
+        }
+      } else if (grafana.state === "Running" && grafana.plan === "Trial") {
+        if (!intervalRef.current) {
+          intervalRef.current = setInterval(() => {
+            queryClient.invalidateQueries({
+              queryKey: queryKeys.grafanas(project.organization_id),
+            });
+          }, 60000);
         }
       } else {
         clearInterval(intervalRef.current);

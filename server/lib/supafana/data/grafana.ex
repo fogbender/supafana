@@ -8,7 +8,7 @@ defmodule Supafana.Data.Grafana do
 
     belongs_to(:org, Org, type: Ecto.UUID)
 
-    field(:plan, :string, default: "Hobby")
+    field(:plan, :string, default: "Trial")
     field(:state, :string, default: "Initial")
     field(:password, :string)
 

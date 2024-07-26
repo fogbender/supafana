@@ -7,13 +7,13 @@ import Testimonials from "../ui/landing/testimonials.astro";
 import WhySupafana from "../ui/landing/why-supafana.astro";
 
 const pricing = {
-  plans: ["Hobby", "Pro"],
+  plans: ["Trial", "Pro"],
   features: [
     {
       name: "Price per month",
       tiers: [
         {
-          plan: "Hobby",
+          plan: "Trial",
           value: "Free",
         },
         {
@@ -23,11 +23,11 @@ const pricing = {
       ],
     },
     {
-      name: "Supafana instance paused",
+      name: "Supafana instance deleted",
       tiers: [
         {
-          plan: "Hobby",
-          value: "After 8 hours",
+          plan: "Trial",
+          value: "After 5 hours",
         },
         {
           plan: "Pro",
@@ -39,25 +39,12 @@ const pricing = {
       name: "Support",
       tiers: [
         {
-          plan: "Hobby",
-          value: "Reluctant",
+          plan: "Trial",
+          value: "Fanatical",
         },
         {
           plan: "Pro",
           value: "Fanatical",
-        },
-      ],
-    },
-    {
-      name: "Alerts",
-      tiers: [
-        {
-          plan: "Hobby",
-          value: "When not paused",
-        },
-        {
-          plan: "Pro",
-          value: "Yes",
         },
       ],
     },
