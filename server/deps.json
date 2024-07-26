@@ -573,7 +573,7 @@
     "fetcher": "git",
     "name": "zbang",
     "rev": "49206577592d44f49230ba9f5e793189343aa2cc",
-    "sha256": "sha256-YHNPisKpK/LF0nSQlxmehSHkEcmk1d2V9lNb0Al0Z/c=",
+    "sha256": "sha256-aeQe3c5gKxFWVXVsPDo49aRZSp7PcP8tsYPQZd6/W3I=",
     "url": "https://github.com/abs/zbang.git",
     "version": "git"
   }

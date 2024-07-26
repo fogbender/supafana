@@ -9,7 +9,7 @@ param imageGalleryName string = 'supafanasig'
 param imageName string = 'supafana'
 param imageVersion string = '0.0.2'
 
-param vmName string = 'supafana'
+param vmName string = 'supafana-test-vm'
 param vmSize string = 'Standard_B2s'
 param osDiskType string = 'Standard_LRS'
 param osDiskSizeGB int = 20
@@ -54,78 +54,78 @@ resource nic 'Microsoft.Network/networkInterfaces@2020-06-01' = {
 }
 
 // Security group
-resource nsg 'Microsoft.Network/networkSecurityGroups@2020-06-01' = {
+resource nsg 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
   name: networkSecurityGroupName
   location: location
   properties: {
     securityRules: [
       {
-           name: 'SSH'
-           properties : {
-               protocol : 'Tcp'
-               sourcePortRange :  '*'
-               destinationPortRange :  '22'
-               sourceAddressPrefix :  '*'
-               destinationAddressPrefix: '*'
-               access:  'Allow'
-               priority : 1010
-               direction : 'Inbound'
-               sourcePortRanges : []
-               destinationPortRanges : []
-               sourceAddressPrefixes : []
-               destinationAddressPrefixes : []
-          }
+        name: 'SSH'
+        properties : {
+          protocol : 'Tcp'
+          sourcePortRange :  '*'
+          destinationPortRange :  '22'
+          sourceAddressPrefix :  '*'
+          destinationAddressPrefix: '*'
+          access:  'Allow'
+          priority : 1010
+          direction : 'Inbound'
+          sourcePortRanges : []
+          destinationPortRanges : []
+          sourceAddressPrefixes : []
+          destinationAddressPrefixes : []
+        }
       }
       {
-           name: 'MOSH'
-           properties : {
-               protocol : 'Udp'
-               sourcePortRange :  '*'
-               destinationPortRange :  '60000-61000'
-               sourceAddressPrefix :  '*'
-               destinationAddressPrefix: '*'
-               access:  'Allow'
-               priority : 1050
-               direction : 'Inbound'
-               sourcePortRanges : []
-               destinationPortRanges : []
-               sourceAddressPrefixes : []
-               destinationAddressPrefixes : []
-          }
+        name: 'MOSH'
+        properties : {
+          protocol : 'Udp'
+          sourcePortRange :  '*'
+          destinationPortRange :  '60000-61000'
+          sourceAddressPrefix :  '*'
+          destinationAddressPrefix: '*'
+          access:  'Allow'
+          priority : 1050
+          direction : 'Inbound'
+          sourcePortRanges : []
+          destinationPortRanges : []
+          sourceAddressPrefixes : []
+          destinationAddressPrefixes : []
+        }
       }
       {
-           name : 'HTTPS'
-           properties : {
-               protocol :  'Tcp'
-               sourcePortRange :  '*'
-               destinationPortRange :  '443'
-               sourceAddressPrefix :  '*'
-               destinationAddressPrefix :  '*'
-               access :  'Allow'
-               priority : 1020
-               direction :  'Inbound'
-               sourcePortRanges : []
-               destinationPortRanges : []
-               sourceAddressPrefixes : []
-               destinationAddressPrefixes : []
-          }
+        name : 'HTTPS'
+        properties : {
+          protocol :  'Tcp'
+          sourcePortRange :  '*'
+          destinationPortRange :  '443'
+          sourceAddressPrefix :  '*'
+          destinationAddressPrefix :  '*'
+          access :  'Allow'
+          priority : 1020
+          direction :  'Inbound'
+          sourcePortRanges : []
+          destinationPortRanges : []
+          sourceAddressPrefixes : []
+          destinationAddressPrefixes : []
+        }
       }
       {
-           name : 'HTTP'
-           properties : {
-               protocol :  'Tcp'
-               sourcePortRange :  '*'
-               destinationPortRange :  '80'
-               sourceAddressPrefix :  '*'
-               destinationAddressPrefix :  '*'
-               access :  'Allow'
-               priority : 1030
-               direction :  'Inbound'
-               sourcePortRanges : []
-               destinationPortRanges : []
-               sourceAddressPrefixes : []
-               destinationAddressPrefixes : []
-          }
+        name : 'HTTP'
+        properties : {
+          protocol :  'Tcp'
+          sourcePortRange :  '*'
+          destinationPortRange :  '80'
+          sourceAddressPrefix :  '*'
+          destinationAddressPrefix :  '*'
+          access :  'Allow'
+          priority : 1030
+          direction :  'Inbound'
+          sourcePortRanges : []
+          destinationPortRanges : []
+          sourceAddressPrefixes : []
+          destinationAddressPrefixes : []
+        }
       }
       {
         name: 'Internal'
