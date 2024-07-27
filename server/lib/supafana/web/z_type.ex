@@ -45,6 +45,10 @@ defmodule Supafana.Z do
     "#{name}: number;"
   end
 
+  def field_to_typescript(name, {Z.Integer, []}) do
+    "#{name}: null | number;"
+  end
+
   def field_to_typescript(name, {Z.String, [required: true, enum: [value]]}) do
     "#{name}: \"#{value}\";"
   end
@@ -121,6 +125,8 @@ defmodule Supafana.Z.Grafana do
     field(:plan, :string, [:required])
     field(:state, :string, [:required])
     field(:inserted_at, :integer, [:required])
+    field(:updated_at, :integer, [:required])
+    field(:first_start_at, :integer, [])
     field(:password, :string, [:required])
   end
 end

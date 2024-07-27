@@ -32,7 +32,8 @@ CREATE TABLE public.grafana (
     state character varying(255) DEFAULT 'Initial'::character varying,
     password character varying(255),
     inserted_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    first_start_at timestamp without time zone
 );
 
 
@@ -124,3 +125,4 @@ CREATE UNIQUE INDEX org_supabase_id_index ON public.org USING btree (supabase_id
 INSERT INTO public."schema_migrations" (version) VALUES (20240710152810);
 INSERT INTO public."schema_migrations" (version) VALUES (20240713193345);
 INSERT INTO public."schema_migrations" (version) VALUES (20240720230903);
+INSERT INTO public."schema_migrations" (version) VALUES (20240727002752);

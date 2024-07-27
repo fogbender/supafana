@@ -149,13 +149,13 @@ const SupafanaProject = ({
             });
           }, 9000);
         }
-      } else if (grafana.state === "Running" && grafana.plan === "Trial") {
+      } else if (grafana.plan === "Trial") {
         if (!intervalRef.current) {
           intervalRef.current = setInterval(() => {
             queryClient.invalidateQueries({
               queryKey: queryKeys.grafanas(project.organization_id),
             });
-          }, 60000);
+          }, 30000);
         }
       } else {
         clearInterval(intervalRef.current);
@@ -174,7 +174,7 @@ const SupafanaProject = ({
             onClick={() => {
               provisionGrafanaMutation.mutate();
             }}
-            className="btn btn-xs btn-error"
+            className="btn btn-xs btn-primary"
           >
             Provision Grafana
           </button>
@@ -242,7 +242,7 @@ const SupafanaProject = ({
                 onClick={() => {
                   provisionGrafanaMutation.mutate();
                 }}
-                className="btn btn-xs btn-info w-20"
+                className="btn btn-xs btn-primary w-20"
               >
                 {provisionGrafanaMutation.isPending ? (
                   <span className="loading loading-ring loading-xs text-black h-3" />
@@ -253,12 +253,29 @@ const SupafanaProject = ({
             </td>
           )}
         </tr>
-        <tr>
-          <RowHeader>Plan</RowHeader>
-          <td>
-            <span className="font-medium break-all">{plan}</span>
-          </td>
-        </tr>
+        {plan !== "Trial" && (
+          <tr>
+            <RowHeader>Plan</RowHeader>
+            <td>
+              <span className="font-medium break-all">{plan}</span>
+            </td>
+          </tr>
+        )}
+        {plan === "Trial" && grafana.first_start_at && (
+          <tr key={Math.random()}>
+            <RowHeader>Trial ends</RowHeader>
+            <td>
+              <span className="inline-block font-medium break-all first-letter:capitalize">
+                {dayjs(grafana.first_start_at).add(5, "minute").fromNow()}
+              </span>
+            </td>
+            <td>
+              <button onClick={() => {}} className="btn btn-xs btn-secondary">
+                Upgrade to Pro
+              </button>
+            </td>
+          </tr>
+        )}
         {/*
         <tr>
           <RowHeader>Version</RowHeader>
@@ -276,7 +293,7 @@ const SupafanaProject = ({
           </tr>
         )}
         <tr>
-          <RowHeader>User/password</RowHeader>
+          <RowHeader>User/pass</RowHeader>
           <td>
             <span className="font-medium">
               <code>admin</code>

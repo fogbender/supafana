@@ -28,7 +28,11 @@ import type { Grafana as GrafanaT } from "../types/z_types";
 (JotaiProvider as any).displayName = "JotaiProvider";
 
 export const Dashboard = () => {
-  const { data: organizations, isLoading: organizationsLoading } = useOrganizations();
+  const {
+    data: organizations,
+    isLoading: organizationsLoading,
+    error: organizationsError,
+  } = useOrganizations();
 
   // XXX looks like at the moment we can only deal with one organization at the time, per access token
   // (Because an access token is created in a specific organization)
@@ -66,7 +70,7 @@ export const Dashboard = () => {
     <div className="min-h-screen flex flex-col">
       <Header organization={organization} />
       <div className="mt-4 flex-1 flex flex-col items-center justify-center text-black dark:text-white">
-        {organization ? (
+        {organization && !organizationsError ? (
           <div className="pl-4 w-full flex flex-col gap-10">
             {projectsLoading || grafanasLoading ? (
               <div className="flex w-52 flex-col gap-4">

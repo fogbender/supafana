@@ -150,6 +150,10 @@ defmodule Supafana.Azure.Api do
             delete_vm(project_ref)
         end
 
+      {:ok, %Tesla.Env{status: 409}} ->
+        # {"code" => "Conflict", "message" => "The request failed due to conflict with a concurrent request. To resolve it, please refer to https://aka.ms/activitylog to get more details on the conflicting requests."}
+        r
+
       {:ok,
        %Tesla.Env{
          status: 401,
@@ -181,7 +185,7 @@ defmodule Supafana.Azure.Api do
     path = "/#{id}"
 
     r =
-      client(access_token)
+      client_with_retry(access_token)
       |> Tesla.delete(path,
         query: [
           {"api-version", "2021-04-01"}
@@ -200,6 +204,15 @@ defmodule Supafana.Azure.Api do
       {:ok, %Tesla.Env{status: status}} when status in [409] ->
         Logger.info("Resource #{id} has dependencies, deleting others first")
         delete_resources(t ++ [h])
+
+      {:ok,
+       %Tesla.Env{
+         status: 429,
+         body: %{"error" => %{"code" => "RetryableError", "message" => message}}
+       }} ->
+        Logger.info(message)
+        Process.sleep(10000)
+        delete_resources(resources)
 
       {:ok,
        %Tesla.Env{

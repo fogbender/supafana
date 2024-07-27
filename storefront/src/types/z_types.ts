@@ -17,6 +17,8 @@ export type Grafana = {
   plan: string;
   state: string;
   inserted_at: number;
+  updated_at: number;
+  first_start_at: null | number;
   password: string;
 };
 

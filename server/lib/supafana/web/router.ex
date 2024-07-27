@@ -241,8 +241,6 @@ defmodule Supafana.Web.Router do
         forbid(conn, "Project #{project_ref} does not belong to your Supabase organization")
 
       {:ok, _} ->
-        Repo.Grafana.set_state(project_ref, org_id, "Deleting")
-
         Supafana.Web.Task.schedule(
           operation: :delete_vm,
           project_ref: project_ref,
@@ -275,6 +273,8 @@ defmodule Supafana.Web.Router do
       plan: g.plan,
       state: g.state,
       inserted_at: to_unix(g.inserted_at),
+      updated_at: to_unix(g.updated_at),
+      first_start_at: to_unix(g.first_start_at),
       password: g.password
     }
     |> Z.Grafana.to_json!()

@@ -78,6 +78,6 @@ end
 config :supafana, Supafana.Scheduler,
   jobs:
     [
-      {{:extended, "*/30 * * * *"}, {Supafana.CheckVmsJob, :run, []}}
+      {{:extended, "*/10 * * * *"}, {Supafana.CheckVmsJob, :run, []}}
     ]
     |> Enum.reject(&is_nil/1)

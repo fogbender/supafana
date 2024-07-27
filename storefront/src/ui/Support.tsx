@@ -53,7 +53,11 @@ export const Support = () => {
     };
   }, []);
 
-  const { data: organizations, isLoading: organizationsLoading } = useOrganizations();
+  const {
+    data: organizations,
+    isLoading: organizationsLoading,
+    error: organizationsError,
+  } = useOrganizations();
 
   const [connecting, setConnecting] = React.useState(false);
 
@@ -117,7 +121,7 @@ export const Support = () => {
             </FogbenderIsConfigured>
           </FogbenderProvider>
         </div>
-      ) : organization ? (
+      ) : organization && !organizationsError ? (
         <div className="mt-12 flex-1 flex ml-2 md:ml-16 text-black dark:text-white">
           <div className="max-w-xl">
             <p>

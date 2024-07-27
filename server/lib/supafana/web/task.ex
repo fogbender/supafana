@@ -10,6 +10,9 @@ defmodule Supafana.Web.Task do
   end
 
   def run(operation: :delete_vm, project_ref: project_ref, org_id: org_id) do
+    %Supafana.Data.Grafana{} =
+      Supafana.Repo.Grafana.set_state(project_ref, org_id, "Deleting")
+
     :ok = Supafana.Azure.Api.delete_vm(project_ref)
 
     %Supafana.Data.Grafana{} =

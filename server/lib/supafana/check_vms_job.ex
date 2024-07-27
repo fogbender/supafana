@@ -24,17 +24,19 @@ defmodule Supafana.CheckVmsJob do
       g in Data.Grafana,
       where: g.state == "Running",
       where: g.plan == "Trial",
-      where: g.updated_at > ago(^trial_number, ^trial_unit)
+      where: g.first_start_at < ago(^trial_number, ^trial_unit)
     )
     |> Repo.all()
-    |> Enum.each(fn %{supabase_id: project_ref, org_id: org_id} ->
-      IO.inspect("Deleting #{project_ref}")
+    |> Enum.each(fn %{supabase_id: project_ref, org_id: org_id, first_start_at: first_start_at} ->
+      IO.inspect("Deleting #{org_id} #{project_ref} #{first_start_at}")
 
       Supafana.Web.Task.schedule(
         operation: :delete_vm,
         project_ref: project_ref,
         org_id: org_id
       )
+
+      :ok
     end)
   end
 
@@ -72,9 +74,7 @@ defmodule Supafana.CheckVmsJob do
               {:ok, %{"statuses" => statuses}} ->
                 case parse_statuses(statuses) do
                   "Running" ->
-                    case Tesla.get(
-                           "https://#{Supafana.env(:supafana_domain)}/dashboard/jbxacdyzczwlmrzwapkp/"
-                         ) do
+                    case probe_grafana(project_ref) do
                       {:ok, %{status: 302}} ->
                         "Running"
 
@@ -125,5 +125,9 @@ defmodule Supafana.CheckVmsJob do
   defp parse_statuses([s | t]) do
     IO.inspect({:s, s})
     parse_statuses(t)
+  end
+
+  def probe_grafana(project_ref) do
+    Tesla.get("https://#{Supafana.env(:supafana_domain)}/dashboard/#{project_ref}/")
   end
 end
