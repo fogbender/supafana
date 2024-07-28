@@ -64,6 +64,9 @@ defmodule Supafana.CheckVmsJob do
                   "Initial" ->
                     "Initial"
 
+                  "Starting" ->
+                    "Starting"
+
                   "Provisioning" ->
                     "Provisioning"
 
