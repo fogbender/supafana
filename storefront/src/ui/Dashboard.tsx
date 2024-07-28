@@ -84,7 +84,7 @@ export const Dashboard = () => {
                 {/*<div className="flex flex-col border-y border-gray-200 dark:border-gray-700 divide-y divide-gray-200 dark:divide-gray-700">*/}
                 <div className="flex flex-col">
                   {projects
-                    ?.sort((p0, p1) => (p0.status === "ACTIVE_HEALTHY" ? -1 : 1))
+                    ?.sort((p0, p1) => (p0.id > p1.id ? -1 : 1))
                     .map(p => (
                       <Project
                         key={p.id}

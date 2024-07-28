@@ -20,6 +20,7 @@ export type Grafana = {
   updated_at: number;
   first_start_at: null | number;
   password: string;
+  trial_length_min: number;
 };
 
 export type Subscription = {

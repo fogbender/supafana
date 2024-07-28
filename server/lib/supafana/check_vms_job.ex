@@ -16,7 +16,7 @@ defmodule Supafana.CheckVmsJob do
 
   defp check_trials() do
     # XXX needs to be parameterized
-    trial_number = 5
+    trial_number = Supafana.env(:trial_length_min)
     # XXX needs to be parameterized
     trial_unit = "minute"
 

@@ -128,6 +128,7 @@ defmodule Supafana.Z.Grafana do
     field(:updated_at, :integer, [:required])
     field(:first_start_at, :integer, [])
     field(:password, :string, [:required])
+    field(:trial_length_min, :integer, [:required])
   end
 end
 

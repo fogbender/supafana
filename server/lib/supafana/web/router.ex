@@ -275,7 +275,8 @@ defmodule Supafana.Web.Router do
       inserted_at: to_unix(g.inserted_at),
       updated_at: to_unix(g.updated_at),
       first_start_at: to_unix(g.first_start_at),
-      password: g.password
+      password: g.password,
+      trial_length_min: Supafana.env(:trial_length_min)
     }
     |> Z.Grafana.to_json!()
     |> Z.Grafana.from_json!()

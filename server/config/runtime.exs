@@ -30,7 +30,8 @@ config :supafana,
 config :supafana,
   supafana_domain: System.get_env("SUPAFANA_DOMAIN"),
   supafana_api_url: System.get_env("SUPAFANA_API_URL"),
-  supafana_storefront_url: System.get_env("SUPAFANA_STOREFRONT_URL")
+  supafana_storefront_url: System.get_env("SUPAFANA_STOREFRONT_URL"),
+  trial_length_min: System.get_env("SUPAFANA_TRIAL_LENGTH_MIN") |> Integer.parse() |> elem(0)
 
 config :supafana,
   loops_api_key: System.get_env("LOOPS_API_KEY")

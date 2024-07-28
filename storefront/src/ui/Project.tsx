@@ -20,10 +20,33 @@ dayjs.extend(relativeTime);
 const Project = ({ project, grafana }: { project: ProjectT; grafana: GrafanaT | undefined }) => {
   const dividerSize = 32;
 
+  const intervalRef = React.useRef<ReturnType<typeof setTimeout>>();
+
+  React.useEffect(() => {
+    if (!grafana) {
+      if (
+        ["COMING_UP", "GOING_DOWN", "RESTARTING", "UPGRADING", "RESTORING", "PAUSING"].includes(
+          project.status
+        )
+      ) {
+        if (!intervalRef.current) {
+          intervalRef.current = setInterval(() => {
+            queryClient.invalidateQueries({
+              queryKey: queryKeys.projects(project.organization_id),
+            });
+          }, 9000);
+        }
+      } else {
+        clearInterval(intervalRef.current);
+        intervalRef.current = undefined;
+      }
+    }
+  }, [project, grafana]);
+
   return (
-    <div className="p-4 m-4 flex gap-4 border rounded-lg flex-col md:flex-row">
+    <div className="p-4 m-4 flex gap-4 border rounded-lg flex-col lg:flex-row">
       <SupabaseProject project={project} />
-      {(!grafana || ["ACTIVE_HEALTHY", "ACTIVE_UNHEALTHY"].includes(project.status)) && (
+      {project.status.startsWith("ACTIVE") && (
         <>
           <div className="self-center flex flex-col gap-4 text-base">
             <DividerGlyph size={dividerSize} />
@@ -43,7 +66,7 @@ const SupabaseProject = ({ project }: { project: ProjectT }) => {
           <RowHeader>
             <span className="font-bold">Database</span>
           </RowHeader>
-          <td>
+          <td colSpan={2}>
             <a
               className="inline-flex items-center gap-1.5 font-medium link link-primary dark:link-secondary"
               href={`https://supabase.com/dashboard/project/${project.id}`}
@@ -164,25 +187,6 @@ const SupafanaProject = ({
     }
   }, [grafana]);
 
-  if (!grafana) {
-    return (
-      <div className="flex items-center justify-center bg-dots rounded-xl w-full md:w-64 py-8 md:py-0">
-        {provisionGrafanaMutation.isPending || !provisionGrafanaMutation.isIdle ? (
-          <span className="loading loading-ring loading-lg text-accent" />
-        ) : (
-          <button
-            onClick={() => {
-              provisionGrafanaMutation.mutate();
-            }}
-            className="btn btn-xs btn-primary"
-          >
-            Provision Grafana
-          </button>
-        )}
-      </div>
-    );
-  }
-
   const [passwordCopied, setPasswordCopied] = React.useState(false);
 
   React.useEffect(() => {
@@ -193,6 +197,34 @@ const SupafanaProject = ({
     }
   }, [passwordCopied]);
 
+  const trialEnded =
+    (grafana &&
+      dayjs(grafana.first_start_at).add(grafana.trial_length_min, "minute").isBefore(dayjs())) ??
+    false;
+
+  if (!grafana) {
+    if (project.status.startsWith("ACTIVE")) {
+      return (
+        <div className="flex items-center justify-center bg-dots rounded-xl w-full md:w-64 py-8 md:py-0">
+          {provisionGrafanaMutation.isPending || !provisionGrafanaMutation.isIdle ? (
+            <span className="loading loading-ring loading-lg text-accent" />
+          ) : (
+            <button
+              onClick={() => {
+                provisionGrafanaMutation.mutate();
+              }}
+              className="btn btn-xs btn-primary"
+            >
+              Provision Grafana
+            </button>
+          )}
+        </div>
+      );
+    } else {
+      return null;
+    }
+  }
+
   return (
     <table className="text-gray-200 dark:text-gray-700 bg-dots table">
       <tbody className="text-black dark:text-white">
@@ -200,7 +232,7 @@ const SupafanaProject = ({
           <RowHeader>
             <span className="font-bold">Grafana</span>
           </RowHeader>
-          <td>
+          <td colSpan={2}>
             <a
               className="inline-flex items-center gap-1.5 font-medium link link-primary dark:link-secondary"
               href={`/dashboard/${project.id}/`}
@@ -236,7 +268,7 @@ const SupafanaProject = ({
               </button>
             </td>
           )}
-          {["Failed", "Deleted"].includes(state) && (
+          {["Failed"].includes(state) && (
             <td>
               <button
                 onClick={() => {
@@ -252,6 +284,11 @@ const SupafanaProject = ({
               </button>
             </td>
           )}
+          {trialEnded && state === "Deleted" && (
+            <td>
+              <span className="text-gray-500">Upgrade&nbsp;to&nbsp;provision</span>
+            </td>
+          )}
         </tr>
         {plan !== "Trial" && (
           <tr>
@@ -263,7 +300,7 @@ const SupafanaProject = ({
         )}
         {plan === "Trial" && grafana.first_start_at && (
           <tr key={Math.random()}>
-            <RowHeader>Trial ends</RowHeader>
+            {trialEnded ? <RowHeader>Trial ended</RowHeader> : <RowHeader>Trial ends</RowHeader>}
             <td>
               <span className="inline-block font-medium break-all first-letter:capitalize">
                 {dayjs(grafana.first_start_at).add(5, "minute").fromNow()}
@@ -271,7 +308,7 @@ const SupafanaProject = ({
             </td>
             <td>
               <button onClick={() => {}} className="btn btn-xs btn-secondary">
-                Upgrade to Pro
+                Upgrade&nbsp;to&nbsp;Pro
               </button>
             </td>
           </tr>
@@ -287,27 +324,29 @@ const SupafanaProject = ({
         {created && (
           <tr>
             <RowHeader>Created</RowHeader>
-            <td>
+            <td colSpan={2}>
               <span className="inline-block font-medium first-letter:capitalize">{created}</span>
             </td>
           </tr>
         )}
-        <tr>
-          <RowHeader>User/pass</RowHeader>
-          <td>
-            <span className="font-medium">
-              <code>admin</code>
-            </span>
-          </td>
-          <td>
-            <button
-              onClick={() => copyTextToClipboard(grafana.password, () => setPasswordCopied(true))}
-              className={classNames("btn btn-xs", passwordCopied && "btn-success")}
-            >
-              Copy&nbsp;password
-            </button>
-          </td>
-        </tr>
+        {grafana.state === "Running" && (
+          <tr>
+            <RowHeader>User/pass</RowHeader>
+            <td>
+              <span className="font-medium">
+                <code>admin</code>
+              </span>
+            </td>
+            <td>
+              <button
+                onClick={() => copyTextToClipboard(grafana.password, () => setPasswordCopied(true))}
+                className={classNames("btn btn-xs", passwordCopied && "btn-success")}
+              >
+                Copy&nbsp;password
+              </button>
+            </td>
+          </tr>
+        )}
       </tbody>
     </table>
   );
