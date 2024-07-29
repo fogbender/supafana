@@ -80,6 +80,12 @@ defmodule Supafana.Web.AuthUtils do
 
       {:ok, %Tesla.Env{status: 401}} ->
         sign_out(conn)
+
+      {:ok, %Tesla.Env{status: 502}} ->
+        sign_out(conn)
+
+      {:ok, _} ->
+        sign_out(conn)
     end
   end
 
