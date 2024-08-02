@@ -6,4 +6,10 @@
     default = "supafana.local";
     type = lib.types.str;
   };
+
+  options.supafana.env = lib.mkOption {
+    description = "Supafana env name";
+    default = "test";
+    type = lib.types.str;
+  };
 }

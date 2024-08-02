@@ -33,7 +33,7 @@ in
       };
       "~ ^/${urlPrefix}/([a-zA-Z0-9]+)(/.*)?" = {
         proxyWebsockets = true;
-        proxyPass = "http://$1.${config.supafana.localDomain}:8080/${urlPrefix}/$1$2";
+        proxyPass = "http://supafana-${config.supafana.env}-grafana-$1.${config.supafana.localDomain}:8080/${urlPrefix}/$1$2";
       };
     };
   };
