@@ -1,15 +1,17 @@
 import {groups} from 'groups.bicep'
 
 param location string = resourceGroup().location
-param virtualNetworkName string = 'vNet'
-param supafanaSubnetName string = 'SupafanaSubnet'
+param env string
+param adminGroupName string
 
-param dbName string = 'supafana-test-db'
+param vnetId string
+param apiSubnetId string
+param dbSubnetId string
+
+param dbHostName string = 'supafana-${env}-db'
 param dbVersion string = '15'
 param dbSkuName string = 'Standard_B1ms'
-
-param dbAdminGroupName string = 'supafana_test_db_admin'
-param dbDatabaseName string = 'supafana_test'
+param dbDatabaseName string = 'supafana_${env}'
 
 @allowed([
   'Burstable'
@@ -19,28 +21,24 @@ param dbDatabaseName string = 'supafana_test'
 param dbSkuTier string = 'Burstable'
 param dbDiskSizeGb int = 32
 
-module network './network.bicep' = {
-  name: 'supafana-network'
-}
-
-var dbHost = '${dbName}.private.postgres.database.azure.com'
+var dbDomainName = '${dbHostName}.private.postgres.database.azure.com'
 
 // Private DNS Zone
 resource privateDbDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
-  name: dbHost
+  name: dbDomainName
   location: 'global'
   resource vNetLink 'virtualNetworkLinks' = {
-    name: '${dbName}-link'
+    name: '${dbHostName}-vnet-link'
     location: 'global'
     properties: {
       registrationEnabled: false
-      virtualNetwork: { id: network.outputs.vNetId }
+      virtualNetwork: { id: vnetId }
     }
   }
 }
 
-resource server 'Microsoft.DBforPostgreSQL/flexibleServers@2023-12-01-preview' = {
-  name: dbName
+resource db 'Microsoft.DBforPostgreSQL/flexibleServers@2023-12-01-preview' = {
+  name: dbHostName
   location: location
   sku: {
     name: dbSkuName
@@ -52,7 +50,7 @@ resource server 'Microsoft.DBforPostgreSQL/flexibleServers@2023-12-01-preview' =
       storageSizeGB: dbDiskSizeGb
     }
     network: {
-      delegatedSubnetResourceId: network.outputs.dbSubnetId
+      delegatedSubnetResourceId: dbSubnetId
       privateDnsZoneArmResourceId: privateDbDnsZone.id
       publicNetworkAccess: 'Disabled'
     }
@@ -65,20 +63,22 @@ resource server 'Microsoft.DBforPostgreSQL/flexibleServers@2023-12-01-preview' =
 }
 
 resource dbAdminGroup 'Microsoft.DBforPostgreSQL/flexibleServers/administrators@2022-12-01' = {
-  name: concat(dbName, '/', groups[dbAdminGroupName].objectId)
+  name: concat(dbHostName, '/', groups[adminGroupName].objectId)
   dependsOn: [
-    server
+    db
   ]
   properties: {
     tenantId: subscription().tenantId
     principalType: 'Group'
-    principalName: dbAdminGroupName
+    principalName: adminGroupName
   }
 }
 
 resource dbDatabase 'Microsoft.DBforPostgreSQL/flexibleServers/databases@2023-12-01-preview' = {
   name: dbDatabaseName
-  parent: server
+  parent: db
 }
 
-output dbHost string = dbHost
+output dbDomainName string = dbDomainName
+output dbHostName string = dbHostName
+output dbDatabaseName string = dbDatabaseName

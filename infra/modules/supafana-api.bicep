@@ -1,29 +1,25 @@
 param location string = resourceGroup().location
-param virtualNetworkName string = 'vNet'
-param supafanaSubnetName string = 'SupafanaSubnet'
+param env string
+param publicDomain string
+param vnetId string
+param apiSubnetId string
+param keyVaultName string
+param dbHostName string
 
-param keyVaultName string = concat(resourceGroup().name, '-vault')
-
-param imageResourceGroupName string = 'supafana-common-rg'
-param imageGalleryName string = 'supafanasig'
-param imageName string = 'supafana'
-param imageVersion string = '0.0.2'
-
-param vmName string = 'supafana-test-vm'
+param vmName string = 'supafana-${env}-api'
 param vmSize string = 'Standard_B2s'
 param osDiskType string = 'Standard_LRS'
 param osDiskSizeGB int = 20
+param imageVersion string = '0.0.2'
 
-var osDiskName = '${vmName}OSDisk'
-var publicIPAddressName = '${vmName}PublicIP'
-var networkInterfaceName = '${vmName}Nic'
-var networkSecurityGroupName = '${vmName}SecGroupNet'
+param commonResourceGroupName string = 'supafana-common-rg'
+param imageGalleryName string = 'supafanasig'
+param imageName string = 'supafana'
 
-resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' existing = {
-  name: virtualNetworkName
-}
-var addressPrefix = vnet.properties.addressSpace.addressPrefixes[0]
-var supafanaSubnetRef = resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetworkName, supafanaSubnetName)
+var osDiskName = '${vmName}-os-disk'
+var publicIPAddressName = '${vmName}-public-ip'
+var networkInterfaceName = '${vmName}-nic'
+var networkSecurityGroupName = '${vmName}-nsg'
 
 // Network interface
 resource nic 'Microsoft.Network/networkInterfaces@2020-06-01' = {
@@ -35,7 +31,7 @@ resource nic 'Microsoft.Network/networkInterfaces@2020-06-01' = {
         name: 'ipconfig1'
         properties: {
           subnet: {
-            id: supafanaSubnetRef
+            id: apiSubnetId
           }
           privateIPAllocationMethod: 'Dynamic'
           publicIPAddress: {
@@ -48,9 +44,6 @@ resource nic 'Microsoft.Network/networkInterfaces@2020-06-01' = {
       id: nsg.id
     }
   }
-  dependsOn: [
-    vnet
-  ]
 }
 
 // Security group
@@ -127,19 +120,6 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
           destinationAddressPrefixes : []
         }
       }
-      {
-        name: 'Internal'
-        properties: {
-          protocol: '*'
-          sourcePortRange: '*'
-          destinationPortRange: '*'
-          sourceAddressPrefix: addressPrefix
-          destinationAddressPrefix: addressPrefix
-          access: 'Allow'
-          priority: 1040
-          direction: 'Inbound'
-        }
-      }
     ]
   }
 }
@@ -163,7 +143,7 @@ resource publicIP 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
 // Image
 resource image 'Microsoft.Compute/galleries/images/versions@2023-07-03' existing = {
   name: '${imageGalleryName}/${imageName}/${imageVersion}'
-  scope: resourceGroup(imageResourceGroupName)
+  scope: resourceGroup(commonResourceGroupName)
 }
 
 // Virtual Machine
@@ -211,11 +191,31 @@ resource vm 'Microsoft.Compute/virtualMachines@2021-03-01' = {
   }
 }
 
-module roleAssignment './role-assignment.bicep' = {
+module dnsRecord './dns-record.bicep' = {
+  name: 'dns-record'
+  params: {
+    ipAddress: publicIP.properties.ipAddress
+    publicDomain: publicDomain
+  }
+  scope: resourceGroup(commonResourceGroupName)
+}
+
+module keyRoleAssignment './role-assignment.bicep' = {
   name: 'role-assignment'
   params: {
     keyVaultName: keyVaultName
     roleName: 'Key Vault Crypto User'
+    principalId: vm.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+module dbAdmin './db-admin.bicep' = {
+  name: 'db-admin-module'
+  params: {
+    dbName: dbHostName
+    principalType: 'ServicePrincipal'
+    principalName: vmName
     principalId: vm.identity.principalId
   }
 }

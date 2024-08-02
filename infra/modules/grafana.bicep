@@ -5,7 +5,7 @@ param grafanaPassword string = 'admin'
 
 param location string = resourceGroup().location
 param virtualNetworkName string = 'vNet'
-param supafanaSubnetName string = 'SupafanaSubnet'
+param apiSubnetName string = 'SupafanaSubnet'
 param grafanaSubnetName string = 'GrafanaSubnet'
 
 param imageResourceGroupName string = 'supafana-common-rg'

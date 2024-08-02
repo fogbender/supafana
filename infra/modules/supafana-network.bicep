@@ -1,12 +1,14 @@
+param env string
 param location string = resourceGroup().location
-param virtualNetworkName string = 'vNet'
-param privateDnsZoneName string = 'supafana.local'
+
+param virtualNetworkName string = 'supafana-${env}-vnet'
+param privateDnsZoneName string = 'supafana-${env}.local'
 param addressPrefix string = '10.5.0.0/16'
-param supafanaSubnetName string = 'SupafanaSubnet'
-param supafanaSubnetAddressPrefix string = '10.5.0.0/24'
-param grafanaSubnetName string = 'GrafanaSubnet'
+param apiSubnetName string = 'supafana-${env}-api-subnet'
+param apiSubnetAddressPrefix string = '10.5.0.0/24'
+param grafanaSubnetName string = 'supafana-${env}-grafana-subnet'
 param grafanaSubnetAddressPrefix string = '10.5.16.0/20'
-param dbSubnetName string = 'DbSubnet'
+param dbSubnetName string = 'supafana-${env}-db-subnet'
 param dbSubnetAddressPrefix string = '10.5.1.0/24'
 
 // Virtual Network
@@ -21,9 +23,9 @@ resource vnet 'Microsoft.Network/virtualNetworks@2023-11-01' = {
     }
     subnets: [
       {
-        name: supafanaSubnetName
+        name: apiSubnetName
         properties: {
-          addressPrefix: supafanaSubnetAddressPrefix
+          addressPrefix: apiSubnetAddressPrefix
           privateEndpointNetworkPolicies: 'Enabled'
           privateLinkServiceNetworkPolicies: 'Enabled'
         }
@@ -59,12 +61,12 @@ resource vnet 'Microsoft.Network/virtualNetworks@2023-11-01' = {
 
 // Db subnet security group
 resource dbSubnetNsg 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
-  name: '${dbSubnetName}-security-group'
+  name: '${dbSubnetName}-nsg'
   location: location
   properties: {
     securityRules: [
       {
-        name: 'db-grafana-deny-security-rule'
+        name: '${dbSubnetName}-deny-rule'
         properties : {
           protocol : '*'
           sourcePortRange :  '*'
@@ -84,12 +86,12 @@ resource dbSubnetNsg 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
   }
 }
 
-
 // Private DNS Zone
 resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   name: privateDnsZoneName
   location: 'global'
 }
+
 
 // DNS Zone Link
 resource dnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
@@ -104,8 +106,9 @@ resource dnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020
   }
 }
 
-output vNetId string = vnet.id
-output supafanaSubnetId string = vnet.properties.subnets[0].id
+output vnetId string = vnet.id
+output apiSubnetId string = vnet.properties.subnets[0].id
 output grafanaSubnetId string = vnet.properties.subnets[1].id
 output dbSubnetId string = vnet.properties.subnets[2].id
 output privateDnsZoneId string = privateDnsZone.id
+output privateDnsZoneName string = privateDnsZone.name

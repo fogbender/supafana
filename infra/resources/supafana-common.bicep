@@ -24,4 +24,19 @@ resource cr 'Microsoft.ContainerRegistry/registries@2023-01-01-preview' = {
   }
 }
 
+// Prod Dns zone
+resource prodDnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {
+  name: 'supafana.com'
+  location: 'global'
+}
+
+// Test Dns zone
+resource testDnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {
+  name: 'supafana-test.com'
+  location: 'global'
+}
+
 output containerRegistryLoginServer string = cr.properties.loginServer
+
+output prodNameServers array = prodDnsZone.properties.nameServers
+output testNameServers array = testDnsZone.properties.nameServers
