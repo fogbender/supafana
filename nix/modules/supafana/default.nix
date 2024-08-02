@@ -5,6 +5,7 @@
     ../supafana-base
     ./nginx.nix
     ./supafana-options.nix
+    ../decrypt-sops-service.nix
     inputs.sops-nix.nixosModules.sops
   ];
 
