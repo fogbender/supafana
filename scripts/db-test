@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-exec scripts/db-remote "$0" supafana_test_db_admin supafana-test-db supafana_test supafana-test.com 55432  "$@"
+exec scripts/db-remote "$0" SupafanaTestAdmins supafana-test-db supafana_test supafana-test.com 55432  "$@"

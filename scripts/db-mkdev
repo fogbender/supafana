@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+exec scripts/db-remote "$0" SupafanaTestAdmins supafana-mkdev-db supafana_mkdev mkdev.supafana-test.com 55432  "$@"
