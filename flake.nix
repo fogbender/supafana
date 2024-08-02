@@ -123,6 +123,9 @@
         supafana-test = nixosSystem system {
           modules = [ nix/hosts/supafana-test.nix ];
         };
+        supafana-mkdev = nixosSystem system {
+          modules = [ nix/hosts/supafana-mkdev.nix ];
+        };
         grafana = nixosSystem system {
           modules = [ nix/hosts/grafana ];
         };
@@ -135,6 +138,10 @@
           supafana-test = {
             hostname = "supafana-test.com";
             profiles.system.path = deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.supafana-test;
+          };
+          supafana-mkdev = {
+            hostname = "mkdev.supafana-test.com";
+            profiles.system.path = deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.supafana-mkdev;
           };
           grafana-mk = {
             hostname = "iclisqzkhfgcvlrvqbal.supafana.local";

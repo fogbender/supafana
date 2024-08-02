@@ -1,30 +1,31 @@
+param location string = resourceGroup().location
+param env string
+param supafanaDomain string
 param supabaseProjectRef string
 param supabaseServiceRoleKey string
-param supafanaDomain string
 param grafanaPassword string = 'admin'
 
-param location string = resourceGroup().location
-param virtualNetworkName string = 'vNet'
-param apiSubnetName string = 'SupafanaSubnet'
-param grafanaSubnetName string = 'GrafanaSubnet'
+param virtualNetworkName string = 'supafana-${env}-vnet'
+param apiSubnetName string = 'supafana-${env}-api-subnet'
+param grafanaSubnetName string = 'supafana-${env}-grafana-subnet'
 
-param imageResourceGroupName string = 'supafana-common-rg'
+param commonResourceGroupName string = 'supafana-common-rg'
 param imageGalleryName string = 'supafanasig'
 param imageName string = 'grafana'
 param imageVersion string = '0.0.5'
 
 param projectId string = supabaseProjectRef
 
-param vmName string = projectId
+param vmName string = 'supafana-${env}-grafana-${supabaseProjectRef}'
 param vmSize string = 'Standard_B2s'
 param osDiskType string = 'Standard_LRS'
 param osDiskSizeGB int = 20
 
-var osDiskName = '${vmName}OSDisk'
-var networkInterfaceName = '${vmName}Nic'
-var networkSecurityGroupName = '${vmName}SecGroupNet'
+var osDiskName = '${vmName}-os-disk'
+var networkInterfaceName = '${vmName}-nic'
+var networkSecurityGroupName = '${vmName}-nsg'
 
-param privateDnsZoneName string = 'supafana.local'
+param privateDnsZoneName string = 'supafana-${env}.local'
 
 var customDataRaw = format('''
 #cloud-config
@@ -42,7 +43,7 @@ resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' existing = {
   name: virtualNetworkName
 }
 var addressPrefix = vnet.properties.addressSpace.addressPrefixes[0]
-var grafanaSubnetRef = resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetworkName, grafanaSubnetName)
+var grafanaSubnetId = resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetworkName, grafanaSubnetName)
 var tags = { vm: vmName }
 
 // Network interface
@@ -55,7 +56,7 @@ resource nic 'Microsoft.Network/networkInterfaces@2020-06-01' = {
         name: 'ipconfig1'
         properties: {
           subnet: {
-            id: grafanaSubnetRef
+            id: grafanaSubnetId
           }
           privateIPAllocationMethod: 'Dynamic'
         }
@@ -134,7 +135,7 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
 // Image
 resource image 'Microsoft.Compute/galleries/images/versions@2023-07-03' existing = {
   name: '${imageGalleryName}/${imageName}/${imageVersion}'
-  scope: resourceGroup(imageResourceGroupName)
+  scope: resourceGroup(commonResourceGroupName)
 }
 
 // Virtual Machine
@@ -147,7 +148,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2021-03-01' = {
     }
     osProfile: {
       computerName: vmName
-      adminUserName: 'supafana'
+      adminUsername: 'supafana'
       adminPassword: 'Azurepass1349' //will be removed by nixos-rebuild
       customData: base64(customDataRaw)
     }
@@ -182,5 +183,5 @@ resource vm 'Microsoft.Compute/virtualMachines@2021-03-01' = {
 }
 
 output privateIPAddress string = nic.properties.ipConfigurations[0].properties.privateIPAddress
-output localDomain string = '${projectId}.${privateDnsZoneName}'
+output localDomain string = '${vmName}.${privateDnsZoneName}'
 output publicUri string = 'https://${supafanaDomain}/dashboard/${projectId}'
