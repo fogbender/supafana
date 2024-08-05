@@ -7,7 +7,7 @@ export type Billing = {
   free_instances: number;
   used_instances: number;
   price_per_instance: number;
-  subscriptions: Subscription[];
+  payment_profiles: PaymentProfile[];
 };
 
 export type Grafana = {
@@ -21,17 +21,26 @@ export type Grafana = {
   first_start_at: null | number;
   password: string;
   trial_length_min: number;
+  trial_remaining_msec: null | number;
+  stripe_subscription_id: null | string;
 };
 
-export type Subscription = {
+export type PaymentProfile = {
   id: string;
   email: string;
   name: string;
   created_ts_sec: number;
-  portal_session_url: string;
+  is_default: boolean;
+  subscriptions: Subscription[];
+};
+
+export type Subscription = {
+  id: string;
+  created_ts_sec: number;
   period_end_ts_sec: number;
   cancel_at_ts_sec: number;
   canceled_at_ts_sec: number;
   status: string;
   quantity: number;
+  product_name: string;
 };

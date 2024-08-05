@@ -49,6 +49,10 @@ defmodule Supafana.Z do
     "#{name}: null | number;"
   end
 
+  def field_to_typescript(name, {Z.String, []}) do
+    "#{name}: null | string;"
+  end
+
   def field_to_typescript(name, {Z.String, [required: true, enum: [value]]}) do
     "#{name}: \"#{value}\";"
   end
@@ -129,6 +133,8 @@ defmodule Supafana.Z.Grafana do
     field(:first_start_at, :integer, [])
     field(:password, :string, [:required])
     field(:trial_length_min, :integer, [:required])
+    field(:trial_remaining_msec, :integer, [])
+    field(:stripe_subscription_id, :string, [])
   end
 end
 
@@ -137,15 +143,26 @@ defmodule Supafana.Z.Subscription do
 
   schema do
     field(:id, :string, [:required])
-    field(:email, :string, [:required])
-    field(:name, :string, [:required])
     field(:created_ts_sec, :integer, [:required])
-    field(:portal_session_url, :string, [:required])
     field(:period_end_ts_sec, :integer, [:required])
     field(:cancel_at_ts_sec, :integer, [:required])
     field(:canceled_at_ts_sec, :integer, [:required])
     field(:status, :string, [:required])
     field(:quantity, :integer, [:required])
+    field(:product_name, :string, [:required])
+  end
+end
+
+defmodule Supafana.Z.PaymentProfile do
+  use Supafana.Z
+
+  schema do
+    field(:id, :string, [:required])
+    field(:email, :string, [:required])
+    field(:name, :string, [:required])
+    field(:created_ts_sec, :integer, [:required])
+    field(:is_default, :boolean, [:required])
+    field(:subscriptions, Supafana.Z.Subscription, [:required, :cast, :array])
   end
 end
 
@@ -159,6 +176,6 @@ defmodule Supafana.Z.Billing do
     field(:free_instances, :integer, [:required])
     field(:used_instances, :integer, [:required])
     field(:price_per_instance, :integer, [:required])
-    field(:subscriptions, Supafana.Z.Subscription, [:required, :cast, :array])
+    field(:payment_profiles, Supafana.Z.PaymentProfile, [:required, :cast, :array])
   end
 end

@@ -276,7 +276,16 @@ defmodule Supafana.Web.Router do
       updated_at: to_unix(g.updated_at),
       first_start_at: to_unix(g.first_start_at),
       password: g.password,
-      trial_length_min: Supafana.env(:trial_length_min)
+      trial_length_min: Supafana.env(:trial_length_min),
+      trial_remaining_msec:
+        case g.first_start_at do
+          nil ->
+            nil
+
+          first_start_at ->
+            to_unix(first_start_at) + Supafana.env(:trial_length_min) * 60 * 1000 -
+              (DateTime.now("Etc/UTC") |> elem(1) |> DateTime.to_unix(:millisecond))
+        end
     }
     |> Z.Grafana.to_json!()
     |> Z.Grafana.from_json!()

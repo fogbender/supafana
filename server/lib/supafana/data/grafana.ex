@@ -12,13 +12,23 @@ defmodule Supafana.Data.Grafana do
     field(:state, :string, default: "Initial")
     field(:password, :string)
     field(:first_start_at, :utc_datetime_usec)
+    field(:stripe_subscription_id, :string)
 
     timestamps()
   end
 
   def changeset(grafana, params \\ %{}) do
     grafana
-    |> cast(params, [:id, :supabase_id, :org_id, :plan, :state, :password, :first_start_at])
+    |> cast(params, [
+      :id,
+      :supabase_id,
+      :org_id,
+      :plan,
+      :state,
+      :password,
+      :first_start_at,
+      :stripe_subscription_id
+    ])
     |> validate_required([:supabase_id, :org_id])
   end
 end

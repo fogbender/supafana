@@ -43,7 +43,7 @@ defmodule Supafana.CheckVmsJob do
   defp update_states() do
     from(
       g in Data.Grafana,
-      where: g.state in @unstable_states
+      where: g.state in @unstable_states or (g.state == "Running" and g.plan == "Trial")
     )
     |> Repo.all()
     |> Enum.each(fn %{supabase_id: project_ref, state: state, org_id: org_id} ->

@@ -56,12 +56,24 @@ defmodule Supafana.Stripe.Api do
     end
   end
 
+  def get_customer_payment_methods(customer_id) do
+    r =
+      client()
+      |> Tesla.get("/v1/customers/#{customer_id}/payment_methods")
+
+    case r do
+      {:ok, %Tesla.Env{status: 200, body: body}} ->
+        {:ok, body}
+    end
+  end
+
   def get_subscriptions(customer_id) do
     r =
       client()
       |> Tesla.get("/v1/subscriptions",
         query: [
-          customer: customer_id
+          customer: customer_id,
+          expand: ["data.plan.product"]
         ]
       )
 
@@ -72,7 +84,6 @@ defmodule Supafana.Stripe.Api do
   end
 
   def create_portal_session(customer_id) do
-    # TODO: add vendorId instead of "-" for faster navigation
     r =
       post(
         "/v1/billing_portal/sessions",

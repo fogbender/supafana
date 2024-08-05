@@ -31,6 +31,28 @@ defmodule Supafana.Web.BillingRouter do
     )
   end
 
+  post "/create-portal-session" do
+    case conn.params["stripe_subscription_id"] do
+      nil ->
+        send_resp(conn, 400, "stripe_subscription_id missing")
+
+      stripe_subscription_id ->
+        %Data.OrgStripeSubscription{stripe_customer_id: stripe_customer_id} =
+          from(
+            s in Data.OrgStripeSubscription,
+            where: s.stripe_subscription_id == ^stripe_subscription_id
+          )
+          |> Repo.one()
+
+        %{"url" => url} = Supafana.Stripe.Api.create_portal_session(stripe_customer_id)
+
+        ok_json(
+          conn,
+          %{url: url}
+        )
+    end
+  end
+
   post "/set-stripe-session-id" do
     org_id = conn.assigns[:org_id]
 
@@ -38,39 +60,53 @@ defmodule Supafana.Web.BillingRouter do
       session_id = conn.params["session_id"]
       {:ok, session} = Supafana.Stripe.Api.get_checkout_session(session_id)
 
-      %{"status" => "complete", "customer" => stripe_customer_id} = session
+      %{
+        "status" => "complete",
+        "customer" => stripe_customer_id,
+        "subscription" => stripe_subscription_id
+      } = session
 
-      Data.OrgStripeCustomer.new(%{
-        org_id: org_id,
-        stripe_customer_id: stripe_customer_id
-      })
-      |> Repo.insert!(on_conflict: :nothing)
+      case Repo.OrgStripeCustomer.add(%{
+             org_id: org_id,
+             stripe_customer_id: stripe_customer_id
+           }) do
+        {:error, :rollback} ->
+          forbid(conn, "Billing profile already exists")
 
-      {:ok, %{"created" => created_ts_sec, "email" => email}} =
-        Supafana.Stripe.Api.get_customer(stripe_customer_id)
+        {:ok, _} ->
+          Data.OrgStripeSubscription.new(%{
+            org_id: org_id,
+            stripe_customer_id: stripe_customer_id,
+            stripe_subscription_id: stripe_subscription_id
+          })
+          |> Repo.insert!(on_conflict: :nothing)
 
-      %{"url" => portal_session_url} =
-        Supafana.Stripe.Api.create_portal_session(stripe_customer_id)
+          {:ok, %{"created" => created_ts_sec, "email" => email}} =
+            Supafana.Stripe.Api.get_customer(stripe_customer_id)
 
-      ok_json(
-        conn,
-        %{
-          email: email,
-          created_ts_sec: created_ts_sec,
-          portal_session_url: portal_session_url
-        }
-      )
+          %{"url" => portal_session_url} =
+            Supafana.Stripe.Api.create_portal_session(stripe_customer_id)
+
+          ok_json(
+            conn,
+            %{
+              email: email,
+              created_ts_sec: created_ts_sec,
+              portal_session_url: portal_session_url
+            }
+          )
+      end
     else
       forbid(conn, "Stripe not configured")
     end
   end
 
-  get "/subscriptions" do
-    {:ok, conn, subscriptions} = subscriptions(conn)
+  get "/billing" do
+    {:ok, conn, billing} = billing(conn)
 
     Process.sleep(2000)
 
-    conn |> ok_json(subscriptions, :no_encode)
+    conn |> ok_json(billing, :no_encode)
   end
 
   defp is_stripe_configured() do
@@ -81,18 +117,29 @@ defmodule Supafana.Web.BillingRouter do
     ] === false
   end
 
-  defp subscriptions(conn) do
+  defp billing(conn) do
     org_id = conn.assigns[:org_id]
 
-    subscriptions =
+    payment_profiles =
       from(
         c in Data.OrgStripeCustomer,
-        where: c.org_id == ^org_id
+        where: c.org_id == ^org_id,
+        preload: [:subscriptions]
       )
       |> Repo.all()
-      |> Enum.map(fn %{stripe_customer_id: stripe_customer_id} ->
+      |> Enum.map(fn %{
+                       stripe_customer_id: stripe_customer_id,
+                       is_default: is_default
+                     } ->
         case Supafana.Stripe.Api.get_customer(stripe_customer_id) do
           {:ok, %{"deleted" => true}} ->
+            from(
+              s in Data.OrgStripeSubscription,
+              where: s.org_id == ^org_id,
+              where: s.stripe_customer_id == ^stripe_customer_id
+            )
+            |> Repo.delete_all()
+
             from(
               c in Data.OrgStripeCustomer,
               where: c.org_id == ^org_id,
@@ -108,9 +155,6 @@ defmodule Supafana.Web.BillingRouter do
              "email" => email,
              "name" => name
            }} ->
-            %{"url" => portal_session_url} =
-              Supafana.Stripe.Api.create_portal_session(stripe_customer_id)
-
             {:ok, %{"data" => subscriptions}} =
               Supafana.Stripe.Api.get_subscriptions(stripe_customer_id)
 
@@ -125,33 +169,52 @@ defmodule Supafana.Web.BillingRouter do
 
                 nil
 
-              [subscription] ->
-                %{
-                  "id" => subscription_id,
-                  "current_period_end" => period_end_ts_sec,
-                  "cancel_at" => cancel_at_ts_sec,
-                  "canceled_at" => canceled_at_ts_sec,
-                  "status" => status,
-                  "quantity" => quantity
-                } = subscription
+              subscriptions ->
+                # IO.inspect(subscriptions)
 
-                %Supafana.Z.Subscription{
-                  id: subscription_id,
+                subscriptions =
+                  subscriptions
+                  |> Enum.map(fn %{
+                                   "id" => subscription_id,
+                                   "current_period_end" => period_end_ts_sec,
+                                   "cancel_at" => cancel_at_ts_sec,
+                                   "canceled_at" => canceled_at_ts_sec,
+                                   "status" => status,
+                                   "quantity" => quantity,
+                                   "plan" => %{
+                                     "product" => %{
+                                       "name" => product_name
+                                     }
+                                   }
+                                 } ->
+                    %Supafana.Z.Subscription{
+                      id: subscription_id,
+                      created_ts_sec: created_ts_sec,
+                      period_end_ts_sec: period_end_ts_sec,
+                      cancel_at_ts_sec: cancel_at_ts_sec,
+                      canceled_at_ts_sec: canceled_at_ts_sec,
+                      status: status,
+                      quantity: quantity,
+                      product_name: product_name
+                    }
+                  end)
+
+                %Supafana.Z.PaymentProfile{
+                  id: stripe_customer_id,
                   email: email,
                   name: name,
                   created_ts_sec: created_ts_sec,
-                  portal_session_url: portal_session_url,
-                  period_end_ts_sec: period_end_ts_sec,
-                  cancel_at_ts_sec: cancel_at_ts_sec,
-                  canceled_at_ts_sec: canceled_at_ts_sec,
-                  status: status,
-                  quantity: quantity
+                  is_default: is_default,
+                  subscriptions: subscriptions
                 }
             end
         end
       end)
       |> Enum.filter(&(not is_nil(&1)))
 
+    subscriptions = payment_profiles |> Enum.flat_map(& &1.subscriptions)
+
+    # NOTE: this does not account for different products - will be wrong once that happens
     paid_instances = subscriptions |> Enum.map(& &1.quantity) |> Enum.sum()
 
     free_instances =
@@ -193,7 +256,7 @@ defmodule Supafana.Web.BillingRouter do
         free_instances: free_instances,
         used_instances: used_instances,
         price_per_instance: price_per_instance,
-        subscriptions: subscriptions
+        payment_profiles: payment_profiles
       }
       |> Supafana.Z.Billing.to_json!()
 

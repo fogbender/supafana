@@ -7,6 +7,8 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { HiExternalLink as ExternalLink } from "react-icons/hi";
 import { SiDungeonsanddragons as DividerGlyph } from "react-icons/si";
 
+import { nbsp } from "./Utils";
+
 import { apiServer, queryClient, queryKeys } from "./client";
 
 import SupabaseLogo from "./landing/assets/supabase-logo-icon.svg?url";
@@ -80,7 +82,9 @@ const SupabaseProject = ({ project }: { project: ProjectT }) => {
           </td>
         </tr>
         <tr>
-          <RowHeader>Project&nbsp;ref</RowHeader>
+          <RowHeader>
+            <span dangerouslySetInnerHTML={{ __html: nbsp("Project ref") }} />
+          </RowHeader>
           <td>
             <span className="font-medium break-all">{project.id}</span>
           </td>
@@ -277,7 +281,7 @@ const SupafanaProject = ({
                 className="btn btn-xs btn-primary w-20"
               >
                 {provisionGrafanaMutation.isPending ? (
-                  <span className="loading loading-ring loading-xs text-black h-3" />
+                  <span className="loading loading-ring loading-xs h-3" />
                 ) : (
                   <span>Provision</span>
                 )}
@@ -286,7 +290,10 @@ const SupafanaProject = ({
           )}
           {trialEnded && state === "Deleted" && (
             <td>
-              <span className="text-gray-500">Upgrade&nbsp;to&nbsp;provision</span>
+              <span
+                className="text-gray-500"
+                dangerouslySetInnerHTML={{ __html: nbsp("↓ Upgrade to provision") }}
+              />
             </td>
           )}
           {!trialEnded && state === "Deleted" && (
@@ -315,17 +322,22 @@ const SupafanaProject = ({
           </tr>
         )}
         {plan === "Trial" && grafana.first_start_at && (
-          <tr key={Math.random()}>
+          <tr>
             {trialEnded ? <RowHeader>Trial ended</RowHeader> : <RowHeader>Trial ends</RowHeader>}
             <td>
-              <span className="inline-block font-medium break-all first-letter:capitalize">
-                {dayjs(grafana.first_start_at).add(5, "minute").fromNow()}
+              <span
+                key={grafana.trial_remaining_msec}
+                className="inline-block font-medium break-all first-letter:capitalize"
+              >
+                {dayjs(grafana.first_start_at).add(grafana.trial_length_min, "minute").fromNow()}
               </span>
             </td>
             <td>
-              <button onClick={() => {}} className="btn btn-xs btn-secondary">
-                Upgrade&nbsp;to&nbsp;Pro
-              </button>
+              <button
+                onClick={() => {}}
+                className="btn btn-xs btn-secondary"
+                dangerouslySetInnerHTML={{ __html: nbsp("Upgrade to Pro") }}
+              />
             </td>
           </tr>
         )}
@@ -357,9 +369,8 @@ const SupafanaProject = ({
               <button
                 onClick={() => copyTextToClipboard(grafana.password, () => setPasswordCopied(true))}
                 className={classNames("btn btn-xs", passwordCopied && "btn-success")}
-              >
-                Copy&nbsp;password
-              </button>
+                dangerouslySetInnerHTML={{ __html: nbsp("Copy password") }}
+              />
             </td>
           </tr>
         )}

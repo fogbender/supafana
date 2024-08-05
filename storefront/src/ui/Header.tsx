@@ -3,6 +3,8 @@ import { useLocation } from "react-router-dom";
 import { HiExternalLink as ExternalLink } from "react-icons/hi";
 import { useQuery } from "@tanstack/react-query";
 
+import { nbsp } from "./Utils";
+
 import {
   createNewFogbender,
   FogbenderConfig,
@@ -130,9 +132,11 @@ const Header = ({ organization }: { organization: undefined | Organization }) =>
             method="post"
             action={signOutActionUrl}
           >
-            <button className="btn btn-xs" type="submit">
-              Sign&nbsp;out
-            </button>
+            <button
+              className="btn btn-xs"
+              type="submit"
+              dangerouslySetInnerHTML={{ __html: nbsp("Sigh out") }}
+            />
           </form>
         )}
         <ThemeController />

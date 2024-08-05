@@ -4,15 +4,25 @@ import relativeTime from "dayjs/plugin/relativeTime";
 
 dayjs.extend(relativeTime);
 
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 
-import { apiServer, queryKeys, queryClient } from "./client";
+import {
+  apiServer,
+  queryKeys,
+  queryClient,
+  useCheckoutSession,
+  useSetStripeSessionId,
+} from "./client";
 
 import qs, { type ParseOptions } from "query-string";
 
 import type { Organization } from "../types/supabase";
 
-import type { Subscription as StripeCustomer, Billing as BillingT } from "../types/z_types";
+import type {
+  PaymentProfile,
+  Subscription as StripeCustomer,
+  Billing as BillingT,
+} from "../types/z_types";
 
 function getQueryParam(query: string, key: string, options?: ParseOptions) {
   const value = qs.parse(query, options)[key];
@@ -20,41 +30,36 @@ function getQueryParam(query: string, key: string, options?: ParseOptions) {
 }
 
 const Billing = ({ organization }: { organization: Organization }) => {
-  const createCheckoutSessionMutation = useMutation({
-    mutationFn: () => {
-      return apiServer
-        .url(`/billing/create-checkout-session`)
-        .post({
-          instances: 1,
-        })
-        .json<{ url: string }>();
-    },
-    onSuccess: res => {
-      const { url } = res;
-
-      window.location.href = url;
-    },
-  });
+  const createCheckoutSessionMutation = useCheckoutSession();
 
   const stripeSessionId = getQueryParam(location.search, "session_id");
 
-  const [pollSubscriptions, setPollSubscriptions] = React.useState(false);
+  const [pollBilling, setPollBilling] = React.useState(false);
 
-  console.log({ pollSubscriptions });
+  const { data: billing, isLoading: billingLoading } = useQuery({
+    queryKey: queryKeys.billing(organization.id),
+    queryFn: async () => {
+      return await apiServer.url("/billing/billing").get().json<BillingT>();
+    },
+    refetchInterval: () => {
+      if (pollBilling) {
+        return 5000;
+      } else {
+        return false;
+      }
+    },
+  });
 
-  const setStripeSessionIdMutation = useMutation({
-    mutationFn: async (session_id: string) => {
-      return apiServer
-        .url(`/billing/set-stripe-session-id`)
-        .post({
-          session_id,
-        })
-        .json<StripeCustomer>();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.billing(organization.id) });
-      setPollSubscriptions(true);
-    },
+  console.log(billing);
+
+  const setStripeSessionIdMutation = useSetStripeSessionId(() => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.billing(organization.id) });
+
+    const url = new URL(window.location.href);
+    url.searchParams.delete("session_id");
+    window.history.replaceState({}, document.title, url.toString());
+
+    setPollBilling(true);
   });
 
   React.useEffect(() => {
@@ -63,31 +68,31 @@ const Billing = ({ organization }: { organization: Organization }) => {
     }
   }, [stripeSessionId]);
 
-  const { data: billing, isLoading: billingLoading } = useQuery({
-    queryKey: queryKeys.billing(organization.id),
-    queryFn: async () => {
-      return await apiServer.url("/billing/subscriptions").get().json<BillingT>();
-    },
-    refetchInterval: () => {
-      if (pollSubscriptions) {
-        return 2000;
-      } else {
-        return false;
-      }
-    },
-  });
+  const numSubscriptions =
+    billing?.payment_profiles.map(pp => pp.subscriptions.length).reduce((acc, x) => acc + x, 0) ??
+    0;
 
+  const prevNumSubscriptions = React.useRef<number | null>(null);
+
+  console.log({ numSubscriptions, prev: prevNumSubscriptions.current });
+
+  // this is crazy - we should use db subscriptions instead
   React.useEffect(() => {
-    if (pollSubscriptions && billing?.subscriptions.length) {
-      setPollSubscriptions(false);
+    if (billing) {
+      if (pollBilling && prevNumSubscriptions.current === null) {
+        prevNumSubscriptions.current = numSubscriptions;
+      } else if (pollBilling && numSubscriptions > (prevNumSubscriptions.current ?? 0)) {
+        setPollBilling(false);
+        prevNumSubscriptions.current = null;
+      }
     }
   }, [billing]);
 
-  const isFree = billing?.subscriptions?.length === 0;
+  const isFree = numSubscriptions === 0;
 
   return (
     <div className="p-4">
-      {billingLoading || pollSubscriptions ? (
+      {billingLoading || pollBilling ? (
         <span className="loading loading-ring loading-lg text-accent" />
       ) : isFree ? (
         <div className="flex flex-col gap-2">
@@ -106,34 +111,109 @@ const Billing = ({ organization }: { organization: Organization }) => {
           </a>
         </div>
       ) : (
-        billing?.subscriptions.map(s => (
-          <Subscription s={s} price={billing.price_per_instance} key={s.id} />
-        ))
+        /*
+          Why a list here? Basically, it's easier to support multiple subscriptions than to
+          enfore a single one. Also, say the person who managed the old subscription left -
+          adding another subscription and letting the old one lapse is the simplest way to
+          ensure continuity.
+        */
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
+            <div className="font-semibold text-black dark:text-white">Payment profiles</div>
+            <div className="flex flex-col gap-2">
+              {billing?.payment_profiles.map(pp => (
+                <div key={pp.id} className="p-4 border rounded-lg">
+                  <PaymentProfile pp={pp} b={billing} />
+                </div>
+              ))}
+            </div>
+          </div>
+          <button
+            className="ml-4 w-48 btn btn-accent btn-sm"
+            type="button"
+            onClick={() => createCheckoutSessionMutation.mutate()}
+          >
+            Add payment profile
+          </button>
+        </div>
       )}
     </div>
   );
 };
 
-const Subscription = ({ s, price }: { s: StripeCustomer; price: number }) => {
+const PaymentProfile = ({ pp, b }: { pp: PaymentProfile; b: BillingT }) => {
   return (
     <table className="text-gray-200 dark:text-gray-700 bg-dots table">
       <tbody>
         <tr>
           <RowHeader>Email</RowHeader>
-          <RowBody>{s.email}</RowBody>
+          <RowBody>{pp.email}</RowBody>
         </tr>
         <tr>
           <RowHeader>Name</RowHeader>
-          <RowBody>{s.name}</RowBody>
+          <RowBody>{pp.name}</RowBody>
         </tr>
         <tr>
-          <RowHeader>Number of Grafana instances</RowHeader>
+          <RowHeader>Default billing profile?</RowHeader>
+          <td>
+            <input
+              type="checkbox"
+              onChange={() => {}}
+              value={pp.is_default ? "selected" : "not selected"}
+              checked={pp.is_default}
+              className="checkbox checkbox-info checkbox-sm"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td colSpan={2}>
+            <div className="flex flex-col gap-2">
+              <div className="font-semibold text-black dark:text-white">Subscriptions</div>
+              <div>
+                {pp.subscriptions.map(s => (
+                  <div key={s.id} className="p-4 border rounded-lg bg-white dark:bg-black">
+                    <Subscription s={s} b={b} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  );
+};
+
+export const Subscription = ({ s, b }: { s: StripeCustomer; b: BillingT }) => {
+  const createPortalSessionMutation = useMutation({
+    mutationFn: (): Promise<{ url: string }> => {
+      return apiServer
+        .url("/billing/create-portal-session")
+        .post({ stripe_subscription_id: s.id })
+        .json<{ url: string }>();
+    },
+    onSuccess: res => {
+      const { url } = res;
+
+      window.location.href = url;
+    },
+  });
+
+  return (
+    <table className="text-gray-200 dark:text-gray-700 bg-dots table">
+      <tbody>
+        <tr>
+          <RowHeader>Product</RowHeader>
+          <RowBody>{`${s.product_name}`}</RowBody>
+        </tr>
+        <tr>
+          <RowHeader>Quantity</RowHeader>
           <RowBody>{`${s.quantity}`}</RowBody>
         </tr>
         <tr>
           <RowHeader>Cost per month</RowHeader>
           <RowBody>
-            <span>${`${(price / 100) * s.quantity}`}</span>
+            <span>${`${(b.price_per_instance / 100) * s.quantity}`}</span>
           </RowBody>
         </tr>
         <tr>
@@ -189,14 +269,13 @@ const Subscription = ({ s, price }: { s: StripeCustomer; price: number }) => {
           </tr>
         )}
         <tr>
-          <td>
-            <a
-              target="_blank"
-              className="break-all text-sm font-medium link link-primary dark:link-secondary no-underline"
-              href={s.portal_session_url}
+          <td colSpan={2}>
+            <button
+              className="btn btn-link link-primary dark:link-secondary !no-underline h-4 min-h-min px-0"
+              onClick={() => createPortalSessionMutation.mutate()}
             >
               Manage subscription
-            </a>
+            </button>
           </td>
         </tr>
       </tbody>
