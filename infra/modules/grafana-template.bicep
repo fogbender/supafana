@@ -3,10 +3,11 @@ param env string
 param supafanaDomain string
 param supabaseProjectRef string
 param supabaseServiceRoleKey string
-param grafanaPassword string = 'admin'
+@secure()
+param grafanaPassword string
 
 param virtualNetworkName string = 'supafana-${env}-vnet'
-param apiSubnetName string = 'supafana-${env}-api-subnet'
+//param apiSubnetName string = 'supafana-${env}-api-subnet'
 param grafanaSubnetName string = 'supafana-${env}-grafana-subnet'
 
 param commonResourceGroupName string = 'supafana-common-rg'
@@ -42,7 +43,7 @@ write_files:
 resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' existing = {
   name: virtualNetworkName
 }
-var addressPrefix = vnet.properties.addressSpace.addressPrefixes[0]
+//var addressPrefix = vnet.properties.addressSpace.addressPrefixes[0]
 var grafanaSubnetId = resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetworkName, grafanaSubnetName)
 var tags = { vm: vmName }
 

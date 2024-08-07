@@ -111,3 +111,18 @@ ${PROXY_DATA}:
 
 proxy-stop:
 	caddy stop
+
+GRAFANA_TEMPLATE_BICEP=infra/modules/grafana-template.bicep
+GRAFANA_TEMPLATE_JSON=infra/templates/grafana-template.json
+GRAFANA_TEMPLATE_VERSION=infra/templates/grafana-template.version
+
+az-grafana-template-bump:
+	@echo "Generating new grafana template..."
+	@az bicep build --file ${GRAFANA_TEMPLATE_BICEP} --outfile ${GRAFANA_TEMPLATE_JSON}
+	@! git diff --quiet -- ${GRAFANA_TEMPLATE_JSON} && echo "There are changes! Bumping template version..." || (echo "No changes... Aborting."; exit 1)
+	@scripts/calver bump "$$(cat ${GRAFANA_TEMPLATE_VERSION})" > ${GRAFANA_TEMPLATE_VERSION}
+
+az-grafana-template-upload:
+	az ts create -g supafana-common-rg --name grafana-template -v "$$(cat ${GRAFANA_TEMPLATE_VERSION})" --template-file ${GRAFANA_TEMPLATE_BICEP} --debug
+
+az-grafana-template-update: az-grafana-template-bump az-grafana-template-upload

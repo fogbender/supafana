@@ -1,7 +1,10 @@
 param location string = resourceGroup().location
 param sharedImageGalleryName string = 'supafanasig'
+
 param containerRegistryName string = 'supafanacr'
 param containerRegistrySku string = 'Basic'
+
+param grafanaTemplateSpecName string = 'grafana-template'
 
 // Shared image gallery
 resource sig 'Microsoft.Compute/galleries@2023-07-03' = {
@@ -36,7 +39,17 @@ resource testDnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {
   location: 'global'
 }
 
-output containerRegistryLoginServer string = cr.properties.loginServer
+// Grafana VM template spec
+resource grafanaTemplateSpec 'Microsoft.Resources/templateSpecs@2022-02-01' = {
+  name: grafanaTemplateSpecName
+  location: location
+  properties: {
+    description: 'Grafana template spec'
+    displayName: 'Grafana template'
+  }
+}
 
+output containerRegistryLoginServer string = cr.properties.loginServer
 output prodNameServers array = prodDnsZone.properties.nameServers
 output testNameServers array = testDnsZone.properties.nameServers
+output grafanaTemplateSpecId string = grafanaTemplateSpec.id
