@@ -89,6 +89,7 @@ sub_scope="subscriptions/${subscription_id}"
 # Set roles for the app
 az role assignment create --assignee $app_sp_id --role "Virtual Machine Contributor" --scope ${group_scope} ${debug:+"$debug"}
 az role assignment create --assignee $app_sp_id --role "Template Spec Reader" --scope ${sub_scope} ${debug:+"$debug"}
+az role assignment create --assignee $app_sp_id --role "supafana-sig-access"  --scope ${sub_scope} ${debug:+"$debug"}
 
 # Domains
 public_domain="${name}.supafana-test.com"

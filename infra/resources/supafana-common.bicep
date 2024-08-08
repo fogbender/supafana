@@ -1,5 +1,6 @@
 param location string = resourceGroup().location
 param sharedImageGalleryName string = 'supafanasig'
+param sigRoleName string = 'supafana-sig-access'
 
 param containerRegistryName string = 'supafanacr'
 param containerRegistrySku string = 'Basic'
@@ -14,6 +15,34 @@ resource sig 'Microsoft.Compute/galleries@2023-07-03' = {
     description: 'Private shared images for Supafana VMs'
   }
 }
+
+// Image gallery access role
+resource sigRole 'Microsoft.Authorization/roleDefinitions@2022-05-01-preview' = {
+  name: guid(subscription().id, sigRoleName)
+  properties: {
+    roleName: sigRoleName
+    description: 'Access to shared gallery images'
+    type: 'CustomRole'
+    permissions: [
+      {
+        actions: [
+          'Microsoft.Compute/galleries/read'
+          'Microsoft.Compute/galleries/images/read'
+          'Microsoft.Compute/galleries/images/versions/read'
+          'Microsoft.Compute/images/read'
+        ]
+        notActions: []
+        dataActions: []
+        notDataActions: []
+      }
+    ]
+    assignableScopes: [
+      subscription().id
+      resourceGroup().id
+    ]
+  }
+}
+
 
 // Container registry
 resource cr 'Microsoft.ContainerRegistry/registries@2023-01-01-preview' = {
