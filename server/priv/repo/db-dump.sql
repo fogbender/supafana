@@ -28,7 +28,7 @@ CREATE TABLE public.grafana (
     id uuid NOT NULL,
     supabase_id character varying(255) NOT NULL,
     org_id uuid NOT NULL,
-    plan character varying(255) DEFAULT 'Hobby'::character varying,
+    plan character varying(255) DEFAULT 'Trial'::character varying,
     state character varying(255) DEFAULT 'Initial'::character varying,
     password character varying(255),
     inserted_at timestamp without time zone NOT NULL,
