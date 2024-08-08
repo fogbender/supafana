@@ -1,5 +1,6 @@
 defmodule Supafana.Azure.Api do
   require Logger
+  alias Supafana.Azure
 
   def clear_access_token() do
     tenant_id = Supafana.env(:azure_tenant_id)
@@ -262,11 +263,7 @@ defmodule Supafana.Azure.Api do
 
   def create_deployment(project_ref, service_role_key, password) do
     supafana_domain = Supafana.env(:supafana_domain)
-
-    template_file_url = "https://biceps.blob.core.windows.net/biceps/grafana.json"
-
-    template_file_query_string =
-      "sp=r&st=2024-07-14T16:19:06Z&se=2027-01-01T01:19:06Z&spr=https&sv=2022-11-02&sr=c&sig=LOuF6bWvwEm37sDVLphqlQMiII19N6i6G%2F8NNXiPbuA%3D"
+    supafana_env = Supafana.env(:supafana_env)
 
     parameters = %{
       "supabaseProjectRef" => %{
@@ -280,6 +277,9 @@ defmodule Supafana.Azure.Api do
       },
       "grafanaPassword" => %{
         "value" => password
+      },
+      "env" => %{
+        "value" => supafana_env
       }
     }
 
@@ -292,8 +292,7 @@ defmodule Supafana.Azure.Api do
       |> Tesla.put(path, %{
         "properties" => %{
           "templateLink" => %{
-            "uri" => template_file_url,
-            "queryString" => template_file_query_string
+            "id" => Azure.TemplateSpec.grafana()
           },
           "parameters" => parameters,
           "mode" => "Incremental"
