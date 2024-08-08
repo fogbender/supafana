@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.26",
-      "templateHash": "9563598315346162621"
+      "templateHash": "17905435322716412113"
     }
   },
   "parameters": {
@@ -80,7 +80,6 @@
   "variables": {
     "osDiskName": "[format('{0}-os-disk', parameters('vmName'))]",
     "networkInterfaceName": "[format('{0}-nic', parameters('vmName'))]",
-    "networkSecurityGroupName": "[format('{0}-nsg', parameters('vmName'))]",
     "customDataRaw": "[format('#cloud-config\nwrite_files:\n- content: |\n    SUPABASE_PROJECT_REF={0}\n    SUPABASE_SERVICE_ROLE_KEY={1}\n    GF_SERVER_ROOT_URL=https://{3}/dashboard/{2}\n    GF_SERVER_SERVE_FROM_SUB_PATH=true\n    GRAFANA_PASSWORD={4}\n  path: /var/lib/supafana/supafana.env\n', parameters('supabaseProjectRef'), parameters('supabaseServiceRoleKey'), parameters('projectId'), parameters('supafanaDomain'), parameters('grafanaPassword'))]",
     "grafanaSubnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('grafanaSubnetName'))]",
     "tags": {
@@ -102,70 +101,6 @@
                 "id": "[variables('grafanaSubnetId')]"
               },
               "privateIPAllocationMethod": "Dynamic"
-            }
-          }
-        ],
-        "networkSecurityGroup": {
-          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
-        }
-      },
-      "tags": "[variables('tags')]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
-      ]
-    },
-    {
-      "type": "Microsoft.Network/networkSecurityGroups",
-      "apiVersion": "2023-11-01",
-      "name": "[variables('networkSecurityGroupName')]",
-      "location": "[parameters('location')]",
-      "properties": {
-        "securityRules": [
-          {
-            "name": "SSH",
-            "properties": {
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "22",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": 1010,
-              "direction": "Inbound",
-              "sourcePortRanges": [],
-              "destinationPortRanges": [],
-              "sourceAddressPrefixes": [],
-              "destinationAddressPrefixes": []
-            }
-          },
-          {
-            "name": "Grafana",
-            "properties": {
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "8080",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": 1030,
-              "direction": "Inbound",
-              "sourcePortRanges": [],
-              "destinationPortRanges": [],
-              "sourceAddressPrefixes": [],
-              "destinationAddressPrefixes": []
-            }
-          },
-          {
-            "name": "Internal",
-            "properties": {
-              "protocol": "*",
-              "sourcePortRange": "*",
-              "destinationPortRange": "*",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": 1040,
-              "direction": "Inbound"
             }
           }
         ]

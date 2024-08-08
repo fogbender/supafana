@@ -24,7 +24,6 @@ param osDiskSizeGB int = 20
 
 var osDiskName = '${vmName}-os-disk'
 var networkInterfaceName = '${vmName}-nic'
-var networkSecurityGroupName = '${vmName}-nsg'
 
 param privateDnsZoneName string = 'supafana-${env}.local'
 
@@ -63,9 +62,6 @@ resource nic 'Microsoft.Network/networkInterfaces@2020-06-01' = {
         }
       }
     ]
-    networkSecurityGroup: {
-      id: nsg.id
-    }
   }
   tags: tags
   dependsOn: [
@@ -74,64 +70,6 @@ resource nic 'Microsoft.Network/networkInterfaces@2020-06-01' = {
 }
 
 // Security group
-resource nsg 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
-  name: networkSecurityGroupName
-  location: location
-  properties: {
-    securityRules: [
-      {
-           name: 'SSH'
-           properties : {
-               protocol : 'Tcp'
-               sourcePortRange :  '*'
-               destinationPortRange :  '22'
-               sourceAddressPrefix :  '*'
-               destinationAddressPrefix: '*'
-               access:  'Allow'
-               priority : 1010
-               direction : 'Inbound'
-               sourcePortRanges : []
-               destinationPortRanges : []
-               sourceAddressPrefixes : []
-               destinationAddressPrefixes : []
-          }
-      }
-      {
-           name : 'Grafana'
-           properties : {
-               protocol :  'Tcp'
-               sourcePortRange :  '*'
-               destinationPortRange :  '8080'
-               sourceAddressPrefix :  '*'
-               destinationAddressPrefix :  '*'
-               access :  'Allow'
-               priority : 1030
-               direction :  'Inbound'
-               sourcePortRanges : []
-               destinationPortRanges : []
-               sourceAddressPrefixes : []
-               destinationAddressPrefixes : []
-          }
-      }
-      {
-        name: 'Internal'
-        properties: {
-          protocol: '*'
-          sourcePortRange: '*'
-          destinationPortRange: '*'
-          sourceAddressPrefix: '*'
-          destinationAddressPrefix: '*'
-          access: 'Allow'
-          priority: 1040
-          direction: 'Inbound'
-        }
-      }
-    ]
-  }
-  tags: tags
-}
-
-// Image
 
 // Image
 resource image 'Microsoft.Compute/galleries/images/versions@2023-07-03' existing = {

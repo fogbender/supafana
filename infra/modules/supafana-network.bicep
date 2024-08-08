@@ -36,6 +36,7 @@ resource vnet 'Microsoft.Network/virtualNetworks@2023-11-01' = {
           addressPrefix: grafanaSubnetAddressPrefix
           privateEndpointNetworkPolicies: 'Enabled'
           privateLinkServiceNetworkPolicies: 'Enabled'
+          networkSecurityGroup: { id: grafanaSubnetNsg.id }
         }
       }
       {
@@ -67,24 +68,71 @@ resource dbSubnetNsg 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
     securityRules: [
       {
         name: '${dbSubnetName}-deny-rule'
-        properties : {
-          protocol : '*'
-          sourcePortRange :  '*'
-          destinationPortRange :  '*'
-          sourceAddressPrefix :  grafanaSubnetAddressPrefix
-          destinationAddressPrefix: '*'
-          access:  'Deny'
+        properties: {
           priority : 1010
           direction : 'Inbound'
-          sourcePortRanges : []
-          destinationPortRanges : []
-          sourceAddressPrefixes : []
-          destinationAddressPrefixes : []
+          access:  'Deny'
+          protocol: '*'
+          sourceAddressPrefix:  grafanaSubnetAddressPrefix
+          sourcePortRange:  '*'
+          destinationAddressPrefix: dbSubnetAddressPrefix
+          destinationPortRange:  '*'
         }
       }
     ]
   }
 }
+
+resource grafanaSubnetNsg 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
+  name: '${grafanaSubnetName}-nsg'
+  location: location
+  properties: {
+    securityRules: [
+      {
+        name: '${grafanaSubnetName}-deny-vnet-access'
+        properties: {
+          priority: 1010
+          direction: 'Outbound'
+          access:  'Deny'
+          protocol: 'Tcp'
+          sourceAddressPrefix:  grafanaSubnetAddressPrefix
+          sourcePortRange:  '*'
+          destinationAddressPrefix: 'VirtualNetwork'
+          destinationPortRange :  '*'
+        }
+      }
+
+      {
+        name: '${grafanaSubnetName}-inet-access'
+        properties: {
+          priority: 1020
+          direction: 'Outbound'
+          access:  'Allow'
+          protocol: '*'
+          sourceAddressPrefix:  grafanaSubnetAddressPrefix
+          sourcePortRange:  '*'
+          destinationAddressPrefix: 'Internet'
+          destinationPortRange :  '*'
+        }
+      }
+
+      {
+        name: '${grafanaSubnetName}-api-access'
+        properties: {
+          priority: 1030
+          direction: 'Inbound'
+          access:  'Allow'
+          protocol: 'Tcp'
+          sourceAddressPrefix:  apiSubnetAddressPrefix
+          sourcePortRange:  '*'
+          destinationAddressPrefix: grafanaSubnetAddressPrefix
+          destinationPortRange : '*'
+        }
+      }
+    ]
+  }
+}
+
 
 // Private DNS Zone
 resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
