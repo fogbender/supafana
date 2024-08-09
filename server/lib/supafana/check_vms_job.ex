@@ -131,6 +131,8 @@ defmodule Supafana.CheckVmsJob do
   end
 
   def probe_grafana(project_ref) do
-    Tesla.get("https://#{Supafana.env(:supafana_domain)}/dashboard/#{project_ref}/")
+    url = "https://#{Supafana.env(:supafana_domain)}/dashboard/#{project_ref}/"
+
+    Tesla.get(url)
   end
 end

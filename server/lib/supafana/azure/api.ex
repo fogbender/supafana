@@ -86,9 +86,11 @@ defmodule Supafana.Azure.Api do
   def check_vm(project_ref) do
     subscription_id = Supafana.env(:azure_subscription_id)
     resource_group = Supafana.env(:azure_resource_group)
+    supafana_env = Supafana.env(:supafana_env)
+    vm_name = "supafana-#{supafana_env}-grafana-#{project_ref}"
 
     path =
-      "/subscriptions/#{subscription_id}/resourceGroups/#{resource_group}/providers/Microsoft.Compute/virtualMachines/#{project_ref}/InstanceView"
+      "/subscriptions/#{subscription_id}/resourceGroups/#{resource_group}/providers/Microsoft.Compute/virtualMachines/#{vm_name}/InstanceView"
 
     {:ok, access_token} = get_graph_access_token()
 
@@ -125,9 +127,11 @@ defmodule Supafana.Azure.Api do
   def delete_vm(project_ref) do
     subscription_id = Supafana.env(:azure_subscription_id)
     resource_group = Supafana.env(:azure_resource_group)
+    supafana_env = Supafana.env(:supafana_env)
+    vm_name = "supafana-#{supafana_env}-grafana-#{project_ref}"
 
     path =
-      "/subscriptions/#{subscription_id}/resourceGroups/#{resource_group}/providers/Microsoft.Compute/virtualMachines/#{project_ref}"
+      "/subscriptions/#{subscription_id}/resourceGroups/#{resource_group}/providers/Microsoft.Compute/virtualMachines/#{vm_name}"
 
     {:ok, access_token} = get_graph_access_token()
 
@@ -143,7 +147,7 @@ defmodule Supafana.Azure.Api do
       {:ok, %Tesla.Env{status: status}} when status in [201, 202, 204] ->
         case check_vm(project_ref) do
           {:error, :not_found} ->
-            delete_resources_by_tag(project_ref)
+            delete_resources_by_tag(vm_name)
 
           _ ->
             Logger.info("VM #{project_ref} is still around, waiting for deletion...")
