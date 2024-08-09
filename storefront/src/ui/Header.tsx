@@ -72,7 +72,7 @@ const Header = ({ organization }: { organization: undefined | Organization }) =>
   return (
     <div className="bg-transparent sticky top-0 z-20">
       <div className="nav-container-blur bg-white absolute z-[-1] h-full w-full shadow-[0_2px_4px_rgba(0,0,0,.02),0_1px_0_rgba(0,0,0,.06)] dark:shadow-[0_-1px_0_rgba(255,255,255,.1)_inset] dark:bg-black dark:contrast-more:shadow-[0_0_0_1px_#000] contrast-more:shadow-[0_0_0_1px_#fff]"></div>
-      <nav className="mx-auto flex h-16 max-w-[90rem] items-center justify-end gap-5 pl-[max(env(safe-area-inset-left),1.5rem)] pr-[max(env(safe-area-inset-right),1.5rem)] text-black dark:text-white">
+      <nav className="mx-auto flex h-16 items-center justify-end gap-5 pl-[max(env(safe-area-inset-left),1.5rem)] pr-[max(env(safe-area-inset-right),1.5rem)] text-black dark:text-white">
         <div className="flex items-center mr-auto gap-x-5">
           <a title="Home" href="/">
             <img src={SupafanaLogo} alt="Supafana logo" width={22} height={22} />

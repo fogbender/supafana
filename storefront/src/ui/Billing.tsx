@@ -119,7 +119,6 @@ const Billing = ({ organization }: { organization: Organization }) => {
         */
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
-            <div className="font-semibold text-black dark:text-white">Payment profiles</div>
             <div className="flex flex-col gap-2">
               {billing?.payment_profiles.map(pp => (
                 <div key={pp.id} className="p-4 border rounded-lg">
@@ -128,13 +127,6 @@ const Billing = ({ organization }: { organization: Organization }) => {
               ))}
             </div>
           </div>
-          <button
-            className="ml-4 w-48 btn btn-accent btn-sm"
-            type="button"
-            onClick={() => createCheckoutSessionMutation.mutate()}
-          >
-            Add payment profile
-          </button>
         </div>
       )}
     </div>
@@ -152,18 +144,6 @@ const PaymentProfile = ({ pp, b }: { pp: PaymentProfile; b: BillingT }) => {
         <tr>
           <RowHeader>Name</RowHeader>
           <RowBody>{pp.name}</RowBody>
-        </tr>
-        <tr>
-          <RowHeader>Default billing profile?</RowHeader>
-          <td>
-            <input
-              type="checkbox"
-              onChange={() => {}}
-              value={pp.is_default ? "selected" : "not selected"}
-              checked={pp.is_default}
-              className="checkbox checkbox-info checkbox-sm"
-            />
-          </td>
         </tr>
         <tr>
           <td colSpan={2}>
