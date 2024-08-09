@@ -20,7 +20,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
   }
 }
 
-module ownerRoleAssignment './role-assignment.bicep' = {
+module ownerRoleAssignment './key-vault-role.bicep' = {
   name: 'owner-role-assignment'
   dependsOn: [ keyVault ]
   params: {
@@ -31,7 +31,7 @@ module ownerRoleAssignment './role-assignment.bicep' = {
   }
 }
 
-module userRoleAssignment './role-assignment.bicep' = {
+module userRoleAssignment './key-vault-role.bicep' = {
   name: 'user-role-assignment'
   dependsOn: [ keyVault ]
   params: {
@@ -41,7 +41,6 @@ module userRoleAssignment './role-assignment.bicep' = {
     principalType: 'Group'
   }
 }
-
 
 resource sopsKey 'Microsoft.KeyVault/vaults/keys@2023-07-01' = {
   name: sopsKeyName

@@ -200,11 +200,41 @@ module dnsRecord './dns-record.bicep' = {
   scope: resourceGroup(commonResourceGroupName)
 }
 
-module keyRoleAssignment './role-assignment.bicep' = {
+module keyRoleAssignment './key-vault-role.bicep' = {
   name: 'role-assignment'
   params: {
     keyVaultName: keyVaultName
     roleName: 'Key Vault Crypto User'
+    principalId: vm.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+module vmContributorRole './group-role.bicep' = {
+  name: 'vm-contributor-role'
+  scope: resourceGroup()
+  params: {
+    roleName: 'Virtual Machine Contributor'
+    principalId: vm.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+module templateSpecReaderRole './sub-role.bicep' = {
+  name: 'template-spec-reader-role'
+  scope: subscription()
+  params: {
+    roleName: 'Template Spec Reader'
+    principalId: vm.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+module imageReaderRole './sub-role.bicep' = {
+  name: 'image-reader-role'
+  scope: subscription()
+  params: {
+    roleName: 'supafana-sig-access'
     principalId: vm.identity.principalId
     principalType: 'ServicePrincipal'
   }
