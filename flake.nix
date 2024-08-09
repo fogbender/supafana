@@ -11,9 +11,13 @@
 
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
     sops-nix.url = "github:Mic92/sops-nix";
+
+    #pnpm2nix.url = "github:nzbr/pnpm2nix-nzbr";
+    pnpm2nix.url = "github:wrvsrx/pnpm2nix-nzbr/adapt-to-v9";
+    pnpm2nix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = inputs@{ self, nixpkgs, gitignore, deploy-rs, sops-nix }:
+  outputs = inputs@{ self, nixpkgs, gitignore, deploy-rs, sops-nix, pnpm2nix }:
     let
       system = "x86_64-linux";
       inherit (nixpkgs.lib) filterAttrs const;
@@ -65,6 +69,24 @@
         in pkgs.supafana.server
       );
 
+      pkgStorefront = (system:
+        let pkgs = sysPkgs system;
+            inherit (pnpm2nix.packages.${system}) mkPnpmPackage;
+        in
+          mkPnpmPackage {
+            src = ./storefront/.;
+            inherit (pkgs) nodejs;
+            inherit (pkgs.nodePackages) pnpm;
+            extraBuildInputs = with pkgs; [
+              # needed by sharp
+              vips
+            ];
+            installInPlace = true;
+            copyPnpmStore = false;
+            noDevDependencies = true;
+          }
+      );
+
       shells = (system:
         let s = mapAttrs
           (path: _: (let pkgs = sysPkgs system; in pkgs.callPackage (./nix/shells + "/${path}") {  }))
@@ -114,10 +136,13 @@
       packages.x86_64-darwin.supafana = pkgSupafana "x86_64-darwin";
       packages.aarch64-darwin.supafana = pkgSupafana "aarch64-darwin";
 
+      packages.x86_64-linux.storefront = pkgStorefront "x86_64-linux";
+
       overlays.default = overlay;
 
       packages.x86_64-linux.supafana-image = supafanaAzureImage "x86_64-linux";
       packages.x86_64-linux.grafana-image = grafanaAzureImage "x86_64-linux";
+
 
       nixosConfigurations = {
         supafana-test = nixosSystem system {
