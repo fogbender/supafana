@@ -68,3 +68,12 @@ module api './supafana-api.bicep' = {
     dbHostName: db.outputs.dbHostName
   }
 }
+
+module web './supafana-web.bicep' = {
+  name: 'web-module'
+  params: {
+    location: location
+    env: env
+    subnetId: network.outputs.apiSubnetId
+  }
+}
