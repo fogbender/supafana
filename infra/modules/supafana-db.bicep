@@ -1,4 +1,4 @@
-import {groups} from 'groups.bicep'
+import {groups} from 'constants.bicep'
 
 param location string = resourceGroup().location
 param env string
@@ -63,7 +63,7 @@ resource db 'Microsoft.DBforPostgreSQL/flexibleServers@2023-12-01-preview' = {
 }
 
 resource dbAdminGroup 'Microsoft.DBforPostgreSQL/flexibleServers/administrators@2022-12-01' = {
-  name: concat(dbHostName, '/', groups[adminGroupName].objectId)
+  name: concat(dbHostName, '/', groups[adminGroupName])
   dependsOn: [
     db
   ]

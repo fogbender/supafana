@@ -5,7 +5,7 @@ param keyVaultName string = 'supafana-${env}-vault'
 param sopsKeyName string = 'sops-key'
 param location string = resourceGroup().location
 
-import { groups } from './groups.bicep'
+import { groups } from './constants.bicep'
 
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
   name: keyVaultName
@@ -26,7 +26,7 @@ module ownerRoleAssignment './role-assignment.bicep' = {
   params: {
     keyVaultName: keyVaultName
     roleName: 'Owner'
-    principalId: groups[adminGroupName].objectId
+    principalId: groups[adminGroupName]
     principalType: 'Group'
   }
 }
@@ -37,7 +37,7 @@ module userRoleAssignment './role-assignment.bicep' = {
   params: {
     keyVaultName: keyVaultName
     roleName: 'Key Vault Crypto User'
-    principalId: groups[adminGroupName].objectId
+    principalId: groups[adminGroupName]
     principalType: 'Group'
   }
 }
