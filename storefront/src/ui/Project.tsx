@@ -289,6 +289,22 @@ const SupafanaProject = ({
               <span className="text-gray-500">Upgrade&nbsp;to&nbsp;provision</span>
             </td>
           )}
+          {!trialEnded && state === "Deleted" && (
+            <td>
+              <button
+                onClick={() => {
+                  provisionGrafanaMutation.mutate();
+                }}
+                className="btn btn-xs btn-primary w-20"
+              >
+                {provisionGrafanaMutation.isPending ? (
+                  <span className="loading loading-ring loading-xs h-3" />
+                ) : (
+                  <span>Provision</span>
+                )}
+              </button>
+            </td>
+          )}
         </tr>
         {plan !== "Trial" && (
           <tr>
