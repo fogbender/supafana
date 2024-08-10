@@ -21,6 +21,12 @@ defmodule Supafana.Web.BillingRouter do
 
   plug(:dispatch)
 
+  delete "/customers/:customer_id" do
+    :ok = Supafana.Stripe.Api.delete_customer(customer_id)
+
+    ok_no_content(conn)
+  end
+
   post "/create-checkout-session" do
     instances = conn.params["instances"]
     %{"url" => url} = Supafana.Stripe.Api.create_checkout_session(instances)

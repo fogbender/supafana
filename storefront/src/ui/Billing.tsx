@@ -50,8 +50,6 @@ const Billing = ({ organization }: { organization: Organization }) => {
     },
   });
 
-  console.log(billing);
-
   const setStripeSessionIdMutation = useSetStripeSessionId(() => {
     queryClient.invalidateQueries({ queryKey: queryKeys.billing(organization.id) });
 
@@ -74,8 +72,6 @@ const Billing = ({ organization }: { organization: Organization }) => {
 
   const prevNumSubscriptions = React.useRef<number | null>(null);
 
-  console.log({ numSubscriptions, prev: prevNumSubscriptions.current });
-
   // this is crazy - we should use db subscriptions instead
   React.useEffect(() => {
     if (billing) {
@@ -89,6 +85,7 @@ const Billing = ({ organization }: { organization: Organization }) => {
   }, [billing]);
 
   const isFree = numSubscriptions === 0;
+  const hasManySubscriptions = (billing?.payment_profiles ?? []).length > 1;
 
   return (
     <div className="p-4">
@@ -113,16 +110,19 @@ const Billing = ({ organization }: { organization: Organization }) => {
       ) : (
         /*
           Why a list here? Basically, it's easier to support multiple subscriptions than to
-          enfore a single one. Also, say the person who managed the old subscription left -
-          adding another subscription and letting the old one lapse is the simplest way to
-          ensure continuity.
+          enfore a single one.
         */
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-2">
               {billing?.payment_profiles.map(pp => (
                 <div key={pp.id} className="p-4 border rounded-lg">
-                  <PaymentProfile pp={pp} b={billing} />
+                  <PaymentProfile
+                    pp={pp}
+                    b={billing}
+                    hasManySubscriptions={hasManySubscriptions}
+                    organization_id={organization.id}
+                  />
                 </div>
               ))}
             </div>
@@ -133,7 +133,26 @@ const Billing = ({ organization }: { organization: Organization }) => {
   );
 };
 
-const PaymentProfile = ({ pp, b }: { pp: PaymentProfile; b: BillingT }) => {
+const PaymentProfile = ({
+  pp,
+  b,
+  hasManySubscriptions,
+  organization_id,
+}: {
+  pp: PaymentProfile;
+  b: BillingT;
+  hasManySubscriptions: boolean;
+  organization_id: string;
+}) => {
+  const deleteCustomerMutation = useMutation({
+    mutationFn: (): Promise<{ url: string }> => {
+      return apiServer.url(`/billing/customers/${pp.id}`).delete().text();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.billing(organization_id) });
+    },
+  });
+
   return (
     <table className="text-gray-200 dark:text-gray-700 bg-dots table">
       <tbody>
@@ -145,6 +164,21 @@ const PaymentProfile = ({ pp, b }: { pp: PaymentProfile; b: BillingT }) => {
           <RowHeader>Name</RowHeader>
           <RowBody>{pp.name}</RowBody>
         </tr>
+        {hasManySubscriptions && (
+          <tr>
+            <td colSpan={2}>
+              <button
+                className="h-6 btn btn-link link-primary dark:link-secondary !no-underline h-4 min-h-min px-0 flex gap-2 items-center"
+                onClick={() => deleteCustomerMutation.mutate()}
+              >
+                <span>Delete payment profile</span>
+                {deleteCustomerMutation.isPending && (
+                  <span className="loading loading-ring loading-xs text-primary" />
+                )}
+              </button>
+            </td>
+          </tr>
+        )}
         <tr>
           <td colSpan={2}>
             <div className="flex flex-col gap-2">
