@@ -46,11 +46,11 @@ const Project = ({ project, grafana }: { project: ProjectT; grafana: GrafanaT | 
   }, [project, grafana]);
 
   return (
-    <div className="p-4 m-4 flex gap-4 border rounded-lg flex-col lg:flex-row">
+    <div className="p-4 m-4 flex gap-4 border border-zinc-500 rounded-lg flex-col lg:flex-row">
       <SupabaseProject project={project} />
       {project.status.startsWith("ACTIVE") && (
         <>
-          <div className="self-center flex flex-col gap-4 text-base">
+          <div className="lg:self-center flex flex-col gap-4 text-base">
             <DividerGlyph size={dividerSize} />
           </div>
           <SupafanaProject project={project} grafana={grafana} />
@@ -155,6 +155,22 @@ const SupafanaProject = ({
     },
   });
 
+  const upgradeGrafanaMutation = useMutation({
+    mutationFn: () => {
+      return apiServer
+        .url(`/billing/subscriptions/${project.id}`)
+        .put()
+        .json<{ status: string; url?: string }>();
+    },
+    onSuccess: res => {
+      if (res.status === "redirect" && res.url) {
+        window.location.href = res.url;
+      } else {
+        queryClient.invalidateQueries({ queryKey: queryKeys.grafanas(project.organization_id) });
+      }
+    },
+  });
+
   const deleteGrafanaMutation = useMutation({
     mutationFn: () => {
       return apiServer.url(`/grafanas/${project.id}`).delete().text();
@@ -236,7 +252,7 @@ const SupafanaProject = ({
           <RowHeader>
             <span className="font-bold">Grafana</span>
           </RowHeader>
-          <td colSpan={2}>
+          <td colSpan={state === "Running" ? 1 : 2}>
             <a
               className="inline-flex items-center gap-1.5 font-medium link link-primary dark:link-secondary"
               href={`/dashboard/${project.id}/`}
@@ -248,6 +264,19 @@ const SupafanaProject = ({
               <ExternalLink size={18} />
             </a>
           </td>
+          {state === "Running" && (
+            <td>
+              <a
+                href={`/dashboard/${project.id}/`}
+                title={`Open ${project.name} in Supafana`}
+                target="_blank"
+              >
+                <button className="btn btn-xs btn-accent w-20">
+                  <span>Open</span>
+                </button>
+              </a>
+            </td>
+          )}
         </tr>
         <tr>
           <RowHeader>State</RowHeader>
@@ -262,7 +291,7 @@ const SupafanaProject = ({
                     deleteGrafanaMutation.mutate();
                   }
                 }}
-                className="btn btn-xs btn-info w-20"
+                className="btn btn-xs btn-warning w-20"
               >
                 {deleteGrafanaMutation.isPending ? (
                   <span className="loading loading-ring loading-xs text-black h-3" />
@@ -272,11 +301,14 @@ const SupafanaProject = ({
               </button>
             </td>
           )}
-          {["Failed"].includes(state) && (
+          {(["Failed"].includes(state) ||
+            (plan === "Supafana Pro" && ["Deleted"].includes(state))) && (
             <td>
               <button
                 onClick={() => {
-                  provisionGrafanaMutation.mutate();
+                  if (!provisionGrafanaMutation.isPending) {
+                    provisionGrafanaMutation.mutate();
+                  }
                 }}
                 className="btn btn-xs btn-primary w-20"
               >
@@ -288,7 +320,7 @@ const SupafanaProject = ({
               </button>
             </td>
           )}
-          {trialEnded && state === "Deleted" && (
+          {plan === "Trial" && trialEnded && state === "Deleted" && (
             <td>
               <span
                 className="text-gray-500"
@@ -296,7 +328,7 @@ const SupafanaProject = ({
               />
             </td>
           )}
-          {!trialEnded && state === "Deleted" && (
+          {plan === "Trial" && !trialEnded && state === "Deleted" && (
             <td>
               <button
                 onClick={() => {
@@ -334,10 +366,17 @@ const SupafanaProject = ({
             </td>
             <td>
               <button
-                onClick={() => {}}
-                className="btn btn-xs btn-secondary"
-                dangerouslySetInnerHTML={{ __html: nbsp("Upgrade to Pro") }}
-              />
+                onClick={() => {
+                  upgradeGrafanaMutation.mutate();
+                }}
+                className="btn btn-xs btn-secondary w-28"
+              >
+                {upgradeGrafanaMutation.isPending ? (
+                  <span className="loading loading-ring loading-xs h-3" />
+                ) : (
+                  <span dangerouslySetInnerHTML={{ __html: nbsp("Upgrade to Pro") }} />
+                )}
+              </button>
             </td>
           </tr>
         )}

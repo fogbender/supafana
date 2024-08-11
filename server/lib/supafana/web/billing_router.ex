@@ -21,10 +21,61 @@ defmodule Supafana.Web.BillingRouter do
 
   plug(:dispatch)
 
-  delete "/customers/:customer_id" do
-    :ok = Supafana.Stripe.Api.delete_customer(customer_id)
+  put "/subscriptions/:project_ref" do
+    access_token = conn.assigns[:supabase_access_token]
+    org_id = conn.assigns[:org_id]
 
-    ok_no_content(conn)
+    case ensure_own_project(access_token, project_ref) do
+      false ->
+        forbid(conn, "Project #{project_ref} does not belong to your Supabase organization")
+
+      {:ok, _} ->
+        subscritpions =
+          from(
+            s in Data.OrgStripeSubscription,
+            where: s.org_id == ^org_id
+          )
+          |> Repo.all()
+
+        case subscritpions do
+          [] ->
+            %{"url" => url} =
+              Supafana.Stripe.Api.create_checkout_session(1, %{"project_ref" => project_ref})
+
+            ok_json(
+              conn,
+              %{status: "redirect", url: url}
+            )
+
+          [%Data.OrgStripeSubscription{stripe_subscription_id: stripe_subscription_id} | _] ->
+            %Data.Grafana{} =
+              Repo.Grafana.set_stripe_subscription_id(project_ref, org_id, stripe_subscription_id)
+
+            ok_json(conn, %{status: "success"})
+        end
+    end
+  end
+
+  delete "/customers/:customer_id" do
+    org_id = conn.assigns[:org_id]
+
+    c =
+      from(
+        c in Data.OrgStripeCustomer,
+        where: c.org_id == ^org_id,
+        where: c.stripe_customer_id == ^customer_id
+      )
+      |> Repo.one()
+
+    case c do
+      nil ->
+        forbid(conn, "No such customer")
+
+      _ ->
+        :ok = Supafana.Stripe.Api.delete_customer(customer_id)
+
+        ok_no_content(conn)
+    end
   end
 
   post "/create-checkout-session" do
@@ -66,10 +117,13 @@ defmodule Supafana.Web.BillingRouter do
       session_id = conn.params["session_id"]
       {:ok, session} = Supafana.Stripe.Api.get_checkout_session(session_id)
 
+      IO.inspect(session)
+
       %{
         "status" => "complete",
         "customer" => stripe_customer_id,
-        "subscription" => stripe_subscription_id
+        "subscription" => stripe_subscription_id,
+        "metadata" => metadata
       } = session
 
       case Repo.OrgStripeCustomer.add(%{
@@ -92,6 +146,19 @@ defmodule Supafana.Web.BillingRouter do
 
           %{"url" => portal_session_url} =
             Supafana.Stripe.Api.create_portal_session(stripe_customer_id)
+
+          case metadata do
+            %{"project_ref" => project_ref} ->
+              %Data.Grafana{} =
+                Repo.Grafana.set_stripe_subscription_id(
+                  project_ref,
+                  org_id,
+                  stripe_subscription_id
+                )
+
+            _ ->
+              :ok
+          end
 
           ok_json(
             conn,

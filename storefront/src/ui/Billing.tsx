@@ -116,7 +116,7 @@ const Billing = ({ organization }: { organization: Organization }) => {
           <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-2">
               {billing?.payment_profiles.map(pp => (
-                <div key={pp.id} className="p-4 border rounded-lg">
+                <div key={pp.id} className="p-4 border border-zinc-500 rounded-lg">
                   <PaymentProfile
                     pp={pp}
                     b={billing}
@@ -185,7 +185,10 @@ const PaymentProfile = ({
               <div className="font-semibold text-black dark:text-white">Subscriptions</div>
               <div>
                 {pp.subscriptions.map(s => (
-                  <div key={s.id} className="p-4 border rounded-lg bg-white dark:bg-black">
+                  <div
+                    key={s.id}
+                    className="p-4 border border-zinc-500 rounded-lg bg-white dark:bg-black"
+                  >
                     <Subscription s={s} b={b} />
                   </div>
                 ))}

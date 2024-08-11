@@ -1,5 +1,6 @@
 defmodule Supafana.Web.Router do
   import Supafana.Web.Utils
+
   import Ecto.Query, only: [from: 2]
 
   require Logger
@@ -248,17 +249,6 @@ defmodule Supafana.Web.Router do
         )
 
         ok_no_content(conn)
-    end
-  end
-
-  defp ensure_own_project(access_token, project_ref) do
-    case Supafana.Supabase.Management.project_api_keys(access_token, project_ref) do
-      {:ok, %{status: 200, body: keys}} ->
-        service_key = (keys |> Enum.find(&(&1["name"] == "service_role")))["api_key"]
-        {:ok, service_key}
-
-      _ ->
-        false
     end
   end
 

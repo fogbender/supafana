@@ -14,18 +14,35 @@ defmodule Supafana.Stripe.Api do
     end
   end
 
-  def create_checkout_session(quantity) do
+  def create_checkout_session(quantity, metadata \\ %{}) do
+    params = %{
+      "line_items[0][price]" => Supafana.env(:stripe_price_id),
+      "line_items[0][quantity]" => quantity,
+      "mode" => "subscription",
+      "success_url" =>
+        "#{Supafana.env(:supafana_storefront_url)}/dashboard?session_id={CHECKOUT_SESSION_ID}",
+      "cancel_url" => "#{Supafana.env(:supafana_storefront_url)}/dashboard"
+    }
+
+    params =
+      case metadata do
+        nil ->
+          params
+
+        map when is_map(map) ->
+          params
+          |> Map.merge(
+            map
+            |> Enum.reduce(%{}, fn {k, v}, acc ->
+              acc |> Map.merge(%{"metadata[#{k}]" => v})
+            end)
+          )
+      end
+
     r =
       post(
         "/v1/checkout/sessions",
-        %{
-          "line_items[0][price]" => Supafana.env(:stripe_price_id),
-          "line_items[0][quantity]" => quantity,
-          "mode" => "subscription",
-          "success_url" =>
-            "#{Supafana.env(:supafana_storefront_url)}/dashboard?session_id={CHECKOUT_SESSION_ID}",
-          "cancel_url" => "#{Supafana.env(:supafana_storefront_url)}/dashboard"
-        }
+        params
       )
 
     case r do
