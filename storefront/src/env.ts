@@ -1,5 +1,6 @@
 /// <reference types="vite/client" />
 /// <reference types="astro/client" />
+/// <reference path="../.astro/types.d.ts" />
 
 export function initEnv() {
   if (!import.meta.env.SSR) {
