@@ -203,23 +203,6 @@ defmodule Supafana.Web.BillingRouter do
                        is_default: is_default
                      } ->
         case Supafana.Stripe.Api.get_customer(stripe_customer_id) do
-          {:ok, %{"deleted" => true}} ->
-            from(
-              s in Data.OrgStripeSubscription,
-              where: s.org_id == ^org_id,
-              where: s.stripe_customer_id == ^stripe_customer_id
-            )
-            |> Repo.delete_all()
-
-            from(
-              c in Data.OrgStripeCustomer,
-              where: c.org_id == ^org_id,
-              where: c.stripe_customer_id == ^stripe_customer_id
-            )
-            |> Repo.delete_all()
-
-            nil
-
           {:ok,
            %{
              "created" => created_ts_sec,
@@ -229,56 +212,41 @@ defmodule Supafana.Web.BillingRouter do
             {:ok, %{"data" => subscriptions}} =
               Supafana.Stripe.Api.get_subscriptions(stripe_customer_id)
 
-            case subscriptions do
-              [] ->
-                from(
-                  c in Data.OrgStripeCustomer,
-                  where: c.org_id == ^org_id,
-                  where: c.stripe_customer_id == ^stripe_customer_id
-                )
-                |> Repo.delete_all()
-
-                nil
-
-              subscriptions ->
-                # IO.inspect(subscriptions)
-
-                subscriptions =
-                  subscriptions
-                  |> Enum.map(fn %{
-                                   "id" => subscription_id,
-                                   "current_period_end" => period_end_ts_sec,
-                                   "cancel_at" => cancel_at_ts_sec,
-                                   "canceled_at" => canceled_at_ts_sec,
-                                   "status" => status,
-                                   "quantity" => quantity,
-                                   "plan" => %{
-                                     "product" => %{
-                                       "name" => product_name
-                                     }
-                                   }
-                                 } ->
-                    %Supafana.Z.Subscription{
-                      id: subscription_id,
-                      created_ts_sec: created_ts_sec,
-                      period_end_ts_sec: period_end_ts_sec,
-                      cancel_at_ts_sec: cancel_at_ts_sec,
-                      canceled_at_ts_sec: canceled_at_ts_sec,
-                      status: status,
-                      quantity: quantity,
-                      product_name: product_name
-                    }
-                  end)
-
-                %Supafana.Z.PaymentProfile{
-                  id: stripe_customer_id,
-                  email: email,
-                  name: name,
+            subscriptions =
+              subscriptions
+              |> Enum.map(fn %{
+                               "id" => subscription_id,
+                               "current_period_end" => period_end_ts_sec,
+                               "cancel_at" => cancel_at_ts_sec,
+                               "canceled_at" => canceled_at_ts_sec,
+                               "status" => status,
+                               "quantity" => quantity,
+                               "plan" => %{
+                                 "product" => %{
+                                   "name" => product_name
+                                 }
+                               }
+                             } ->
+                %Supafana.Z.Subscription{
+                  id: subscription_id,
                   created_ts_sec: created_ts_sec,
-                  is_default: is_default,
-                  subscriptions: subscriptions
+                  period_end_ts_sec: period_end_ts_sec,
+                  cancel_at_ts_sec: cancel_at_ts_sec,
+                  canceled_at_ts_sec: canceled_at_ts_sec,
+                  status: status,
+                  quantity: quantity,
+                  product_name: product_name
                 }
-            end
+              end)
+
+            %Supafana.Z.PaymentProfile{
+              id: stripe_customer_id,
+              email: email,
+              name: name,
+              created_ts_sec: created_ts_sec,
+              is_default: is_default,
+              subscriptions: subscriptions
+            }
         end
       end)
       |> Enum.filter(&(not is_nil(&1)))

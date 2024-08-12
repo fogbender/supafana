@@ -59,6 +59,8 @@ defmodule Supafana.CheckVmsJob do
 
           {:ok, subscription} = Stripe.Api.get_subscription(stripe_subscription_id)
 
+          IO.inspect({:subscription, subscription})
+
           price_id = Supafana.env(:stripe_price_id)
 
           case subscription["plan"]["id"] do
