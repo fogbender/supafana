@@ -1,0 +1,41 @@
+<style is:global>
+  .blog {
+    --gradient-from: 0 112 243;
+    --gradient-to: 248 28 229;
+    background-size:
+      100% 100%,
+      100% 100%,
+      1440px 1px;
+    background-position: bottom;
+    background-repeat: no-repeat;
+  }
+
+  .dark .blog-gradient {
+    background: linear-gradient(to top, #000 0, hsla(0, 0%, 100%, 0) 100%),
+      linear-gradient(
+        90deg,
+        rgb(var(--gradient-from, 85 85 85) / 0.2) 0,
+        rgb(var(--gradient-to, 85 85 85) / 0.2) 100%
+      );
+  }
+  .blog-gradient {
+    background: linear-gradient(to top, #fff 0, hsla(0, 0%, 100%, 0) 100%),
+      linear-gradient(
+        to right,
+        rgb(var(--gradient-from, 192.5 192.5 192.5) / 0.08) 0,
+        rgb(var(--gradient-to, 192.5 192.5 192.5) / 0.08) 100%
+      );
+  }
+</style>
+
+<main class="blog blog-gradient py-24">
+  <div
+    class:list={[
+      "isolate max-w-7xl mx-auto px-3 space-y-4 flex flex-col items-center",
+      "md:px-8",
+      "xl:flex-row xl:justify-between lg:max-xl:px-20 xl:items-start xl:space-y-0 xl:px-5",
+    ]}
+  >
+    <slot />
+  </div>
+</main>
