@@ -1,0 +1,9 @@
+---
+import dayjs from "dayjs";
+
+const { value } = Astro.props;
+const date = typeof value === "string" ? dayjs(value).format("MMMM D, YYYY") : value;
+const dateISO = dayjs(date).startOf("day").toISOString();
+---
+
+<time datetime={dateISO}>{date}</time>

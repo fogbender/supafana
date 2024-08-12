@@ -1,0 +1,96 @@
+---
+import Author from "./Author.astro";
+import { smartypants } from "smartypants";
+import { type CollectionEntry } from "astro:content";
+import { Picture } from "astro:assets";
+
+interface Props {
+  content: CollectionEntry<"blog">["data"];
+}
+
+const { content } = Astro.props as Props;
+
+const { title, publishDate, authors, coverImage, heroImage, coverImageAlt, heroImageAlt } = content;
+
+const cover = (coverImage || heroImage) && {
+  src: coverImage ?? heroImage,
+  alt: coverImageAlt ?? heroImageAlt ?? title,
+};
+const { coverImageAspectRatio = 75 / 29 } = content;
+---
+
+<header class="my-4 flex flex-col space-y-8 p-0 sm:my-8">
+  {
+    cover && (
+      <div class="cover-image" style={"aspect-ratio: " + coverImageAspectRatio}>
+        <Picture
+          src={cover.src!}
+          sizes="(max-width: 600px) 1200w, 2400w"
+          widths={[1200, 2400]}
+          alt={cover.alt}
+        />
+      </div>
+    )
+  }
+  <div class="font-prompt mt-2 md:px-12 lg:mt-4">
+    <h1
+      class="leading-13.5 text-left align-top !text-2xl md:!text-4xl mb-0"
+      set:html={smartypants(title, 1)}
+    />
+    <div class="authors mt-3">
+      <ul role="list">
+        {
+          authors.map(author => (
+            <li>
+              <Author publishDate={publishDate} name={author} showTwitter />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</header>
+
+<style>
+  h2 {
+    grid-column-start: title-start;
+    grid-column-end: title-end;
+    grid-row-start: title-start;
+    grid-row-end: title-end;
+  }
+
+  .authors {
+    grid-area: authors;
+  }
+
+  h1 {
+    grid-area: title;
+    font-family: var(--font-display);
+    font-size: var(--size-500);
+    margin-bottom: 0.25em;
+  }
+
+  .cover-image {
+    grid-area: image;
+    width: 100%;
+  }
+
+  ul {
+    grid-area: authors;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+  }
+
+  .authors {
+    /* TODO: remove this */
+    font-size: var(--size-400);
+  }
+
+  @media (min-width: 768px) {
+    h1 {
+      font-size: var(--size-600);
+    }
+  }
+</style>

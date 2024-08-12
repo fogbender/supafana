@@ -1,0 +1,52 @@
+---
+import * as Icon from "../Icons";
+import { getMention, type AuthorName } from "../../mentions";
+import DateTime from "./Date.astro";
+import Avatar from "../../ui/landing/avatar.astro";
+const { name, showTwitter, publishDate } = Astro.props as {
+  name: AuthorName;
+  showTwitter: boolean;
+  publishDate: Date;
+};
+
+const author = getMention(name);
+---
+
+<div class="author text-gray-500">
+  <Avatar src={author.avatar as any} name={author.name} size={25} />
+  <div class="ml-2 flex flex-col">
+    <div class="flex flex-wrap items-center space-x-1 text-sm">
+      <span>Written by</span>
+      <span class="body static flex h-5 items-center text-left align-top">{author.name}</span>
+      {
+        showTwitter && author.twitter && (
+          <a href={author.twitter} title={`Follow ${author.name} on Twitter`}>
+            <span>
+              <Icon.Twitter />
+            </span>
+          </a>
+        )
+      }
+      <span>on</span>
+      <DateTime value={publishDate} />
+    </div>
+    <slot />
+  </div>
+</div>
+
+<style>
+  .author {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font: inherit;
+  }
+
+  a {
+    opacity: 0.7;
+  }
+  a:hover,
+  a:focus {
+    opacity: 1;
+  }
+</style>
