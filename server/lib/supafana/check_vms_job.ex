@@ -50,51 +50,66 @@ defmodule Supafana.CheckVmsJob do
           end
 
         %Data.OrgStripeCustomer{
-          stripe_customer_id: _stripe_customer_id,
+          stripe_customer_id: stripe_customer_id,
           subscriptions: subscriptions
         } ->
-          # For now, there can be only one subscription - until we offer other products
-          [%Data.OrgStripeSubscription{stripe_subscription_id: stripe_subscription_id} | _] =
-            subscriptions
+          case Supafana.Stripe.Api.get_customer(stripe_customer_id) do
+            {:ok, %{"deleted" => true}} ->
+              # NOTE: this can happen if a customer is manually deleted from the Stripe dashboard
+              :ok = cancel_subscription(stripe_customer_id, grafanas, org_id)
 
-          {:ok, subscription} = Stripe.Api.get_subscription(stripe_subscription_id)
+            _ ->
+              # For now, there can be only one subscription - until we offer other products
+              [%Data.OrgStripeSubscription{stripe_subscription_id: stripe_subscription_id} | _] =
+                subscriptions
 
-          IO.inspect({:subscription, subscription})
+              {:ok, subscription} = Stripe.Api.get_subscription(stripe_subscription_id)
 
-          price_id = Supafana.env(:stripe_price_id)
+              price_id = Supafana.env(:stripe_price_id)
 
-          case subscription["plan"]["id"] do
-            ^price_id ->
-              quantity = subscription["quantity"]
+              case subscription["plan"]["id"] do
+                ^price_id ->
+                  case subscription["status"] do
+                    "canceled" ->
+                      :ok = cancel_subscription(stripe_customer_id, grafanas, org_id)
 
-              grafanas =
-                grafanas |> Enum.filter(&(&1.plan == "Supafana Pro"))
+                    _ ->
+                      quantity = subscription["quantity"]
 
-              active_grafanas = grafanas |> Enum.filter(&(&1.state == "Running")) |> length
+                      grafanas =
+                        grafanas |> Enum.filter(&(&1.plan == "Supafana Pro"))
 
-              balance = active_grafanas - (quantity + free_instances)
+                      active_grafanas =
+                        grafanas |> Enum.filter(&(&1.state == "Running")) |> length
 
-              cond do
-                balance == 0 ->
-                  :ok
+                      balance = active_grafanas - (quantity + free_instances)
 
-                true ->
-                  new_quantity = active_grafanas - free_instances
+                      cond do
+                        balance == 0 ->
+                          :ok
 
-                  subscription_item =
-                    subscription["items"]["data"] |> Enum.find(&(&1["plan"]["id"] == price_id))
+                        true ->
+                          new_quantity = active_grafanas - free_instances
 
-                  case subscription_item do
-                    %{"id" => subscription_item_id} ->
-                      {:ok, _} =
-                        Stripe.Api.set_subscription_plan_quantity(
-                          subscription_item_id,
-                          new_quantity
-                        )
+                          subscription_item =
+                            subscription["items"]["data"]
+                            |> Enum.find(&(&1["plan"]["id"] == price_id))
+
+                          case subscription_item do
+                            %{"id" => subscription_item_id} ->
+                              {:ok, _} =
+                                Stripe.Api.set_subscription_plan_quantity(
+                                  subscription_item_id,
+                                  new_quantity
+                                )
+                          end
+                      end
+
+                      Logger.debug(
+                        "#{active_grafanas} grafanas here, subscription is for #{quantity}"
+                      )
                   end
               end
-
-              Logger.debug("#{active_grafanas} grafanas here, subscription is for #{quantity}")
           end
       end
     end)
@@ -222,5 +237,31 @@ defmodule Supafana.CheckVmsJob do
     url = "https://#{Supafana.env(:supafana_domain)}/dashboard/#{project_ref}/"
 
     Tesla.get(url)
+  end
+
+  defp cancel_subscription(stripe_customer_id, grafanas, org_id) do
+    # 1. set subscription_id to nil and plans to Trial for all grafanas in this org
+    # 2. delete customer and subscription from our db
+
+    grafanas
+    |> Enum.each(fn g ->
+      %Data.Grafana{} = Repo.Grafana.set_plan_to_trial(g.supabase_id, org_id)
+    end)
+
+    from(
+      s in Data.OrgStripeSubscription,
+      where: s.org_id == ^org_id,
+      where: s.stripe_customer_id == ^stripe_customer_id
+    )
+    |> Repo.delete_all()
+
+    from(
+      c in Data.OrgStripeCustomer,
+      where: c.org_id == ^org_id,
+      where: c.stripe_customer_id == ^stripe_customer_id
+    )
+    |> Repo.delete_all()
+
+    :ok
   end
 end

@@ -203,6 +203,9 @@ defmodule Supafana.Web.BillingRouter do
                        is_default: is_default
                      } ->
         case Supafana.Stripe.Api.get_customer(stripe_customer_id) do
+          {:ok, %{"deleted" => true}} ->
+            nil
+
           {:ok,
            %{
              "created" => created_ts_sec,
