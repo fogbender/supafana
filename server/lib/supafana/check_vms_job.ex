@@ -72,12 +72,9 @@ defmodule Supafana.CheckVmsJob do
 
               balance = active_grafanas - (quantity + free_instances)
 
-              IO.inspect({:quantity, quantity})
-              IO.inspect({:balance, balance})
-
               cond do
                 balance == 0 ->
-                  IO.inspect("We're square")
+                  :ok
 
                 true ->
                   new_quantity = active_grafanas - free_instances
@@ -95,7 +92,7 @@ defmodule Supafana.CheckVmsJob do
                   end
               end
 
-              IO.inspect("#{active_grafanas} grafanas here, subscription is for #{quantity}")
+              Logger.debug("#{active_grafanas} grafanas here, subscription is for #{quantity}")
           end
       end
     end)
@@ -113,7 +110,7 @@ defmodule Supafana.CheckVmsJob do
     )
     |> Repo.all()
     |> Enum.each(fn %{supabase_id: project_ref, org_id: org_id, first_start_at: first_start_at} ->
-      IO.inspect("Deleting #{org_id} #{project_ref} #{first_start_at}")
+      Logger.info("Deleting #{org_id} #{project_ref} #{first_start_at}")
 
       Supafana.Web.Task.schedule(
         operation: :delete_vm,
@@ -142,11 +139,11 @@ defmodule Supafana.CheckVmsJob do
             check_vm(project_ref, state)
 
           {:ok, %{"properties" => %{"provisioningState" => provisioning_state}}} ->
-            IO.inspect({:provisioning_state, provisioning_state})
+            Logger.info("provisioning_state for #{project_ref}: #{provisioning_state}")
             check_vm(project_ref, state)
         end
 
-      IO.inspect({:next_state, next_state})
+      Logger.info("next_state for #{project_ref}: #{next_state}")
 
       %Data.Grafana{} = Repo.Grafana.set_state(project_ref, org_id, next_state)
     end)
@@ -215,7 +212,7 @@ defmodule Supafana.CheckVmsJob do
   end
 
   defp parse_statuses([s | t]) do
-    IO.inspect({:s, s})
+    Logger.debug("#{inspect({:s, s})}")
     parse_statuses(t)
   end
 

@@ -95,7 +95,7 @@ defmodule Supafana.Azure.Api do
     {:ok, access_token} = get_graph_access_token()
 
     r =
-      client(access_token)
+      client_with_retry(access_token)
       |> Tesla.get(path,
         query: [
           {"api-version", "2021-04-01"}

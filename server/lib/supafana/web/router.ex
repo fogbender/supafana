@@ -153,26 +153,6 @@ defmodule Supafana.Web.Router do
 
     {:ok, projects} = Supafana.Supabase.Management.projects(access_token)
 
-    api_keys =
-      projects
-      |> Enum.filter(&(&1["status"] === "ACTIVE_HEALTHY"))
-      |> Enum.map(fn p ->
-        %{"id" => project_ref} = p
-
-        project_api_keys =
-          case Supafana.Supabase.Management.project_api_keys(access_token, project_ref) do
-            {:ok, %{status: 200, body: body}} ->
-              body
-
-            _ ->
-              :error
-          end
-
-        project_api_keys
-      end)
-
-    IO.inspect(api_keys)
-
     conn |> ok_json(projects)
   end
 
@@ -220,11 +200,11 @@ defmodule Supafana.Web.Router do
 
         case Supafana.Azure.Api.create_deployment(project_ref, service_key, password) do
           {:ok, %{"properties" => %{"provisioningState" => "Accepted"}}} ->
-            IO.inspect("Accepted")
+            Logger.info("#{project_ref}: Accepted")
             :ok
 
           {:error, %{"error" => %{"code" => "DeploymentActive"}}} ->
-            IO.inspect("DeploymentActive")
+            Logger.info("#{project_ref}: DeploymentActive")
             :ok
         end
 

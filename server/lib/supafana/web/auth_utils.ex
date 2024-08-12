@@ -10,7 +10,7 @@ defmodule Supafana.Web.AuthUtils do
   def handle_auth(conn, code, redirect_uri, code_verifier) do
     {:ok, tokens} = Supafana.Supabase.OAuth.tokens(code, redirect_uri, code_verifier)
 
-    IO.inspect({:tokens, tokens})
+    Logger.debug("tokens: #{inspect(tokens)}")
 
     handle_tokens(conn, tokens)
   end

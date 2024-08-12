@@ -49,11 +49,9 @@ defmodule Supafana.CORS do
   end
 
   defp check_origin_hostname(hostname) do
-    IO.inspect({:hostname, hostname})
-
     allowedHosts = [
-      # prod
-      # {:exact, "api.supafana.com"}
+      {:exact, "supafana.com"},
+      {:exact, "supafana-test.com"}
     ]
 
     Enum.any?(allowedHosts, fn

@@ -50,6 +50,12 @@ const Billing = ({ organization }: { organization: Organization }) => {
     },
   });
 
+  React.useEffect(() => {
+    if (pollBilling) {
+      queryClient.invalidateQueries({ queryKey: queryKeys.projects(organization.id) });
+    }
+  }, [billing, pollBilling]);
+
   const setStripeSessionIdMutation = useSetStripeSessionId(() => {
     queryClient.invalidateQueries({ queryKey: queryKeys.billing(organization.id) });
 
