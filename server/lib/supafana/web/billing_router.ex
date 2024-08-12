@@ -117,8 +117,6 @@ defmodule Supafana.Web.BillingRouter do
       session_id = conn.params["session_id"]
       {:ok, session} = Supafana.Stripe.Api.get_checkout_session(session_id)
 
-      IO.inspect(session)
-
       %{
         "status" => "complete",
         "customer" => stripe_customer_id,

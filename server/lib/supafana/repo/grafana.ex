@@ -47,6 +47,19 @@ defmodule Supafana.Repo.Grafana do
     )
   end
 
+  def set_plan_to_trial(project_ref, org_id) do
+    Data.Grafana.new(%{
+      supabase_id: project_ref,
+      org_id: org_id,
+      plan: "Trial",
+      stripe_subscription_id: nil
+    })
+    |> Repo.insert!(
+      on_conflict: {:replace, [:plan, :stripe_subscription_id]},
+      conflict_target: [:supabase_id]
+    )
+  end
+
   def set_stripe_subscription_id(project_ref, org_id, stripe_subscription_id) do
     Data.Grafana.new(%{
       supabase_id: project_ref,

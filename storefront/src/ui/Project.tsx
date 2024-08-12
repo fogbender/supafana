@@ -190,6 +190,9 @@ const SupafanaProject = ({
             queryClient.invalidateQueries({
               queryKey: queryKeys.grafanas(project.organization_id),
             });
+            queryClient.invalidateQueries({
+              queryKey: queryKeys.billing(project.organization_id),
+            });
           }, 9000);
         }
       } else if (grafana.plan === "Trial") {

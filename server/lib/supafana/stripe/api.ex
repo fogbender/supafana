@@ -100,6 +100,17 @@ defmodule Supafana.Stripe.Api do
     end
   end
 
+  def get_subscription(subscription_id) do
+    r =
+      client()
+      |> Tesla.get("/v1/subscriptions/#{subscription_id}")
+
+    case r do
+      {:ok, %Tesla.Env{status: 200, body: body}} ->
+        {:ok, body}
+    end
+  end
+
   def create_portal_session(customer_id) do
     r =
       post(
