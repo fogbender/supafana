@@ -117,6 +117,9 @@ importers:
       sharp:
         specifier: ^0.33.4
         version: 0.33.4
+      smartypants:
+        specifier: ^0.1.6
+        version: 0.1.6
       vite-plugin-checker:
         specifier: ^0.6.4
         version: 0.6.4(typescript@5.5.2)(vite@5.3.2)
@@ -2529,6 +2532,10 @@ packages:
   sitemap@7.1.2:
     resolution: {integrity: sha512-ARCqzHJ0p4gWt+j7NlU5eDlIO9+Rkr/JhPFZKKQ1l5GCus7rJH4UdrlVAh0xC/gDS/Qir2UMxqYNHtsKr2rpCw==}
     engines: {node: '>=12.0.0', npm: '>=5.6.0'}
+    hasBin: true
+
+  smartypants@0.1.6:
+    resolution: {integrity: sha512-zGXh+Q6Y3OPTLM5x2HxAIkEAj4ZcePftmIOdIYozv2T+m03Sp5R4YppczKuo6IdnSMc99U+Wgvy8Mil0eeep7g==}
     hasBin: true
 
   solid-js@1.8.0:
@@ -6067,6 +6074,8 @@ snapshots:
       '@types/sax': 1.2.7
       arg: 5.0.2
       sax: 1.4.1
+
+  smartypants@0.1.6: {}
 
   solid-js@1.8.0:
     dependencies:

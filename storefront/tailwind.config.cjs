@@ -11,8 +11,9 @@ module.exports = {
       typography: ({ theme }) => ({
         fog: {
           css: {
-            "--tw-prose-links": theme("colors.blue.700"),
-            "--tw-prose-bullets:": theme("colors.black"),
+            "--tw-prose-links": "#3291ff",
+            "--tw-prose-body": theme("colors.gray.600"),
+            "--tw-prose-bullets:": theme("colors.black")
           },
         },
       }),
