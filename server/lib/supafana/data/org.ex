@@ -1,7 +1,7 @@
 defmodule Supafana.Data.Org do
   use Supafana.Data
 
-  alias Supafana.Data.{Grafana}
+  alias Supafana.Data.{Grafana, OrgStripeCustomer}
 
   @primary_key {:id, Ecto.UUID, autogenerate: true}
   schema "org" do
@@ -10,6 +10,7 @@ defmodule Supafana.Data.Org do
     field(:free_instances, :integer, default: 0)
 
     has_many(:grafanas, Grafana)
+    has_many(:org_stripe_customers, OrgStripeCustomer)
 
     timestamps()
   end

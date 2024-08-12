@@ -4,7 +4,7 @@
 @tailwind utilities;
 
 .bg-dots {
-  background-image: radial-gradient(theme("colors.zinc.300") 1px, transparent 1px);
+  background-image: radial-gradient(theme("colors.zinc.200") 1px, transparent 1px);
   background-size: 5px 5px;
 }
 
@@ -15,6 +15,6 @@
 
 @layer components {
   .table tr:not(:last-child) {
-    @apply border-b border-b-zinc-500
+    @apply border-b border-b-zinc-500;
   }
 }

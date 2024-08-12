@@ -33,7 +33,8 @@ CREATE TABLE public.grafana (
     password character varying(255),
     inserted_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    first_start_at timestamp without time zone
+    first_start_at timestamp without time zone,
+    stripe_subscription_id text
 );
 
 
@@ -58,6 +59,20 @@ CREATE TABLE public.org (
 CREATE TABLE public.org_stripe_customer (
     org_id uuid NOT NULL,
     stripe_customer_id text NOT NULL,
+    inserted_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    is_default boolean DEFAULT false NOT NULL
+);
+
+
+--
+-- Name: org_stripe_subscription; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.org_stripe_subscription (
+    org_id uuid NOT NULL,
+    stripe_customer_id text NOT NULL,
+    stripe_subscription_id text NOT NULL,
     inserted_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
@@ -119,6 +134,13 @@ CREATE UNIQUE INDEX org_supabase_id_index ON public.org USING btree (supabase_id
 
 
 --
+-- Name: unique_is_default_per_org; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX unique_is_default_per_org ON public.org_stripe_customer USING btree (org_id) WHERE (is_default = true);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
@@ -126,3 +148,4 @@ INSERT INTO public."schema_migrations" (version) VALUES (20240710152810);
 INSERT INTO public."schema_migrations" (version) VALUES (20240713193345);
 INSERT INTO public."schema_migrations" (version) VALUES (20240720230903);
 INSERT INTO public."schema_migrations" (version) VALUES (20240727002752);
+INSERT INTO public."schema_migrations" (version) VALUES (20240804050719);

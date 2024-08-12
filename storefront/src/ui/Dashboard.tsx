@@ -67,7 +67,7 @@ export const Dashboard = () => {
   const { data: me } = useMe();
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col pb-12">
       <Header organization={organization} />
       <div className="mt-4 flex-1 flex flex-col items-center justify-center text-black dark:text-white">
         {organization && !organizationsError ? (
@@ -95,6 +95,10 @@ export const Dashboard = () => {
                 </div>
               </div>
             )}
+            <div>
+              <SectionHeader text="Billing" />
+              <Billing organization={organization} />
+            </div>
             <div className="self-start w-full">
               <SectionHeader text="Who should get email notifications from Supafana?">
                 <>
@@ -131,10 +135,6 @@ export const Dashboard = () => {
                   </table>
                 </div>
               )}
-            </div>
-            <div>
-              <SectionHeader text="Billing" />
-              <Billing organization={organization} />
             </div>
           </div>
         ) : connecting || organizationsLoading ? (

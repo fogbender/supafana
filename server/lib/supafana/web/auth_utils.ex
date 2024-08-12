@@ -10,7 +10,7 @@ defmodule Supafana.Web.AuthUtils do
   def handle_auth(conn, code, redirect_uri, code_verifier) do
     {:ok, tokens} = Supafana.Supabase.OAuth.tokens(code, redirect_uri, code_verifier)
 
-    IO.inspect({:tokens, tokens})
+    Logger.debug("tokens: #{inspect(tokens)}")
 
     handle_tokens(conn, tokens)
   end
@@ -38,12 +38,7 @@ defmodule Supafana.Web.AuthUtils do
   end
 
   defp handle_tokens(conn, %{status: 404}) do
-    location = Supafana.env(:supafana_storefront_url)
-
-    conn
-    |> resp(:found, "Not authorized")
-    |> put_resp_header("location", location)
-    |> halt()
+    sign_out(conn)
   end
 
   defp handle_tokens(conn, tokens) do

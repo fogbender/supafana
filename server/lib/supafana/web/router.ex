@@ -1,5 +1,6 @@
 defmodule Supafana.Web.Router do
   import Supafana.Web.Utils
+
   import Ecto.Query, only: [from: 2]
 
   require Logger
@@ -152,26 +153,6 @@ defmodule Supafana.Web.Router do
 
     {:ok, projects} = Supafana.Supabase.Management.projects(access_token)
 
-    api_keys =
-      projects
-      |> Enum.filter(&(&1["status"] === "ACTIVE_HEALTHY"))
-      |> Enum.map(fn p ->
-        %{"id" => project_ref} = p
-
-        project_api_keys =
-          case Supafana.Supabase.Management.project_api_keys(access_token, project_ref) do
-            {:ok, %{status: 200, body: body}} ->
-              body
-
-            _ ->
-              :error
-          end
-
-        project_api_keys
-      end)
-
-    IO.inspect(api_keys)
-
     conn |> ok_json(projects)
   end
 
@@ -219,11 +200,11 @@ defmodule Supafana.Web.Router do
 
         case Supafana.Azure.Api.create_deployment(project_ref, service_key, password) do
           {:ok, %{"properties" => %{"provisioningState" => "Accepted"}}} ->
-            IO.inspect("Accepted")
+            Logger.info("#{project_ref}: Accepted")
             :ok
 
           {:error, %{"error" => %{"code" => "DeploymentActive"}}} ->
-            IO.inspect("DeploymentActive")
+            Logger.info("#{project_ref}: DeploymentActive")
             :ok
         end
 
@@ -251,17 +232,6 @@ defmodule Supafana.Web.Router do
     end
   end
 
-  defp ensure_own_project(access_token, project_ref) do
-    case Supafana.Supabase.Management.project_api_keys(access_token, project_ref) do
-      {:ok, %{status: 200, body: keys}} ->
-        service_key = (keys |> Enum.find(&(&1["name"] == "service_role")))["api_key"]
-        {:ok, service_key}
-
-      _ ->
-        false
-    end
-  end
-
   defp to_unix(nil), do: nil
   defp to_unix(us), do: Utils.to_unix(us)
 
@@ -276,7 +246,16 @@ defmodule Supafana.Web.Router do
       updated_at: to_unix(g.updated_at),
       first_start_at: to_unix(g.first_start_at),
       password: g.password,
-      trial_length_min: Supafana.env(:trial_length_min)
+      trial_length_min: Supafana.env(:trial_length_min),
+      trial_remaining_msec:
+        case g.first_start_at do
+          nil ->
+            nil
+
+          first_start_at ->
+            to_unix(first_start_at) + Supafana.env(:trial_length_min) * 60 * 1000 -
+              (DateTime.now("Etc/UTC") |> elem(1) |> DateTime.to_unix(:millisecond))
+        end
     }
     |> Z.Grafana.to_json!()
     |> Z.Grafana.from_json!()

@@ -1,8 +1,9 @@
-import { QueryClient, useQuery } from "@tanstack/react-query";
+import { QueryClient, useQuery, useMutation } from "@tanstack/react-query";
 import wretch from "wretch";
 import QueryStringAddon from "wretch/addons/queryString";
 import type { Organization, Member } from "../types/supabase";
 import type { Me } from "../types/supafana";
+import type { Subscription as StripeCustomer } from "../types/z_types";
 
 import { getServerUrl } from "../config";
 
@@ -76,5 +77,37 @@ export const useMe = () => {
       return await apiServer.url("/me").get().json<Me | null>();
     },
     initialData: null,
+  });
+};
+
+export const useCheckoutSession = () => {
+  return useMutation({
+    mutationFn: (): Promise<{ url: string }> => {
+      return apiServer
+        .url(`/billing/create-checkout-session`)
+        .post({
+          instances: 1,
+        })
+        .json<{ url: string }>();
+    },
+    onSuccess: res => {
+      const { url } = res;
+
+      window.location.href = url;
+    },
+  });
+};
+
+export const useSetStripeSessionId = (onSuccess?: () => void) => {
+  return useMutation({
+    mutationFn: async (session_id: string): Promise<StripeCustomer> => {
+      return apiServer
+        .url(`/billing/set-stripe-session-id`)
+        .post({
+          session_id,
+        })
+        .json<StripeCustomer>();
+    },
+    onSuccess: onSuccess,
   });
 };

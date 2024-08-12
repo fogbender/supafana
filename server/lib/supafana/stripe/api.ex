@@ -14,18 +14,35 @@ defmodule Supafana.Stripe.Api do
     end
   end
 
-  def create_checkout_session(quantity) do
+  def create_checkout_session(quantity, metadata \\ %{}) do
+    params = %{
+      "line_items[0][price]" => Supafana.env(:stripe_price_id),
+      "line_items[0][quantity]" => quantity,
+      "mode" => "subscription",
+      "success_url" =>
+        "#{Supafana.env(:supafana_storefront_url)}/dashboard?session_id={CHECKOUT_SESSION_ID}",
+      "cancel_url" => "#{Supafana.env(:supafana_storefront_url)}/dashboard"
+    }
+
+    params =
+      case metadata do
+        nil ->
+          params
+
+        map when is_map(map) ->
+          params
+          |> Map.merge(
+            map
+            |> Enum.reduce(%{}, fn {k, v}, acc ->
+              acc |> Map.merge(%{"metadata[#{k}]" => v})
+            end)
+          )
+      end
+
     r =
       post(
         "/v1/checkout/sessions",
-        %{
-          "line_items[0][price]" => Supafana.env(:stripe_price_id),
-          "line_items[0][quantity]" => quantity,
-          "mode" => "subscription",
-          "success_url" =>
-            "#{Supafana.env(:supafana_storefront_url)}/dashboard?session_id={CHECKOUT_SESSION_ID}",
-          "cancel_url" => "#{Supafana.env(:supafana_storefront_url)}/dashboard"
-        }
+        params
       )
 
     case r do
@@ -56,12 +73,24 @@ defmodule Supafana.Stripe.Api do
     end
   end
 
+  def get_customer_payment_methods(customer_id) do
+    r =
+      client()
+      |> Tesla.get("/v1/customers/#{customer_id}/payment_methods")
+
+    case r do
+      {:ok, %Tesla.Env{status: 200, body: body}} ->
+        {:ok, body}
+    end
+  end
+
   def get_subscriptions(customer_id) do
     r =
       client()
       |> Tesla.get("/v1/subscriptions",
         query: [
-          customer: customer_id
+          customer: customer_id,
+          expand: ["data.plan.product"]
         ]
       )
 
@@ -71,8 +100,18 @@ defmodule Supafana.Stripe.Api do
     end
   end
 
+  def get_subscription(subscription_id) do
+    r =
+      client()
+      |> Tesla.get("/v1/subscriptions/#{subscription_id}")
+
+    case r do
+      {:ok, %Tesla.Env{status: 200, body: body}} ->
+        {:ok, body}
+    end
+  end
+
   def create_portal_session(customer_id) do
-    # TODO: add vendorId instead of "-" for faster navigation
     r =
       post(
         "/v1/billing_portal/sessions",
@@ -115,13 +154,22 @@ defmodule Supafana.Stripe.Api do
     end
   end
 
-  def delete_subscription(subscription_id) do
+  def delete_customer(customer_id) do
+    r = client() |> Tesla.delete("/v1/customers/#{customer_id}")
+
+    case r do
+      {:ok, %Tesla.Env{status: 200}} ->
+        :ok
+    end
+  end
+
+  def delete_subscription(subscription_id, prorate \\ true) do
     r =
       client()
       |> Tesla.delete("/v1/subscriptions/#{subscription_id}",
         query: [
           invoice_now: true,
-          prorate: true
+          prorate: prorate
         ]
       )
 
