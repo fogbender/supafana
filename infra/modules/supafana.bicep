@@ -75,5 +75,6 @@ module web './supafana-web.bicep' = {
     location: location
     env: env
     subnetId: network.outputs.apiSubnetId
+    vnetId: network.outputs.vnetId
   }
 }

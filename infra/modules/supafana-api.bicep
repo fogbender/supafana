@@ -191,7 +191,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2021-03-01' = {
   }
 }
 
-module dnsRecord './dns-record.bicep' = {
+module dnsRecord './public-dns-record.bicep' = {
   name: 'dns-record'
   params: {
     ipAddress: publicIP.properties.ipAddress
