@@ -71,7 +71,7 @@ export const Support = () => {
     showEmails: true,
   });
 
-  const { data: fogbenderTokenData } = useQuery({
+  const { data: fogbenderSignaturesData, isLoading: fogbenderSignaturesLoading } = useQuery({
     queryKey: queryKeys.fogbenderToken(organization?.id, me?.user_id),
     queryFn: async () => {
       return await apiServer
@@ -86,10 +86,10 @@ export const Support = () => {
 
   React.useEffect(() => {
     if (
-      fogbenderTokenData &&
+      fogbenderSignaturesData &&
       organization &&
-      fogbenderTokenData.widgetId &&
-      fogbenderTokenData.signatures &&
+      fogbenderSignaturesData.widgetId &&
+      fogbenderSignaturesData.signatures &&
       me?.user_id &&
       me?.email
     ) {
@@ -99,11 +99,11 @@ export const Support = () => {
         userEmail: me.email,
         customerName: organization.name,
         customerId: organization.id,
-        widgetId: fogbenderTokenData.widgetId,
-        userJWT: fogbenderTokenData.signatures.userJWT,
+        widgetId: fogbenderSignaturesData.widgetId,
+        userJWT: fogbenderSignaturesData.signatures.userJWT,
       });
     }
-  }, [organization, fogbenderTokenData]);
+  }, [organization, fogbenderSignaturesData]);
 
   return (
     <div className="h-full flex flex-col">
@@ -121,7 +121,7 @@ export const Support = () => {
             </FogbenderIsConfigured>
           </FogbenderProvider>
         </div>
-      ) : organization && !organizationsError ? (
+      ) : !fogbenderSignaturesLoading && organization && !organizationsError ? (
         <div className="mt-12 flex-1 flex ml-2 md:ml-16 text-black dark:text-white">
           <div className="max-w-xl">
             <p>
@@ -142,14 +142,14 @@ export const Support = () => {
               <table className="mt-8 text-gray-200 dark:text-gray-700 bg-dots table">
                 <tbody>
                   {members.map(m => (
-                    <MemberRow m={m} me={me} key={m.user_id} verifyText="That’s me!" />
+                    <MemberRow m={m} me={me} key={m.user_id} verifyText="🙋 That’s me!" />
                   ))}
                 </tbody>
               </table>
             )}
           </div>
         </div>
-      ) : connecting || organizationsLoading ? (
+      ) : fogbenderSignaturesLoading || connecting || organizationsLoading ? (
         <div className="flex-1 flex items-center justify-center text-black dark:text-white">
           <span className="loading loading-ring loading-lg text-accent" />
         </div>

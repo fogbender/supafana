@@ -121,7 +121,7 @@ export const Dashboard = () => {
                   <table className="text-gray-200 dark:text-gray-700 bg-dots table">
                     <tbody>
                       {members.map(m => (
-                        <MemberRow m={m} me={me} key={m.user_id} verifyText="Verify">
+                        <MemberRow m={m} me={me} key={m.user_id} verifyText="🙋 That’s me!">
                           <input
                             type="checkbox"
                             onChange={() => {}}

@@ -37,6 +37,8 @@ const MemberRow = ({
   const [verifyingUserId, setVerifyingUserId] = React.useState<string>();
   const [codeProbeError, setCodeProbeError] = React.useState(false);
 
+  // XXX Don't show confirmation input when 'me' already there (i.e. logged in)
+
   const sendVerificationCodeMutation = useMutation({
     mutationFn: () => {
       setVerifyingUserId(m.user_id);
@@ -70,7 +72,7 @@ const MemberRow = ({
   const emailElement = (() => {
     if (isConfirmed && myself) {
       return email;
-    } else if (m.email && !isConfirmed && verifyingUserId !== m.user_id) {
+    } else if (me || (m.email && !isConfirmed && verifyingUserId !== m.user_id)) {
       return m.email;
     } else {
       return (

@@ -48,14 +48,10 @@ const Project = ({ project, grafana }: { project: ProjectT; grafana: GrafanaT | 
   return (
     <div className="p-4 m-4 flex gap-4 border border-zinc-500 rounded-lg flex-col lg:flex-row">
       <SupabaseProject project={project} />
-      {project.status.startsWith("ACTIVE") && (
-        <>
-          <div className="lg:self-center flex flex-col gap-4 text-base">
-            <DividerGlyph size={dividerSize} />
-          </div>
-          <SupafanaProject project={project} grafana={grafana} />
-        </>
-      )}
+      <div className="lg:self-center flex flex-col gap-4 text-base">
+        <DividerGlyph size={dividerSize} />
+      </div>
+      <SupafanaProject project={project} grafana={grafana} />
     </div>
   );
 };
