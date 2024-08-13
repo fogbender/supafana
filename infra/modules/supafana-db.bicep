@@ -4,6 +4,8 @@ param location string = resourceGroup().location
 param env string
 param adminGroupName string
 
+param privateDnsZoneName string = 'supafana-${env}.local'
+
 param vnetId string
 param apiSubnetId string
 param dbSubnetId string
@@ -21,11 +23,12 @@ param dbDatabaseName string = 'supafana_${env}'
 param dbSkuTier string = 'Burstable'
 param dbDiskSizeGb int = 32
 
-var dbDomainName = '${dbHostName}.private.postgres.database.azure.com'
+var dbPrivateDomainName = 'private.postgres.database.azure.com'
+var dbDomainName = '${dbHostName}.postgres.database.azure.com'
 
 // Private DNS Zone
 resource privateDbDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
-  name: dbDomainName
+  name: dbPrivateDomainName
   location: 'global'
   resource vNetLink 'virtualNetworkLinks' = {
     name: '${dbHostName}-vnet-link'
@@ -79,6 +82,23 @@ resource dbDatabase 'Microsoft.DBforPostgreSQL/flexibleServers/databases@2023-12
   parent: db
 }
 
-output dbDomainName string = dbDomainName
+// project private DNS Zone
+resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' existing = {
+  name: privateDnsZoneName
+}
+
+resource cnameRecordSet 'Microsoft.Network/privateDnsZones/CNAME@2020-06-01' = {
+  name: 'db'
+  parent: privateDnsZone
+  properties: {
+    cnameRecord: {
+      cname: dbDomainName
+    }
+    ttl: 3600
+  }
+}
+
+
+output dbDomainName string = 'db.${privateDnsZoneName}'
 output dbHostName string = dbHostName
 output dbDatabaseName string = dbDatabaseName
