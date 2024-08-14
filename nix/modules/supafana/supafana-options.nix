@@ -9,6 +9,12 @@ with lib;
       type = types.str;
     };
 
+    azureWebDomain = mkOption {
+      description = "Azure static site domain";
+      example = literalExample "purple-hill-096a9150f.5.azurestaticapps.net";
+      type = types.str;
+    };
+
     env = mkOption {
       description = "Supafana env name";
       default = "test";

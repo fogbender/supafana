@@ -29,7 +29,20 @@ in
     ];
     locations = {
       "/" = {
-        root = ./site;
+        proxyWebsockets = true;
+        proxyPass = "https://${config.supafana.azureWebDomain}";
+        recommendedProxySettings = false;
+        extraConfig = ''
+          proxy_set_header        X-Real-IP $remote_addr;
+          proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header        X-Forwarded-Proto $scheme;
+          proxy_set_header        X-Forwarded-Host $host;
+          proxy_set_header        X-Forwarded-Server $host;
+        '';
+      };
+      "/api" = {
+        proxyWebsockets = true;
+        proxyPass = "http://localhost:9080";
       };
       "~ ^/${urlPrefix}/([a-zA-Z0-9]+)(/.*)?" = {
         proxyWebsockets = true;

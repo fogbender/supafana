@@ -3,6 +3,7 @@
 let
   env = "absdev1";
   domain = "${env}.supafana-test.com";
+  azureWebDomain = "todo.supafana-${env}.local";
 in
 {
   imports = [
@@ -11,6 +12,7 @@ in
 
   networking.domain = domain;
   supafana.localDomain = "supafana-${env}.local";
+  supafana.azureWebDomain = azureWebDomain;
   supafana.env = env;
   supafana.secretsFile = config.sops.secrets."supafana.env".path;
   supafana.environment = {

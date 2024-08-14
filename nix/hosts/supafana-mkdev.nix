@@ -3,6 +3,7 @@
 let
   env = "mkdev";
   domain = "mkdev.supafana-test.com";
+  azureWebDomain = "purple-hill-096a9150f.5.azurestaticapps.net";
 in
 {
   imports = [
@@ -11,8 +12,10 @@ in
 
   networking.domain = domain;
   supafana.localDomain = "supafana-${env}.local";
+  supafana.azureWebDomain = azureWebDomain;
   supafana.env = env;
   supafana.secretsFile = config.sops.secrets."supafana.env".path;
+
   supafana.environment = {
     PG_HOST = "supafana-${env}-db.private.postgres.database.azure.com";
     PG_USER = "supafana-${env}-api";
