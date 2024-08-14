@@ -151,6 +151,9 @@
         supafana-mkdev = nixosSystem system {
           modules = [ nix/hosts/supafana-mkdev.nix ];
         };
+        supafana-kndev = nixosSystem system {
+          modules = [ nix/hosts/supafana-kndev.nix ];
+        };
         supafana-absdev1 = nixosSystem system {
           modules = [ nix/hosts/supafana-absdev1.nix ];
         };
@@ -174,6 +177,10 @@
           supafana-absdev1 = {
             hostname = "absdev1.supafana-test.com";
             profiles.system.path = deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.supafana-absdev1;
+          };
+          supafana-kndev = {
+            hostname = "kndev.supafana-test.com";
+            profiles.system.path = deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.supafana-kndev;
           };
           grafana-mk = {
             hostname = "iclisqzkhfgcvlrvqbal.supafana.local";

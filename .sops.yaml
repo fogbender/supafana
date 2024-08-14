@@ -5,5 +5,7 @@ creation_rules:
     azure_keyvault: https://supafana-mkdev-vault.vault.azure.net/keys/sops-key/ca3be5c0b9c14439a2b149037133b193
   - path_regex: -absdev1\.env$
     azure_keyvault: https://supafana-absdev1-vault.vault.azure.net/keys/sops-key/bacf2c0de40e4c5e9423f8b27e92381d
+  - path_regex: -kndev\.env$
+    azure_keyvault: https://supafana-kndev-vault.vault.azure.net/keys/sops-key/f3d8dc8cd993493a86e924eba85255c4
   - path_regex: -prod\.env$
     azure_keyvault: https://supafana-prod-vault.vault.azure.net/keys/sops-key
