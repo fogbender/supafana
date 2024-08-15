@@ -197,7 +197,21 @@ defmodule Supafana.Stripe.Api do
          }
        ]}
 
-    middleware = [base_url, json, form, query, headers, auth]
+    retry =
+      {Tesla.Middleware.Retry,
+       [
+         delay: 1000,
+         max_retries: 5,
+         max_delay: 4_000,
+         should_retry: fn
+           {:ok, %{status: status}} when status in [500] -> true
+           {:ok, _} -> false
+           {:error, :timeout} -> true
+           {:error, _} -> false
+         end
+       ]}
+
+    middleware = [base_url, json, form, query, headers, auth, retry]
 
     Tesla.client(middleware)
   end
