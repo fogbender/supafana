@@ -71,7 +71,12 @@ export const Support = () => {
     showEmails: true,
   });
 
-  const { data: fogbenderSignaturesData, isLoading: fogbenderSignaturesLoading } = useQuery({
+  const {
+    data: fogbenderSignaturesData,
+    isLoading: fogbenderSignaturesLoading,
+    isPending: fogbenderSignaturesPending,
+    isFetching: fogbenderSignaturesFetching,
+  } = useQuery({
     queryKey: queryKeys.fogbenderToken(organization?.id, me?.user_id),
     queryFn: async () => {
       return await apiServer
@@ -83,6 +88,9 @@ export const Support = () => {
   });
 
   const [fogbenderToken, setFogbenderToken] = React.useState<FogbenderToken>();
+
+  const fogbenderSignaturesInProgress =
+    fogbenderSignaturesLoading || fogbenderSignaturesPending || fogbenderSignaturesFetching;
 
   React.useEffect(() => {
     if (
@@ -106,7 +114,7 @@ export const Support = () => {
   }, [organization, fogbenderSignaturesData]);
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="flex flex-col min-h-screen">
       <Header organization={organization} />
       {me && fogbenderToken ? (
         <div className="flex-1">
@@ -121,7 +129,7 @@ export const Support = () => {
             </FogbenderIsConfigured>
           </FogbenderProvider>
         </div>
-      ) : !fogbenderSignaturesLoading && organization && !organizationsError ? (
+      ) : !fogbenderSignaturesInProgress && organization && !organizationsError ? (
         <div className="mt-12 flex-1 flex ml-2 md:ml-16 text-black dark:text-white">
           <div className="max-w-xl">
             <p>
@@ -149,7 +157,7 @@ export const Support = () => {
             )}
           </div>
         </div>
-      ) : fogbenderSignaturesLoading || connecting || organizationsLoading ? (
+      ) : fogbenderSignaturesInProgress || connecting || organizationsLoading ? (
         <div className="flex-1 flex items-center justify-center text-black dark:text-white">
           <span className="loading loading-ring loading-lg text-accent" />
         </div>
