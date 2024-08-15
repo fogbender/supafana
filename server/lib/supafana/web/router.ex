@@ -48,9 +48,43 @@ defmodule Supafana.Web.Router do
     conn |> ok_json(me)
   end
 
+  get "/email-notifications" do
+    org_id = conn.assigns[:org_id]
+
+    data =
+      from(
+        n in Data.UserNotification,
+        where: n.org_id == ^org_id
+      )
+      |> Repo.all()
+
+    notifications =
+      data
+      |> Enum.map(fn n ->
+        %Z.UserNotification{
+          org_id: n.org_id,
+          user_id: n.user_id,
+          email: n.email,
+          tx_emails: n.tx_emails
+        }
+      end)
+
+    conn |> ok_json(notifications)
+  end
+
   post "/probe-email-verification-code" do
     code = conn.params["verificationCode"]
     user_id = conn.params["userId"]
+
+    error = fn message ->
+      verification_attempts = get_session(conn)["email_verification_attempts"] || 0
+
+      conn =
+        Plug.Conn.put_session(conn, "email_verification_attempts", verification_attempts + 1)
+
+      Process.sleep(verification_attempts)
+      send_resp(conn, 400, message)
+    end
 
     case {code, user_id} do
       {code, user_id} when is_binary(code) and is_binary(code) ->
@@ -60,17 +94,27 @@ defmodule Supafana.Web.Router do
         case verification_code do
           ^code ->
             email = get_session(conn)["email_candidate"]
-            conn = Plug.Conn.put_session(conn, :me, %{"email" => email, "user_id" => user_id})
-            ok_no_content(conn)
+
+            access_token = conn.assigns[:supabase_access_token]
+            organization_slug = get_session(conn)["organization_slug"]
+
+            {:ok, members} =
+              Supafana.Supabase.Management.organization_members(access_token, organization_slug)
+
+            user = members |> Enum.find(&(&1["user_id"] == user_id))
+
+            case user["email"] do
+              ^email ->
+                conn = Plug.Conn.put_session(conn, "me", user)
+
+                ok_no_content(conn)
+
+              _ ->
+                error.("email and user_id do not match")
+            end
 
           _ ->
-            verification_attempts = get_session(conn)["email_verification_attempts"] || 0
-
-            conn =
-              Plug.Conn.put_session(conn, :email_verification_attempts, verification_attempts + 1)
-
-            Process.sleep(verification_attempts)
-            send_resp(conn, 400, "verificationCode does not match")
+            error.("verificationCode does not match")
         end
 
       _ ->
@@ -94,9 +138,8 @@ defmodule Supafana.Web.Router do
                }
              ) do
           {:ok, %Tesla.Env{status: 200}} ->
-            conn = fetch_session(conn)
-            conn = Plug.Conn.put_session(conn, :email_verification_code, "#{verification_code}")
-            conn = Plug.Conn.put_session(conn, :email_candidate, email)
+            conn = Plug.Conn.put_session(conn, "email_verification_code", "#{verification_code}")
+            conn = Plug.Conn.put_session(conn, "email_candidate", email)
             ok_no_content(conn)
 
           {:ok,
@@ -113,15 +156,33 @@ defmodule Supafana.Web.Router do
   end
 
   get "/organizations/:slug/members" do
-    conn = fetch_session(conn)
-
-    conn = Plug.Conn.put_session(conn, :organization_slug, slug)
+    conn = Plug.Conn.put_session(conn, "organization_slug", slug)
 
     access_token = conn.assigns[:supabase_access_token]
 
     show_emails = conn.params["showEmails"]
 
     {:ok, members} = Supafana.Supabase.Management.organization_members(access_token, slug)
+
+    org_id = conn.assigns[:org_id]
+
+    {_, _} =
+      Repo.insert_all(
+        Data.UserNotification,
+        members
+        |> Enum.filter(&(not is_nil(&1["email"])))
+        |> Enum.map(fn m ->
+          %{
+            org_id: org_id,
+            user_id: m["user_id"],
+            email: m["email"],
+            inserted_at: DateTime.utc_now(),
+            updated_at: DateTime.utc_now()
+          }
+        end),
+        on_conflict: :nothing,
+        conflict_target: [:org_id, :user_id]
+      )
 
     case show_emails do
       "false" ->

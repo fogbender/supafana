@@ -5,14 +5,13 @@ import { lazily } from "react-lazily";
 import { QueryClientProvider, useMutation, useQuery } from "@tanstack/react-query";
 import { Title } from "reactjs-meta";
 import wretch from "wretch";
-import { GiDragonSpiral as Dragon } from "react-icons/gi";
 
-import MemberRow from "./MemberRow";
+import SectionHeader from "./SectionHeader";
+import Notifications from "./Notifications";
 import Header from "./Header";
 import Billing from "./Billing";
 import {
   useMe,
-  useMembers,
   useOrganizations,
   connectActionUrl,
   apiServer,
@@ -58,12 +57,6 @@ export const Dashboard = () => {
 
   const organization = organizations?.[0];
 
-  const { data: members, isLoading: membersLoading } = useMembers({
-    enabled: !!organization,
-    organizationId: organization?.id as string,
-    showEmails: true,
-  });
-
   const { data: me } = useMe();
 
   return (
@@ -95,46 +88,10 @@ export const Dashboard = () => {
                 </div>
               </div>
             )}
+            <Notifications organization={organization} me={me} />
             <div>
               <SectionHeader text="Billing" />
               <Billing organization={organization} />
-            </div>
-            <div className="self-start w-full">
-              <SectionHeader text="Who should get email notifications from Supafana?">
-                <>
-                  {!me && (
-                    <div className="text-sm text-gray-500 font-medium">
-                      Please verify your email below to configure
-                    </div>
-                  )}
-                </>
-              </SectionHeader>
-              {membersLoading && (
-                <div className="flex w-52 flex-col gap-4">
-                  <div className="skeleton h-4 w-full"></div>
-                  <div className="skeleton h-4 w-full"></div>
-                  <div className="skeleton h-4 w-full"></div>
-                </div>
-              )}
-              {members && (
-                <div className="mt-4 mx-4">
-                  <table className="text-gray-200 dark:text-gray-700 bg-dots table">
-                    <tbody>
-                      {members.map(m => (
-                        <MemberRow m={m} me={me} key={m.user_id} verifyText="🙋 That’s me!">
-                          <input
-                            type="checkbox"
-                            onChange={() => {}}
-                            value={me?.email || m.email ? "checked" : "not checked"}
-                            checked={me?.email || m.email ? true : false}
-                            className="checkbox checkbox-info checkbox-sm"
-                          />
-                        </MemberRow>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
             </div>
           </div>
         ) : connecting || organizationsLoading ? (
@@ -160,24 +117,6 @@ export const Dashboard = () => {
             </button>
           </form>
         )}
-      </div>
-    </div>
-  );
-};
-
-const SectionHeader = ({
-  text,
-  children = null,
-}: {
-  text: string;
-  children?: null | JSX.Element;
-}) => {
-  return (
-    <div className="flex items-center gap-3 font-medium text-xl">
-      <Dragon size={32} />
-      <div className="flex flex-col">
-        <span>{text}</span>
-        {children}
       </div>
     </div>
   );

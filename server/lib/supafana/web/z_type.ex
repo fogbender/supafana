@@ -179,3 +179,14 @@ defmodule Supafana.Z.Billing do
     field(:payment_profiles, Supafana.Z.PaymentProfile, [:required, :cast, :array])
   end
 end
+
+defmodule Supafana.Z.UserNotification do
+  use Supafana.Z
+
+  schema do
+    field(:tx_emails, :boolean, [:required])
+    field(:org_id, :string, [:required])
+    field(:user_id, :string, [:required])
+    field(:email, :string, [:required])
+  end
+end

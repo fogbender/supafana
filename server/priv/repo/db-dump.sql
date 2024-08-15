@@ -89,6 +89,20 @@ CREATE TABLE public.schema_migrations (
 
 
 --
+-- Name: user_notification; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.user_notification (
+    org_id uuid NOT NULL,
+    user_id text NOT NULL,
+    email text NOT NULL,
+    tx_emails boolean DEFAULT false NOT NULL,
+    inserted_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: grafana grafana_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -141,6 +155,13 @@ CREATE UNIQUE INDEX unique_is_default_per_org ON public.org_stripe_customer USIN
 
 
 --
+-- Name: unique_user_per_org; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX unique_user_per_org ON public.user_notification USING btree (org_id, user_id);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
@@ -149,3 +170,4 @@ INSERT INTO public."schema_migrations" (version) VALUES (20240713193345);
 INSERT INTO public."schema_migrations" (version) VALUES (20240720230903);
 INSERT INTO public."schema_migrations" (version) VALUES (20240727002752);
 INSERT INTO public."schema_migrations" (version) VALUES (20240804050719);
+INSERT INTO public."schema_migrations" (version) VALUES (20240815015612);
