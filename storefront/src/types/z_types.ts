@@ -44,3 +44,10 @@ export type Subscription = {
   quantity: number;
   product_name: string;
 };
+
+export type UserNotification = {
+  tx_emails: boolean;
+  org_id: string;
+  user_id: string;
+  email: string;
+};

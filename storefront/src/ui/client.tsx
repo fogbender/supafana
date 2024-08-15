@@ -2,7 +2,6 @@ import { QueryClient, useQuery, useMutation } from "@tanstack/react-query";
 import wretch from "wretch";
 import QueryStringAddon from "wretch/addons/queryString";
 import type { Organization, Member } from "../types/supabase";
-import type { Me } from "../types/supafana";
 import type { Subscription as StripeCustomer } from "../types/z_types";
 
 import { getServerUrl } from "../config";
@@ -22,6 +21,7 @@ export const queryKeys = {
     userId,
   ],
   billing: (organizationId: string) => ["billing", organizationId],
+  notifications: (organizationId: string) => ["notifications", organizationId],
 } as any;
 
 export const apiServer = wretch(getServerUrl(), {
@@ -74,7 +74,7 @@ export const useMe = () => {
   return useQuery({
     queryKey: queryKeys.me(),
     queryFn: async () => {
-      return await apiServer.url("/me").get().json<Me | null>();
+      return await apiServer.url("/me").get().json<Member | null>();
     },
     initialData: null,
   });

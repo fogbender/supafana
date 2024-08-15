@@ -28,7 +28,9 @@ defmodule Supafana.Web.AuthUtils do
     })
   end
 
-  defp handle_tokens(conn, %{status: 502}) do
+  defp handle_tokens(conn, %{status: 502} = res) do
+    IO.inspect(res)
+
     location = Supafana.env(:supafana_storefront_url)
 
     conn
@@ -37,7 +39,8 @@ defmodule Supafana.Web.AuthUtils do
     |> halt()
   end
 
-  defp handle_tokens(conn, %{status: 404}) do
+  defp handle_tokens(conn, %{status: 404} = res) do
+    IO.inspect(res)
     sign_out(conn)
   end
 
@@ -68,7 +71,8 @@ defmodule Supafana.Web.AuthUtils do
           |> Repo.one()
 
         conn = assign(conn, :supabase_access_token, access_token)
-        assign(conn, :org_id, org_id)
+        conn = assign(conn, :org_id, org_id)
+        assign(conn, :supabase_org_id, supabase_org_id)
 
       {:ok, %Tesla.Env{status: 500, body: %{"message" => "Unauthorized"}}} ->
         sign_out(conn)

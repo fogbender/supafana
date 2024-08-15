@@ -5,7 +5,6 @@ import { useMutation } from "@tanstack/react-query";
 import { apiServer, queryClient, queryKeys } from "./client";
 
 import type { Member } from "../types/supabase";
-import type { Me } from "../types/supafana";
 
 const MemberRow = ({
   m,
@@ -14,7 +13,7 @@ const MemberRow = ({
   children,
 }: {
   m: Member;
-  me: null | Me;
+  me: null | Member;
   verifyText: string;
   children?: JSX.Element;
 }) => {
