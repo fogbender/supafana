@@ -29,7 +29,7 @@ defmodule Supafana.Web.Router do
 
   get "/fogbender-signatures" do
     conn = fetch_session(conn)
-    organization_slug = get_session(conn)["organization_slug"]
+    organization_slug = conn.assigns[:supabase_org_id]
     me = get_session(conn)["me"]
     widget_id = Supafana.env(:fogbender_widget_id)
 
@@ -46,6 +46,45 @@ defmodule Supafana.Web.Router do
     conn = fetch_session(conn)
     me = get_session(conn)["me"]
     conn |> ok_json(me)
+  end
+
+  post "/email-notifications/:user_id" do
+    org_id = conn.assigns[:org_id]
+    me = get_session(conn)["me"]
+
+    tx_emails_enabled = conn.params["txEmailsEnabled"]
+
+    Process.sleep(1000)
+
+    update = fn ->
+      Data.UserNotification.new(%{
+        org_id: org_id,
+        user_id: user_id,
+        email: "N/A",
+        tx_emails: tx_emails_enabled || false
+      })
+      |> Repo.insert!(
+        on_conflict: {:replace, [:tx_emails]},
+        conflict_target: [:org_id, :user_id]
+      )
+    end
+
+    case me do
+      %{"role_name" => role} when role in ["Owner", "Administrator"] ->
+        %Data.UserNotification{} = update.()
+        ok_no_content(conn)
+
+      %{"user_id" => ^user_id} ->
+        %Data.UserNotification{} = update.()
+        ok_no_content(conn)
+
+      _ ->
+        send_resp(
+          conn,
+          400,
+          "Only Owners and Administrators can update other’s notification settings"
+        )
+    end
   end
 
   get "/email-notifications" do
@@ -96,7 +135,7 @@ defmodule Supafana.Web.Router do
             email = get_session(conn)["email_candidate"]
 
             access_token = conn.assigns[:supabase_access_token]
-            organization_slug = get_session(conn)["organization_slug"]
+            organization_slug = conn.assigns[:supabase_org_id]
 
             {:ok, members} =
               Supafana.Supabase.Management.organization_members(access_token, organization_slug)
@@ -156,8 +195,6 @@ defmodule Supafana.Web.Router do
   end
 
   get "/organizations/:slug/members" do
-    conn = Plug.Conn.put_session(conn, "organization_slug", slug)
-
     access_token = conn.assigns[:supabase_access_token]
 
     show_emails = conn.params["showEmails"]

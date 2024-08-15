@@ -1,10 +1,12 @@
+import React from "react";
+
 import SectionHeader from "./SectionHeader";
 import MemberRow from "./MemberRow";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 
 import type { UserNotification } from "../types/z_types";
 
-import { apiServer, useMembers, queryKeys } from "./client";
+import { apiServer, queryClient, queryKeys, useMembers } from "./client";
 
 import type { Organization, Member } from "../types/supabase";
 
@@ -15,12 +17,32 @@ const Notifications = ({ organization, me }: { organization: Organization; me: n
     showEmails: true,
   });
 
-  const { data: notifications, isLoading: notificationsLoading } = useQuery({
+  const {
+    data: notifications,
+    isFetching: notificationsFetching,
+    isLoading: notificationsLoading,
+    isPending: notificationsPending,
+  } = useQuery({
     queryKey: queryKeys.notifications(organization.id),
     queryFn: async () => {
       return await apiServer.url(`/email-notifications`).get().json<UserNotification[]>();
     },
   });
+
+  const notificationsInProgress =
+    notificationsFetching || notificationsLoading || notificationsPending;
+
+  const updateNotificationMutation = useMutation({
+    mutationFn: ({ userId, txEmailsEnabled }: { userId: string; txEmailsEnabled: boolean }) => {
+      return apiServer.url(`/email-notifications/${userId}`).post({ txEmailsEnabled }).text();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.notifications(organization.id) });
+      setClickedUserId(null);
+    },
+  });
+
+  const [clickedUserId, setClickedUserId] = React.useState<null | string>(null);
 
   return (
     <div className="self-start w-full">
@@ -33,32 +55,45 @@ const Notifications = ({ organization, me }: { organization: Organization; me: n
           )}
         </>
       </SectionHeader>
-      {membersLoading && (
-        <div className="flex w-52 flex-col gap-4">
+      {(membersLoading || notificationsLoading) && (
+        <div className="ml-4 mt-4 flex w-2/3 flex-col gap-4">
           <div className="skeleton h-4 w-full"></div>
           <div className="skeleton h-4 w-full"></div>
           <div className="skeleton h-4 w-full"></div>
         </div>
       )}
-      {members && (
+      {members && notifications && (
         <div className="mt-4 mx-4 p-4 border border-zinc-500 rounded-lg">
           <table className="text-gray-200 dark:text-gray-700 bg-dots table">
             <tbody>
               {members.map(m => {
+                const notification = notifications.find(n => n.user_id === m.user_id);
+
                 return (
                   <MemberRow m={m} me={me} key={m.user_id} verifyText="🙋 That’s me!">
-                    {me ? (
-                      <input
-                        type="checkbox"
-                        onChange={() => {}}
-                        value={me.email || m.email ? "checked" : "not checked"}
-                        disabled={
-                          me.user_id !== m.user_id &&
-                          !["Owner", "Administrator"].includes(me.role_name)
-                        }
-                        checked={me?.email || m.email ? true : false}
-                        className="checkbox checkbox-info checkbox-sm"
-                      />
+                    {me && notifications ? (
+                      clickedUserId === m.user_id &&
+                      (updateNotificationMutation.isPending || notificationsInProgress) ? (
+                        <span className="loading loading-ring loading-sm text-info h-3" />
+                      ) : (
+                        <input
+                          type="checkbox"
+                          onChange={e => {
+                            setClickedUserId(m.user_id);
+                            updateNotificationMutation.mutate({
+                              userId: m.user_id,
+                              txEmailsEnabled: e.target.checked,
+                            });
+                          }}
+                          value={notification?.tx_emails ?? false ? "checked" : "not checked"}
+                          disabled={
+                            me.user_id !== m.user_id &&
+                            !["Owner", "Administrator"].includes(me.role_name)
+                          }
+                          checked={notification?.tx_emails ?? false}
+                          className="checkbox checkbox-info checkbox-sm"
+                        />
+                      )
                     ) : (
                       <></>
                     )}
