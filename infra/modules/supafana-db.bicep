@@ -4,8 +4,6 @@ param location string = resourceGroup().location
 param env string
 param adminGroupName string
 
-param privateDnsZoneName string = 'supafana-${env}.local'
-
 param vnetId string
 param apiSubnetId string
 param dbSubnetId string
@@ -82,23 +80,6 @@ resource dbDatabase 'Microsoft.DBforPostgreSQL/flexibleServers/databases@2023-12
   parent: db
 }
 
-// project private DNS Zone
-resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' existing = {
-  name: privateDnsZoneName
-}
-
-resource cnameRecordSet 'Microsoft.Network/privateDnsZones/CNAME@2020-06-01' = {
-  name: 'db'
-  parent: privateDnsZone
-  properties: {
-    cnameRecord: {
-      cname: dbDomainName
-    }
-    ttl: 3600
-  }
-}
-
-
-output dbDomainName string = 'db.${privateDnsZoneName}'
+output dbDomainName string = dbDomainName
 output dbHostName string = dbHostName
 output dbDatabaseName string = dbDatabaseName

@@ -2,7 +2,6 @@ param env string
 param subnetId string
 param vnetId string
 param location string = resourceGroup().location
-param privateDnsZoneName string = 'supafana-${env}.local'
 
 @allowed([ 'Free', 'Standard' ])
 param sku string = 'Standard'
@@ -75,18 +74,3 @@ resource webPrivateDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZo
   dependsOn: [ privateEndpoint ]
 }
 
-// env private DNS Zone
-resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' existing = {
-  name: privateDnsZoneName
-}
-
-resource cnameRecordSet 'Microsoft.Network/privateDnsZones/CNAME@2020-06-01' = {
-  name: 'web'
-  parent: privateDnsZone
-  properties: {
-    cnameRecord: {
-      cname: web.properties.defaultHostname
-    }
-    ttl: 3600
-  }
-}
