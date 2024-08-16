@@ -1,7 +1,16 @@
 {
   "routes": [
     {
-      "route": "*"
+      "route": "/blog",
+      "rewrite": "/blog.html"
+    },
+    {
+      "route": "/pricing",
+      "rewrite": "/pricing.html"
+    },
+    {
+      "route": "/*",
+      "rewrite": "/404.html"
     }
   ],
   "navigationFallback": {
