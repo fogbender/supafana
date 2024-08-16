@@ -12,5 +12,7 @@ defmodule Supafana.Utils do
   end
 
   def to_unix(%DateTime{} = t), do: t |> DateTime.to_unix(:millisecond)
-  def from_unix(us) when is_integer(us), do: us |> DateTime.from_unix!(:millisecond)
+  def from_unix(ms) when is_integer(ms), do: ms |> DateTime.from_unix!(:millisecond)
+  def now(), do: DateTime.utc_now() |> to_unix()
+  def till(ms), do: now() + ms
 end

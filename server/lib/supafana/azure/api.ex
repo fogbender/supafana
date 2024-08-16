@@ -2,54 +2,8 @@ defmodule Supafana.Azure.Api do
   require Logger
   alias Supafana.Azure
 
-  def clear_access_token() do
-    tenant_id = Supafana.env(:azure_tenant_id)
-
-    true = :ets.delete(:azure_token_cache, {:graph_access_token, tenant_id})
-
-    :ok
-  end
-
-  def get_graph_access_token(renew \\ false) do
-    tenant_id = Supafana.env(:azure_tenant_id)
-
-    renew_token = fn ->
-      path = "/#{tenant_id}/oauth2/v2.0/token"
-      client_id = Supafana.env(:azure_client_id)
-      client_secret = Supafana.env(:azure_client_secret)
-
-      r =
-        client_jwt()
-        |> Tesla.post(path, %{
-          grant_type: "client_credentials",
-          client_id: client_id,
-          client_secret: client_secret,
-          scope: "https://management.azure.com/.default"
-        })
-
-      case r do
-        {:ok, %Tesla.Env{status: 200, body: %{"access_token" => access_token}}} ->
-          true =
-            :ets.insert(:azure_token_cache, {{:graph_access_token, tenant_id}, access_token})
-
-          {:ok, access_token}
-      end
-    end
-
-    case {renew, :ets.lookup(:azure_token_cache, {:graph_access_token, tenant_id})} do
-      {_, []} ->
-        renew_token.()
-
-      {:renew, _} ->
-        renew_token.()
-
-      {false, [{{:graph_access_token, ^tenant_id}, token}]} ->
-        {:ok, token}
-    end
-  end
-
   def list_resources_by_tag(tag) do
-    {:ok, access_token} = get_graph_access_token()
+    {:ok, access_token} = Azure.Auth.api_access_token()
 
     subscription_id = Supafana.env(:azure_subscription_id)
 
@@ -78,7 +32,7 @@ defmodule Supafana.Azure.Api do
          }
        }}
       when code in ["ExpiredAuthenticationToken", "InvalidAuthenticationToken"] ->
-        {:ok, _} = get_graph_access_token(:renew)
+        {:ok, _} = Azure.Auth.api_access_token(:renew)
         list_resources_by_tag(tag)
     end
   end
@@ -92,7 +46,7 @@ defmodule Supafana.Azure.Api do
     path =
       "/subscriptions/#{subscription_id}/resourceGroups/#{resource_group}/providers/Microsoft.Compute/virtualMachines/#{vm_name}/InstanceView"
 
-    {:ok, access_token} = get_graph_access_token()
+    {:ok, access_token} = Azure.Auth.api_access_token()
 
     r =
       client_with_retry(access_token)
@@ -119,7 +73,7 @@ defmodule Supafana.Azure.Api do
          }
        }}
       when code in ["ExpiredAuthenticationToken", "InvalidAuthenticationToken"] ->
-        {:ok, _} = get_graph_access_token(:renew)
+        {:ok, _} = Azure.Auth.api_access_token(:renew)
         check_vm(project_ref)
     end
   end
@@ -133,7 +87,7 @@ defmodule Supafana.Azure.Api do
     path =
       "/subscriptions/#{subscription_id}/resourceGroups/#{resource_group}/providers/Microsoft.Compute/virtualMachines/#{vm_name}"
 
-    {:ok, access_token} = get_graph_access_token()
+    {:ok, access_token} = Azure.Auth.api_access_token()
 
     r =
       client_with_retry(access_token)
@@ -169,7 +123,7 @@ defmodule Supafana.Azure.Api do
          }
        }}
       when code in ["ExpiredAuthenticationToken", "InvalidAuthenticationToken"] ->
-        {:ok, _} = get_graph_access_token(:renew)
+        {:ok, _} = Azure.Auth.api_access_token(:renew)
         delete_vm(project_ref)
     end
   end
@@ -185,7 +139,7 @@ defmodule Supafana.Azure.Api do
   end
 
   defp delete_resources([%{"id" => id} = h | t] = resources) do
-    {:ok, access_token} = get_graph_access_token()
+    {:ok, access_token} = Azure.Auth.api_access_token()
 
     path = "/#{id}"
 
@@ -229,13 +183,13 @@ defmodule Supafana.Azure.Api do
          }
        }}
       when code in ["ExpiredAuthenticationToken", "InvalidAuthenticationToken"] ->
-        {:ok, _} = get_graph_access_token(:renew)
+        {:ok, _} = Azure.Auth.api_access_token(:renew)
         delete_resources(resources)
     end
   end
 
   def check_deployment(project_ref) do
-    {:ok, access_token} = get_graph_access_token()
+    {:ok, access_token} = Azure.Auth.api_access_token()
 
     path = deployment_path(project_ref)
 
@@ -257,7 +211,7 @@ defmodule Supafana.Azure.Api do
          }
        }}
       when code in ["ExpiredAuthenticationToken", "InvalidAuthenticationToken"] ->
-        {:ok, _} = get_graph_access_token(:renew)
+        {:ok, _} = Azure.Auth.api_access_token(:renew)
         check_deployment(project_ref)
 
       resp ->
@@ -287,7 +241,7 @@ defmodule Supafana.Azure.Api do
       }
     }
 
-    {:ok, access_token} = get_graph_access_token()
+    {:ok, access_token} = Azure.Auth.api_access_token()
 
     path = deployment_path(project_ref)
 
@@ -323,7 +277,7 @@ defmodule Supafana.Azure.Api do
          }
        }}
       when code in ["ExpiredAuthenticationToken", "InvalidAuthenticationToken"] ->
-        {:ok, _} = get_graph_access_token(:renew)
+        {:ok, _} = Azure.Auth.api_access_token(:renew)
         create_deployment(project_ref, service_role_key, password)
     end
   end
@@ -334,46 +288,6 @@ defmodule Supafana.Azure.Api do
     deployment_name = "grafana-deployment-#{project_ref}"
 
     "/subscriptions/#{subscription_id}/resourcegroups/#{resource_group}/providers/Microsoft.Resources/deployments/#{deployment_name}?api-version=2021-04-01"
-  end
-
-  defp client_jwt() do
-    url = "https://login.microsoftonline.com"
-
-    base_url = {Tesla.Middleware.BaseUrl, url}
-    form = Tesla.Middleware.FormUrlencoded
-    json = Tesla.Middleware.JSON
-    query = Tesla.Middleware.Query
-
-    retry =
-      {Tesla.Middleware.Retry,
-       [
-         delay: 1000,
-         max_retries: 10,
-         max_delay: 4_000,
-         should_retry: fn
-           {:ok, %{status: status}} when status in [400, 429, 500] -> true
-           {:ok, _} -> false
-           {:error, :timeout} -> true
-           {:error, _} -> true
-         end
-       ]}
-
-    headers =
-      {Tesla.Middleware.Headers,
-       [
-         {
-           "content-type",
-           "application/json"
-         },
-         {
-           "accept",
-           "*/*"
-         }
-       ]}
-
-    middleware = [base_url, form, json, query, headers, retry]
-
-    Tesla.client(middleware)
   end
 
   def client(access_token) do
