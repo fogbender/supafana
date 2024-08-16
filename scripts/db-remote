@@ -33,22 +33,23 @@ Help()
 
 Connect()
 {
-    PASS=$(az account get-access-token --resource-type oss-rdbms --query "[accessToken]" -o tsv)
+    #PASS=$(az account get-access-token --resource-type oss-rdbms --query "[accessToken]" -o tsv)
+    PASS=$(ssh admin@$APIHOST 'curl -s "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https%3A%2F%2Fossrdbms-aad.database.windows.net" -H Metadata:true | jq -r .access_token')
     ssh -Cfo ExitOnForwardFailure=yes -N -L localhost:$PGPORT:$PGHOST:5432 admin@$APIHOST
     PID=$(pgrep -f "N -L localhost:$PGPORT:")
     trap 'kill $PID' ERR
 }
 
-PGUSER=$1
-shift
-PGHOST="$1.postgres.database.azure.com"
-shift
-PGDB=$1
+APIENV=$1
 shift
 APIHOST=$1
 shift
-PGPORT=$1
-shift
+
+
+PGPORT=55432
+PGUSER="supafana-${APIENV}-api"
+PGHOST="supafana-${APIENV}-db.postgres.database.azure.com"
+PGDB="supafana_${APIENV}"
 
 if [ $# -ge 1 ]
 then
