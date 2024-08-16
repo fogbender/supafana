@@ -4,7 +4,8 @@ config :supafana, Supafana.Repo,
   database: "supafana_repo",
   username: "user",
   password: "pass",
-  hostname: "localhost"
+  hostname: "localhost",
+  configure: {Supafana.Repo, :configure, []}
 
 # Repo
 config :supafana,

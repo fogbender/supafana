@@ -180,6 +180,26 @@
     "sha256": "sha256-jJv6BsoBfJy0Ag+r6YC8f9sarsBZ/QBMKrO/8DscWZw=",
     "version": "0.5.2"
   },
+  "exsync": {
+    "builder": "mix",
+    "deps": {
+      "file_system": false
+    },
+    "fetcher": "hex",
+    "name": "exsync",
+    "pkg": "exsync",
+    "sha256": "sha256-zvsiqoBeyX/8W3Wk4dxUvK94HosyVkv3SrvlgD0bUXg=",
+    "version": "0.4.1"
+  },
+  "file_system": {
+    "builder": "mix",
+    "deps": {},
+    "fetcher": "hex",
+    "name": "file_system",
+    "pkg": "file_system",
+    "sha256": "sha256-Z1IJLWauxaEOZirv7tjduVMdedsLwUW7jEAyXKHYU20=",
+    "version": "1.0.0"
+  },
   "finch": {
     "builder": "mix",
     "deps": {

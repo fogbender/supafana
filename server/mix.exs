@@ -23,7 +23,6 @@ defmodule Supafana.MixProject do
 
   def release do
     [
-      include_erts: false,
       include_executables_for: [:unix]
     ]
   end

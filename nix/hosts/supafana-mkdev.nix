@@ -17,10 +17,11 @@ in
   supafana.secretsFile = config.sops.secrets."supafana.env".path;
 
   supafana.environment = {
-    PG_HOST = "supafana-${env}-db.private.postgres.database.azure.com";
+    PG_HOST = "supafana-${env}-db.postgres.database.azure.com";
     PG_USER = "supafana-${env}-api";
     PG_DB = "supafana_${env}";
     PG_PASS = "AZURE_IDENTITY";
+    PG_SSL_ENABLE = "true";
     SUPAFANA_AZURE_CLIENT_ID = "AZURE_IDENTITY";
     SUPAFANA_API_URL = "${domain}/api";
     SUPAFANA_STOREFRONT_URL = domain;

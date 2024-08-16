@@ -8,32 +8,43 @@ defmodule Supafana.Application do
 
   def start(_type, _args) do
     children =
-      [
-        # Starts a worker by calling: Supafana.Worker.start_link(arg)
-        # {Supafana.Worker, arg}
-        Supafana.Repo,
-        Registry.child_spec(keys: :unique, name: Registry.Supafana),
-        {Task.Supervisor, name: Supafana.TaskSupervisor},
-        Supafana.Web.Task.child_spec(),
-        cowboy(),
-        {Finch,
-         name: AzureFinch,
-         pools: %{
-           :default => [size: 32, count: 8]
-         }},
-        Supafana.Scheduler
-      ]
+      case Supafana.env(:minimal) do
+        true ->
+          children_minimal()
 
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
+        _ ->
+          children_minimal() ++ children_full()
+      end
+
     opts = [strategy: :one_for_one, name: Supafana.Supervisor]
     res = Supervisor.start_link(children, opts)
-
-    :azure_token_cache = :ets.new(:azure_token_cache, [:public, :named_table])
 
     IO.puts("Supafana service started with configuration:")
     IO.puts(Supafana.info())
     res
+  end
+
+  # minimal setup for migrations
+  defp children_minimal() do
+    [
+      Supafana.Azure.TokenCache,
+      {Finch,
+       name: AzureFinch,
+       pools: %{
+         :default => [size: 32, count: 8]
+       }}
+    ]
+  end
+
+  defp children_full() do
+    [
+      Supafana.Repo,
+      Registry.child_spec(keys: :unique, name: Registry.Supafana),
+      {Task.Supervisor, name: Supafana.TaskSupervisor},
+      Supafana.Web.Task.child_spec(),
+      cowboy(),
+      Supafana.Scheduler
+    ]
   end
 
   defp cowboy do

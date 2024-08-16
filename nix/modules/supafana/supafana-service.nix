@@ -4,7 +4,7 @@ with lib;
 let
   supafana = pkgs.supafana;
   cfg = config.services.supafana;
-  cookie = cfg.workDir + "/.cookie";
+  cookieFile = cfg.workDir + "/.cookie";
 in
 {
   options.services.supafana = {
@@ -76,10 +76,10 @@ in
         ExecStop = "${cfg.package}/bin/supafana stop";
         Restart = "always";
         ExecStartPre = let preScript = pkgs.writers.writeBashBin "supafanaStartPre" ''
-            if [ ! -f ${cookie} ] || [ ! -s ${cookie} ]
+            if [ ! -f ${cookieFile} ] || [ ! -s ${cookieFile} ]
             then
               echo "Creating cookie file"
-              dd if=/dev/urandom bs=1 count=16 | ${pkgs.hexdump}/bin/hexdump -e '16/1 "%02x"' > ${cookie}
+              dd if=/dev/urandom bs=1 count=16 | ${pkgs.hexdump}/bin/hexdump -e '16/1 "%02x"' > ${cookieFile}
             fi
           '';
                        in
@@ -88,11 +88,15 @@ in
       };
       environment = {
         RELEASE_TMP = cfg.workDir + "/tmp";
-        RELEASE_COOKIE = cookie;
+        RELEASE_COOKIE = cookieFile;
       } // cfg.environment;
     };
     systemd.tmpfiles.rules = [ "d ${cfg.workDir} 0700 ${cfg.user} - -" ];
     # Make the supafana commands available
     environment.systemPackages = [ cfg.package ];
+    environment.variables = {
+      RELEASE_COOKIE = cookieFile;
+      RELEASE_TMP = cfg.workDir + "/tmp";
+    };
   };
 }
