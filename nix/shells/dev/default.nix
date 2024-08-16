@@ -51,6 +51,7 @@ in with pkgs; mkShell ({
     postgresql
     sops mosh
     caddy
+    gh act
   ]
   ++ file-notifier
   ++ elixir_libs
