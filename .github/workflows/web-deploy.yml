@@ -8,7 +8,7 @@ on:
         required: true
         type: string
     secrets:
-      AZURE_STATIC_WEB_APPS_STAGE_API_TOKEN:
+      AZURE_STATIC_WEB_APPS_API_TOKEN:
         required: true
 
 jobs:
@@ -30,7 +30,7 @@ jobs:
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_STAGE_API_TOKEN }}
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
           action: "upload"
           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
