@@ -17,4 +17,8 @@
   .table tr:not(:last-child) {
     @apply border-b border-b-zinc-500;
   }
+
+  .table thead tr {
+    @apply border-b border-b-zinc-500;
+  }
 }
