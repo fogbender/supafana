@@ -22,7 +22,7 @@ in
   ];
 
   services.supafana = {
-    enable = false;
+    enable = true;
     environmentFiles = [ cfg.secretsFile ];
     environment = cfg.environment;
   };

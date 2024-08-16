@@ -19,11 +19,13 @@ in
   supafana.environment = {
     PG_HOST = "supafana-${env}-db.private.postgres.database.azure.com";
     PG_USER = "supafana-${env}-api";
-    PG_DATABASE = "supafana_${env}";
+    PG_DB = "supafana_${env}";
     PG_PASS = "AZURE_IDENTITY";
+    SUPAFANA_AZURE_CLIENT_ID = "AZURE_IDENTITY";
     SUPAFANA_API_URL = "${domain}/api";
     SUPAFANA_STOREFRONT_URL = domain;
     SUPAFANA_AZURE_RESOURCE_GROUP = "supafana-${env}-rg";
+    SUPAFANA_TRIAL_LENGTH_MIN = "30";
   };
 
   sops.secrets."supafana.env" = {
