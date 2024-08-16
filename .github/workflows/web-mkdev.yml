@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - mkdev-web
-    paths:
-      - apps/new/**
-      - .github/workflows/azure-static-web-apps-stage-deploy.yml
 
 jobs:
   deploy:
