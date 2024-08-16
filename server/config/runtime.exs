@@ -9,8 +9,7 @@ config :supafana,
     |> List.to_tuple(),
   supafana_port:
     (System.get_env("SUPAFANA_PORT") || "9080")
-    |> String.to_integer(),
-  minimal: "true"
+    |> String.to_integer()
 
 # Database
 config :supafana, Supafana.Repo,
@@ -22,11 +21,9 @@ config :supafana, Supafana.Repo,
   pool_size: (System.get_env("PG_POOL_SIZE") || "10") |> String.to_integer(),
   migration_timestamps: [type: :utc_datetime_usec],
   start_apps_before_migration: [:snowflake],
-  ssl: System.get_env("PG_SSL_ENABLE") == "true",
-  ssl_opts: [
-    verify: :verify_peer,
-    cacertfile: "/etc/ssl/certs/ca-certificates.crt"
-  ]
+  ssl:
+    System.get_env("PG_SSL_ENABLE") == "true" &&
+      [cacertfile: "/etc/ssl/certs/ca-certificates.crt"]
 
 config :supafana,
   supabase_client_id: System.get_env("SUPABASE_CLIENT_ID"),

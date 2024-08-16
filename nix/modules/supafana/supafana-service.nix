@@ -82,9 +82,9 @@ in
               dd if=/dev/urandom bs=1 count=16 | ${pkgs.hexdump}/bin/hexdump -e '16/1 "%02x"' > ${cookieFile}
             fi
           '';
-                       in
-                         [ "${preScript}/bin/supafanaStartPre" ]
-                         ++ optional (cfg.migrateDb) "${cfg.package}/bin/supafana-ctl migrate";
+        in
+          [ "${preScript}/bin/supafanaStartPre" ]
+          ++ optional (cfg.migrateDb) "${cfg.package}/bin/supafana-ctl migrate";
       };
       environment = {
         RELEASE_TMP = cfg.workDir + "/tmp";
