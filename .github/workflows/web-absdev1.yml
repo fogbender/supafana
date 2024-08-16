@@ -1,0 +1,14 @@
+name: Web deploy (absdev1)
+
+on:
+  push:
+    branches:
+      - absdev1-web
+
+jobs:
+  deploy_absdev1_web:
+    uses: ./.github/workflows/web-deploy.yml
+    with:
+      env_name: "absdev1"
+    secrets:
+      AZURE_STATIC_WEB_APPS_API_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_ABSDEV1 }}

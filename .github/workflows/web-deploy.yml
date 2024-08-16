@@ -20,6 +20,10 @@ jobs:
       pull-requests: write
     name: Build and Deploy Job
     steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
       - name: Set VITE_APP_VERSION
         run: echo "VITE_APP_VERSION=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
       - uses: actions/checkout@v4
@@ -38,7 +42,7 @@ jobs:
           output_location: 'dist'
           skip_api_build: true
         env:
-          PRE_BUILD_COMMAND: npm install -g pnpm@9.5.0
+          PRE_BUILD_COMMAND: npm install -g pnpm@9.7.1
           CUSTOM_BUILD_COMMAND: pnpm install && pnpm run build
 
 
