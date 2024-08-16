@@ -42,7 +42,7 @@ jobs:
           output_location: 'dist'
           skip_api_build: true
         env:
-          PRE_BUILD_COMMAND: npm install -g pnpm@9.7.1
+          PRE_BUILD_COMMAND: git config --global --add safe.directory /github/workspace && npm install -g pnpm@9.7.1
           CUSTOM_BUILD_COMMAND: pnpm install && pnpm run build
 
 
