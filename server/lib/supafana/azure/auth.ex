@@ -23,12 +23,12 @@ defmodule Supafana.Azure.Auth do
   end
 
   def db_access_token(mode \\ :cached) do
-    resource = "https://ossrdbms-aad.database.windows.net/"
+    resource = "https://ossrdbms-aad.database.windows.net"
     access_token(resource, mode)
   end
 
   def api_access_token(mode \\ :cached) do
-    resource = "https://management.azure.com/"
+    resource = "https://management.azure.com"
     access_token(resource, mode)
   end
 
