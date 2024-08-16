@@ -67,8 +67,6 @@ const Header = ({ organization }: { organization: undefined | Organization }) =>
     }
   }, [organization, fogbenderTokenData]);
 
-  console.log({ me });
-
   return (
     <div className="bg-transparent sticky top-0 z-20">
       <div className="nav-container-blur bg-white absolute z-[-1] h-full w-full shadow-[0_2px_4px_rgba(0,0,0,.02),0_1px_0_rgba(0,0,0,.06)] dark:shadow-[0_-1px_0_rgba(255,255,255,.1)_inset] dark:bg-black dark:contrast-more:shadow-[0_0_0_1px_#000] contrast-more:shadow-[0_0_0_1px_#fff]"></div>
