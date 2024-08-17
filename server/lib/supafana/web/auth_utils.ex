@@ -29,7 +29,7 @@ defmodule Supafana.Web.AuthUtils do
   end
 
   defp handle_tokens(conn, %{status: 502} = res) do
-    IO.inspect(res)
+    Logger.error("handle_tokens error - #{inspect(res)}")
 
     location = Supafana.env(:supafana_storefront_url)
 
@@ -40,7 +40,8 @@ defmodule Supafana.Web.AuthUtils do
   end
 
   defp handle_tokens(conn, %{status: 404} = res) do
-    IO.inspect(res)
+    Logger.error("handle_tokens error - #{inspect(res)}")
+
     sign_out(conn)
   end
 
