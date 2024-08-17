@@ -24,6 +24,16 @@ in
   services.supafana = {
     enable = true;
     environmentFiles = [ cfg.secretsFile ];
-    environment = cfg.environment;
+    environment = {
+      PG_HOST = "supafana-${cfg.env}-db.postgres.database.azure.com";
+      PG_USER = "supafana-${cfg.env}-api";
+      PG_DB = "supafana_${cfg.env}";
+      PG_PASS = "AZURE_IDENTITY";
+      PG_SSL_ENABLE = "true";
+      SUPAFANA_AZURE_CLIENT_ID = "AZURE_IDENTITY";
+      SUPAFANA_AZURE_RESOURCE_GROUP = "supafana-${cfg.env}-rg";
+      SUPAFANA_API_URL = "https://${config.networking.domain}";
+      SUPAFANA_STOREFRONT_URL = config.networking.domain;
+    } // cfg.environment;
   };
 }

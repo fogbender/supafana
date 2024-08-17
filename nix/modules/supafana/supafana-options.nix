@@ -3,12 +3,6 @@
 with lib;
 {
   options.supafana = {
-    localDomain = mkOption {
-      description = "Local domain for resolving grafana hosts";
-      default = "supafana.local";
-      type = types.str;
-    };
-
     azureWebDomain = mkOption {
       description = "Azure static site domain";
       example = literalExample "purple-hill-096a9150f.5.azurestaticapps.net";
@@ -17,7 +11,13 @@ with lib;
 
     env = mkOption {
       description = "Supafana env name";
-      default = "test";
+      example = "test";
+      type = types.str;
+    };
+
+    localDomain = mkOption {
+      description = "Local domain for resolving grafana hosts";
+      default = "supafana-${config.supafana.env}.local";
       type = types.str;
     };
 
@@ -30,6 +30,7 @@ with lib;
     secretsFile = mkOption {
       type = types.path;
       description = "Environment file with secrets";
+      default = config.sops.secrets."supafana.env".path;
     };
   };
 }

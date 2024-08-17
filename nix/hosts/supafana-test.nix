@@ -8,6 +8,7 @@
   networking.domain = "supafana-test.com";
   supafana.secretsFile = config.sops.secrets."supafana.env".path;
   supafana.azureWebDomain = "web.supafna-test.local";
+  supafana.env = "test";
 
   sops.secrets."supafana.env" = {
     sopsFile = ../../infra/secrets/supafana-test.env;
