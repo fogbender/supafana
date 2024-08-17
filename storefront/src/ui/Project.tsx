@@ -47,16 +47,26 @@ const Project = ({ project, grafana }: { project: ProjectT; grafana: GrafanaT | 
 
   return (
     <div className="p-4 m-4 flex gap-4 border border-zinc-500 rounded-lg flex-col lg:flex-row">
-      <SupabaseProject project={project} />
-      <div className="lg:self-center flex flex-col gap-4 text-base">
-        <DividerGlyph size={dividerSize} />
-      </div>
-      <SupafanaProject project={project} grafana={grafana} />
+      <SupabaseProject project={project} grafana={grafana} />
+      {(grafana || project.status.startsWith("ACTIVE")) && (
+        <>
+          <div className="lg:self-center flex flex-col gap-4 text-base">
+            <DividerGlyph size={dividerSize} />
+          </div>
+          <SupafanaProject project={project} grafana={grafana} />
+        </>
+      )}
     </div>
   );
 };
 
-const SupabaseProject = ({ project }: { project: ProjectT }) => {
+const SupabaseProject = ({
+  project,
+  grafana,
+}: {
+  project: ProjectT;
+  grafana: undefined | GrafanaT;
+}) => {
   return (
     <table className="text-gray-200 dark:text-gray-700 bg-dots table">
       <tbody className="text-black dark:text-white">
@@ -102,6 +112,7 @@ const SupabaseProject = ({ project }: { project: ProjectT }) => {
           <td>
             <span
               className={classNames(
+                "flex gap-2",
                 "font-medium",
                 (() => {
                   if (project.status === "ACTIVE_HEALTHY") {
@@ -115,6 +126,18 @@ const SupabaseProject = ({ project }: { project: ProjectT }) => {
               )}
             >
               {project.status}
+              {project.status === "INACTIVE" && !grafana && (
+                <span className="text-zinc-500">
+                  You’ll have to{" "}
+                  <a
+                    className="link link-primary dark:link-secondary"
+                    href={`https://supabase.com/dashboard/project/${project.id}`}
+                  >
+                    restore
+                  </a>{" "}
+                  this project to provision Supafana
+                </span>
+              )}
             </span>
           </td>
         </tr>
