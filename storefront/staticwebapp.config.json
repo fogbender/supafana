@@ -29,12 +29,25 @@
       }
     },
     {
+      "route": "/manifest.json",
+      "headers": {
+        "cache-control": "max-age=0, no-cache, no-store, must-revalidate"
+      }
+    },
+    {
       "route": "/*",
       "rewrite": "/404.html"
     }
   ],
   "navigationFallback": {
     "rewrite": "/index.html",
-    "exclude": ["/_astro/*", "/*.{svg,png,jpg,jpeg,gif,webp}", "/blog", "/pricing", "/404"]
+    "exclude": [
+      "/_astro/*",
+      "/*.{svg,png,jpg,jpeg,gif,webp}",
+      "/blog",
+      "/pricing",
+      "/404",
+      "/manifest.json"
+    ]
   }
 }
