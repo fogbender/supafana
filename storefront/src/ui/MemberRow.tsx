@@ -94,7 +94,7 @@ const MemberRow = ({
             <div className="flex items-center gap-1.5">
               <input
                 onKeyUp={e => {
-                  if (e.key === "Enter" || e.keyCode === 13) {
+                  if (e.key === "Enter") {
                     probeVerificationCodeMutation.mutate();
                   }
                 }}
