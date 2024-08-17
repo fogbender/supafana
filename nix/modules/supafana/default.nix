@@ -33,7 +33,7 @@ in
       SUPAFANA_AZURE_CLIENT_ID = "AZURE_IDENTITY";
       SUPAFANA_AZURE_RESOURCE_GROUP = "supafana-${cfg.env}-rg";
       SUPAFANA_API_URL = "https://${config.networking.domain}";
-      SUPAFANA_STOREFRONT_URL = config.networking.domain;
+      SUPAFANA_STOREFRONT_URL = "https://${config.networking.domain}";
     } // cfg.environment;
   };
 }
