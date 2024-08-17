@@ -34,6 +34,7 @@ in
       SUPAFANA_AZURE_RESOURCE_GROUP = "supafana-${cfg.env}-rg";
       SUPAFANA_API_URL = "https://${config.networking.domain}";
       SUPAFANA_STOREFRONT_URL = "https://${config.networking.domain}";
+      SUPAFANA_DOMAIN = config.networking.domain;
       SUPAFANA_ENV = cfg.env;
     } // cfg.environment;
   };
