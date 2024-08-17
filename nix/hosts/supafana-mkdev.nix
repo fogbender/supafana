@@ -23,7 +23,7 @@ in
     PG_PASS = "AZURE_IDENTITY";
     PG_SSL_ENABLE = "true";
     SUPAFANA_AZURE_CLIENT_ID = "AZURE_IDENTITY";
-    SUPAFANA_API_URL = "${domain}/api";
+    SUPAFANA_API_URL = "https://${domain}";
     SUPAFANA_STOREFRONT_URL = domain;
     SUPAFANA_AZURE_RESOURCE_GROUP = "supafana-${env}-rg";
     SUPAFANA_TRIAL_LENGTH_MIN = "30";
