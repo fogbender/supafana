@@ -1,8 +1,8 @@
-import React from "react";
+import { useMutation } from "@tanstack/react-query";
 import classNames from "classnames";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import React from "react";
 
 import { HiExternalLink as ExternalLink } from "react-icons/hi";
 import { SiDungeonsanddragons as DividerGlyph } from "react-icons/si";
@@ -11,8 +11,8 @@ import { nbsp } from "./Utils";
 
 import { apiServer, queryClient, queryKeys } from "./client";
 
-import SupabaseLogo from "./landing/assets/supabase-logo-icon.svg?url";
 import SupafanaLogo from "./landing/assets/logo.svg?url";
+import SupabaseLogo from "./landing/assets/supabase-logo-icon.svg?url";
 
 import type { Project as ProjectT } from "../types/supabase";
 import type { Grafana as GrafanaT } from "../types/z_types";
@@ -453,7 +453,7 @@ const copyTextToClipboard = (text: string, onSuccess: () => void, onError?: () =
     () => {
       onSuccess();
     },
-    err => {
+    () => {
       if (onError) {
         onError();
       }

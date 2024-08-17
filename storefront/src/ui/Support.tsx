@@ -1,8 +1,4 @@
-import classNames from "classnames";
-import { Provider as JotaiProvider, useAtom } from "jotai";
-import React from "react";
-import { QueryClientProvider, useQuery, useMutation } from "@tanstack/react-query";
-import wretch from "wretch";
+import { QueryClientProvider, useQuery } from "@tanstack/react-query";
 import {
   createNewFogbender,
   FogbenderConfig,
@@ -11,24 +7,21 @@ import {
   FogbenderWidget,
   type Token as FogbenderToken,
 } from "fogbender-react";
+import { Provider as JotaiProvider } from "jotai";
+import React from "react";
 
-import Header from "./Header";
 import {
+  apiServer,
+  connectActionUrl,
+  queryClient,
+  queryKeys,
   useMe,
   useMembers,
   useOrganizations,
-  connectActionUrl,
-  apiServer,
-  queryClient,
-  queryKeys,
 } from "./client";
-import Project from "./Project";
-import { localStorageKey, getLocalStorage, type Mode as ThemeMode } from "./ReactThemeController";
+import Header from "./Header";
 import MemberRow from "./MemberRow";
-
-import { getServerUrl } from "../config";
-
-import type { Organization, Member } from "../types/supabase";
+import { getLocalStorage, localStorageKey, type Mode as ThemeMode } from "./ReactThemeController";
 
 (JotaiProvider as any).displayName = "JotaiProvider";
 

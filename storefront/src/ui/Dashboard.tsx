@@ -1,26 +1,22 @@
-import classNames from "classnames";
-import { Provider as JotaiProvider, useAtom } from "jotai";
+import { QueryClientProvider, useQuery } from "@tanstack/react-query";
+import { Provider as JotaiProvider } from "jotai";
 import React from "react";
-import { lazily } from "react-lazily";
-import { QueryClientProvider, useMutation, useQuery } from "@tanstack/react-query";
-import { Title } from "reactjs-meta";
-import wretch from "wretch";
 
-import SectionHeader from "./SectionHeader";
-import Notifications from "./Notifications";
-import Header from "./Header";
 import Billing from "./Billing";
 import {
-  useMe,
-  useOrganizations,
-  connectActionUrl,
   apiServer,
+  connectActionUrl,
   queryClient,
   queryKeys,
+  useMe,
+  useOrganizations,
 } from "./client";
+import Header from "./Header";
+import Notifications from "./Notifications";
 import Project from "./Project";
+import SectionHeader from "./SectionHeader";
 
-import type { Organization, Project as ProjectT } from "../types/supabase";
+import type { Project as ProjectT } from "../types/supabase";
 
 import type { Grafana as GrafanaT } from "../types/z_types";
 

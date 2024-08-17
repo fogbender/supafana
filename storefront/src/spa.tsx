@@ -3,11 +3,10 @@ import { initEnv } from "./env";
 initEnv();
 // import { initHyperDx as initHyperDx } from "../hyperdx";
 // initHyperDx();
-import "./styles/main.css";
 import ReactSPA from "./App";
+import "./styles/main.css";
 
 // tslint:disable-next-line:ordered-imports
-import { setSwRegistration } from "./notifications";
 
 document.head.querySelector("title[data-ssr]")?.remove();
 

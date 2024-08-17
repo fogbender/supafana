@@ -1,6 +1,6 @@
-import React, { Suspense } from "react";
+import { Suspense } from "react";
 import { lazily } from "react-lazily";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 
 const { DashboardPage } = lazily(() => import("./pages/Dashboard"));
 const { SupportPage } = lazily(() => import("./pages/Support"));
