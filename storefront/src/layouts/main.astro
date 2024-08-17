@@ -26,7 +26,11 @@ const { meta, linkedData } = Astro.props;
       <Fragment slot="assets"></Fragment>
     </BaseHead>
 
-    {linkedData && <script type="application/ld+json" set:html={JSON.stringify(linkedData)} />}
+    {
+      linkedData && (
+        <script is:inline type="application/ld+json" set:html={JSON.stringify(linkedData)} />
+      )
+    }
 
     <script>
       window.addEventListener("DOMContentLoaded", () => {
