@@ -16,7 +16,7 @@ in
   supafana.env = env;
   supafana.secretsFile = config.sops.secrets."supafana.env".path;
   supafana.environment = {
-    PG_HOST = "supafana-${env}-db.private.postgres.database.azure.com";
+    PG_HOST = "supafana-${env}-db.postgres.database.azure.com";
     PG_USER = "supafana-${env}-api";
     PG_DB = "supafana_${env}";
     PG_PASS = "AZURE_IDENTITY";
