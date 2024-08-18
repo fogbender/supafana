@@ -9,7 +9,7 @@ on:
       - .github/workflows/web-deploy.yml
       - .github/workflows/web-test.yml
 jobs:
-  deploy_mkdev_web:
+  deploy_test_web:
     uses: ./.github/workflows/web-deploy.yml
     with:
       env_name: "test"
