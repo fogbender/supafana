@@ -11,10 +11,4 @@
   supafana.environment = {
     SUPAFANA_TRIAL_LENGTH_MIN = "30";
   };
-
-  sops.secrets."supafana.env" = {
-    sopsFile = ../../infra/secrets/supafana-${config.supafana.env}.env;
-    format = "dotenv";
-  };
 }
-

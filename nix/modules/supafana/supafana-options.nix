@@ -29,8 +29,9 @@ with lib;
 
     secretsFile = mkOption {
       type = types.path;
-      description = "Environment file with secrets";
-      default = config.sops.secrets."supafana.env".path;
+      description = "Path to local encrypted file with environment secrets";
+      default = ../../../infra/secrets/supafana-${config.supafana.env}.env;
+      example = literalExample "secrets/test.env";
     };
   };
 }

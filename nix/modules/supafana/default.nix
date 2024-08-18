@@ -21,9 +21,14 @@ in
     jq
   ];
 
+  sops.secrets."supafana.env" = {
+    sopsFile = cfg.secretsFile;
+    format = "dotenv";
+  };
+
   services.supafana = {
     enable = true;
-    environmentFiles = [ cfg.secretsFile ];
+    environmentFiles = [ config.sops.secrets."supafana.env".path ];
     environment = {
       PG_HOST = "supafana-${cfg.env}-db.postgres.database.azure.com";
       PG_USER = "supafana-${cfg.env}-api";
@@ -37,5 +42,10 @@ in
       SUPAFANA_DOMAIN = config.networking.domain;
       SUPAFANA_ENV = cfg.env;
     } // cfg.environment;
+  };
+
+  systemd.services.supafana = {
+    after    = [ "decrypt-sops.service" ];
+    requires = [ "decrypt-sops.service" ];
   };
 }
