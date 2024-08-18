@@ -1,4 +1,4 @@
-name: Web deploy (mkdev)
+name: Web deploy (prod)
 
 on:
   push:
