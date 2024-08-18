@@ -5,6 +5,7 @@ import BaseHead from "../ui/landing/BaseHead.astro";
 import Footer from "../ui/landing/footer.astro";
 import Header from "../ui/landing/header.astro";
 import Sidebar from "../ui/landing/sidebar.astro";
+import ThemeScript from "../components/ThemeScript.astro";
 
 export type Props = {
   meta: BaseHeadProps;
@@ -13,11 +14,6 @@ export type Props = {
 const { meta, linkedData } = Astro.props;
 ---
 
-<script defer is:inline>
-  const mode = localStorage.getItem("supafana.theme_mode") ?? "light";
-  const rootEl = document.documentElement;
-  rootEl.classList.add(mode);
-</script>
 <html lang="en">
   <head>
     <BaseHead {...meta}>
@@ -37,6 +33,7 @@ const { meta, linkedData } = Astro.props;
         document.body.classList.add("js");
       });
     </script>
+    <ThemeScript />
   </head>
   <body
     class="min-h-screen bg-white dark:bg-black font-prompt md:overscroll-y-none overscroll-none flex flex-col"

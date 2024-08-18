@@ -1,0 +1,7 @@
+<script is:inline>
+  (() => {
+    const mode = localStorage.getItem("supafana.theme_mode") ?? "light";
+    const rootEl = document.documentElement;
+    rootEl.classList.add(mode);
+  })();
+</script>
