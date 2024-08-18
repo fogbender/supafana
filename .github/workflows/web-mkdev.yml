@@ -3,7 +3,7 @@ name: Web deploy (mkdev)
 on:
   push:
     branches:
-      - mkdev-web
+      - web-mkdev
 
 jobs:
   deploy_mkdev_web:

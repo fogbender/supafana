@@ -3,7 +3,7 @@ name: Web deploy (absdev1)
 on:
   push:
     branches:
-      - absdev1-web
+      - web-absdev1
 
 jobs:
   deploy_absdev1_web:
