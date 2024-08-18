@@ -21,7 +21,8 @@ defmodule Supafana.Stripe.Api do
       "mode" => "subscription",
       "success_url" =>
         "#{Supafana.env(:supafana_storefront_url)}/dashboard?session_id={CHECKOUT_SESSION_ID}",
-      "cancel_url" => "#{Supafana.env(:supafana_storefront_url)}/dashboard"
+      "cancel_url" => "#{Supafana.env(:supafana_storefront_url)}/dashboard",
+      "allow_promotion_codes" => true
     }
 
     params =
