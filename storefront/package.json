@@ -17,7 +17,6 @@
   "dependencies": {
     "@astrojs/check": "^0.7.0",
     "@astrojs/mdx": "^3.1.2",
-    "@astrojs/partytown": "^2.1.1",
     "@astrojs/react": "^3.6.0",
     "@astrojs/sitemap": "^3.1.6",
     "@tailwindcss/custom-forms": "^0.2.1",
