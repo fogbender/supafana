@@ -6,31 +6,27 @@ export const localStorageKey = "supafana.theme_mode";
 const LIGHT = "light";
 const DARK = "dark";
 
-function setLocalStorage(mode: Mode) {
-  localStorage.setItem(localStorageKey, mode);
-  window.dispatchEvent(new StorageEvent("storage", { key: localStorageKey }));
-}
-
 export function getLocalStorage(key: string) {
   const mode = localStorage.getItem(key);
   return mode === DARK ? DARK : LIGHT;
 }
 
-function enableMode(value: Mode, persist: boolean = true) {
-  document.documentElement.classList.add(value);
-  document.documentElement.classList.remove(value === DARK ? LIGHT : DARK);
-
-  if (persist) {
-    setLocalStorage(value);
+declare global {
+  interface Window {
+    setThemeValue: (value: Mode, persist?: boolean) => void;
+    hydrateThemeCheckbox: (el: HTMLScriptElement) => void;
   }
 }
 
-const ThemeController = () => {
-  const [checked, setChecked] = React.useState(false);
+const html = String.raw;
+const __html = html`<script>
+  hydrateThemeCheckbox(document.currentScript);
+</script>`;
 
-  useEffect(() => {
-    setChecked(getLocalStorage(localStorageKey) === "light");
-  }, []);
+const ThemeController = ({ ssr = false }: { ssr?: boolean }) => {
+  const [checked, setChecked] = React.useState(
+    typeof window === "object" ? getLocalStorage(localStorageKey) === "light" : false
+  );
 
   return (
     <label className="text-black dark:text-white cursor-pointer swap swap-rotate">
@@ -41,10 +37,10 @@ const ThemeController = () => {
           const lightMode = evt.currentTarget.checked;
 
           if (lightMode) {
-            enableMode(LIGHT);
+            window.setThemeValue(LIGHT);
             setChecked(true);
           } else {
-            enableMode(DARK);
+            window.setThemeValue(DARK);
             setChecked(false);
           }
         }}
@@ -52,6 +48,8 @@ const ThemeController = () => {
         className="theme-controller"
         value="synthwave"
       />
+
+      {ssr && <div suppressHydrationWarning dangerouslySetInnerHTML={{ __html }} />}
 
       {/* moon icon */}
 

@@ -1,7 +1,29 @@
 <script is:inline>
   (() => {
-    const mode = localStorage.getItem("supafana.theme_mode") ?? "light";
-    const rootEl = document.documentElement;
-    rootEl.classList.add(mode);
+    const localStorageKey = "supafana.theme_mode";
+    const LIGHT = "light";
+    const DARK = "dark";
+
+    const mode = localStorage.getItem(localStorageKey) ?? "light";
+    window.setThemeValue = function setThemeValue(value, persist = true) {
+      document.documentElement.classList.add(value);
+      document.documentElement.classList.remove(value === DARK ? LIGHT : DARK);
+
+      if (persist) {
+        localStorage.setItem(localStorageKey, value);
+        window.dispatchEvent(new StorageEvent("storage", { key: localStorageKey }));
+      }
+    };
+
+    if (mode === "dark") {
+      window.setThemeValue(mode, false);
+    }
+
+    window.hydrateThemeCheckbox = el => {
+      const checkboxElement = el.parentElement?.previousSibling;
+      if (checkboxElement instanceof HTMLInputElement) {
+        checkboxElement.checked = mode !== DARK;
+      }
+    };
   })();
 </script>
