@@ -31,18 +31,13 @@ defmodule Supafana.Web.AuthUtils do
   defp handle_tokens(conn, %{status: 502} = res) do
     Logger.error("handle_tokens error - #{inspect(res)}")
 
-    location = Supafana.env(:supafana_storefront_url)
-
-    conn
-    |> resp(:found, "Not authorized")
-    |> put_resp_header("location", location)
-    |> halt()
+    conn |> not_authorized_with_redirect()
   end
 
   defp handle_tokens(conn, %{status: 404} = res) do
     Logger.error("handle_tokens error - #{inspect(res)}")
 
-    sign_out(conn)
+    conn |> not_authorized_with_redirect()
   end
 
   defp handle_tokens(conn, tokens) do
@@ -76,16 +71,16 @@ defmodule Supafana.Web.AuthUtils do
         assign(conn, :supabase_org_id, supabase_org_id)
 
       {:ok, %Tesla.Env{status: 500, body: %{"message" => "Unauthorized"}}} ->
-        sign_out(conn)
+        conn |> not_authorized_with_redirect()
 
       {:ok, %Tesla.Env{status: 401}} ->
-        sign_out(conn)
+        conn |> not_authorized_with_redirect()
 
       {:ok, %Tesla.Env{status: 502}} ->
-        sign_out(conn)
+        conn |> not_authorized_with_redirect()
 
       {:ok, _} ->
-        sign_out(conn)
+        conn |> not_authorized_with_redirect()
     end
   end
 
@@ -105,5 +100,14 @@ defmodule Supafana.Web.AuthUtils do
     |> configure_session(drop: true)
     |> put_resp_header("location", return_url)
     |> resp(:found, "")
+  end
+
+  def not_authorized_with_redirect(conn) do
+    location = "Supafana.env(:supafana_storefront_url)/dashboard"
+
+    conn
+    |> resp(:found, "Not authorized")
+    |> put_resp_header("location", location)
+    |> halt()
   end
 end
