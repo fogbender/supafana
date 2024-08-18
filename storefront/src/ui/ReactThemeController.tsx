@@ -28,6 +28,10 @@ const ThemeController = ({ ssr = false }: { ssr?: boolean }) => {
     typeof window === "object" ? getLocalStorage(localStorageKey) === "light" : false
   );
 
+  useEffect(() => {
+    setChecked(getLocalStorage(localStorageKey) === "light");
+  }, []);
+
   return (
     <label className="text-black dark:text-white cursor-pointer swap swap-rotate">
       {/* this hidden checkbox controls the state */}
