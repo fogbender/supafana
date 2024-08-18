@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 export type Mode = "light" | "dark";
 
@@ -6,59 +6,54 @@ export const localStorageKey = "supafana.theme_mode";
 const LIGHT = "light";
 const DARK = "dark";
 
-function setLocalStorage(mode: Mode) {
-  localStorage.setItem(localStorageKey, mode);
-  window.dispatchEvent(new StorageEvent("storage", { key: localStorageKey }));
-}
-
 export function getLocalStorage(key: string) {
   const mode = localStorage.getItem(key);
   return mode === DARK ? DARK : LIGHT;
 }
 
-function enableLightMode(persist: boolean = true) {
-  document.documentElement.classList.add(LIGHT);
-  document.documentElement.classList.remove(DARK);
-
-  if (persist) {
-    setLocalStorage(LIGHT);
+declare global {
+  interface Window {
+    setThemeValue: (value: Mode, persist?: boolean) => void;
+    hydrateThemeCheckbox: (el: HTMLScriptElement) => void;
   }
 }
 
-function enableDarkMode(persist: boolean = true) {
-  document.documentElement.classList.add(DARK);
-  document.documentElement.classList.remove(LIGHT);
+const html = String.raw;
+const __html = html`<script>
+  hydrateThemeCheckbox(document.currentScript);
+</script>`;
 
-  if (persist) {
-    setLocalStorage(DARK);
-  }
-}
+const ThemeController = ({ ssr = false }: { ssr?: boolean }) => {
+  const [checked, setChecked] = React.useState(
+    typeof window === "object" ? getLocalStorage(localStorageKey) === "light" : false
+  );
 
-const ThemeController = () => {
-  const [checked, setChecked] = React.useState(getLocalStorage(localStorageKey) === "light");
-
-  function onChangeTheme(evt: React.ChangeEvent) {
-    const lightMode = (evt.target as HTMLInputElement).checked;
-
-    if (lightMode) {
-      enableLightMode();
-      setChecked(true);
-    } else {
-      enableDarkMode();
-      setChecked(false);
-    }
-  }
+  useEffect(() => {
+    setChecked(getLocalStorage(localStorageKey) === "light");
+  }, []);
 
   return (
     <label className="text-black dark:text-white cursor-pointer swap swap-rotate">
       {/* this hidden checkbox controls the state */}
       <input
         checked={checked}
-        onChange={onChangeTheme}
+        onChange={function onChangeTheme(evt) {
+          const lightMode = evt.currentTarget.checked;
+
+          if (lightMode) {
+            window.setThemeValue(LIGHT);
+            setChecked(true);
+          } else {
+            window.setThemeValue(DARK);
+            setChecked(false);
+          }
+        }}
         type="checkbox"
         className="theme-controller"
         value="synthwave"
       />
+
+      {ssr && <div suppressHydrationWarning dangerouslySetInnerHTML={{ __html }} />}
 
       {/* moon icon */}
 

@@ -1,4 +1,6 @@
 ---
+import ThemeScript from "../components/ThemeScript.astro";
+
 // import AnalyticsHead from "../ui/AnalyticsHead.astro";
 // import AnalyticsBody from "../ui/AnalyticsBody.astro";
 
@@ -28,11 +30,7 @@ const { title } = Astro.props;
     <!--
     <AnalyticsHead />
     -->
-    <script defer is:inline>
-      const mode = localStorage.getItem("supafana.theme_mode") ?? "light";
-      const rootEl = document.documentElement;
-      rootEl.classList.add(mode);
-    </script>
+    <ThemeScript />
   </head>
   <body class="bg-white dark:bg-black min-h-screen">
     <!--
