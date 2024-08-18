@@ -23,6 +23,12 @@
       }
     },
     {
+      "route": "/~partytown/*",
+      "headers": {
+        "cache-control": "max-age=31536000"
+      }
+    },
+    {
       "route": "/*.{svg,png,jpg,jpeg,gif,webp}",
       "headers": {
         "cache-control": "max-age=31536000"
