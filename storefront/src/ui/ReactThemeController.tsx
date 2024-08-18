@@ -16,21 +16,12 @@ export function getLocalStorage(key: string) {
   return mode === DARK ? DARK : LIGHT;
 }
 
-function enableLightMode(persist: boolean = true) {
-  document.documentElement.classList.add(LIGHT);
-  document.documentElement.classList.remove(DARK);
+function enableMode(value: Mode, persist: boolean = true) {
+  document.documentElement.classList.add(value);
+  document.documentElement.classList.remove(value === DARK ? LIGHT : DARK);
 
   if (persist) {
-    setLocalStorage(LIGHT);
-  }
-}
-
-function enableDarkMode(persist: boolean = true) {
-  document.documentElement.classList.add(DARK);
-  document.documentElement.classList.remove(LIGHT);
-
-  if (persist) {
-    setLocalStorage(DARK);
+    setLocalStorage(value);
   }
 }
 
@@ -50,10 +41,10 @@ const ThemeController = () => {
           const lightMode = evt.currentTarget.checked;
 
           if (lightMode) {
-            enableLightMode();
+            enableMode(LIGHT);
             setChecked(true);
           } else {
-            enableDarkMode();
+            enableMode(DARK);
             setChecked(false);
           }
         }}
