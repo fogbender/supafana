@@ -173,7 +173,7 @@
             profiles.system.path = deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.supafana-test;
           };
           supafana-prod = {
-            hostname = "supafana-prod.com";
+            hostname = "supafana.com";
             profiles.system.path = deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.supafana-prod;
           };
           supafana-mkdev = {
