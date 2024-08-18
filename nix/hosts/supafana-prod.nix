@@ -10,6 +10,6 @@
   supafana.env = "prod";
 
   supafana.environment = {
-    SUPAFANA_TRIAL_LENGTH_MIN = "30";
+    SUPAFANA_TRIAL_LENGTH_MIN = "300";
   };
 }
