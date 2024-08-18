@@ -8,4 +8,4 @@ creation_rules:
   - path_regex: -test\.env$
     azure_keyvault: https://supafana-test-vault.vault.azure.net/keys/sops-key/6e31977c366f4306947102b155257e04
   - path_regex: -prod\.env$
-    azure_keyvault: https://supafana-prod-vault.vault.azure.net/keys/sops-key
+    azure_keyvault: https://supafana-prod-vault.vault.azure.net/keys/sops-key/a2b94928dca54f3e9444e0b39a9ac79e

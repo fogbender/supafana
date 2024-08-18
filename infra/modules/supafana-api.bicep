@@ -147,7 +147,7 @@ resource image 'Microsoft.Compute/galleries/images/versions@2023-07-03' existing
 }
 
 // Virtual Machine
-resource vm 'Microsoft.Compute/virtualMachines@2021-03-01' = {
+resource vm 'Microsoft.Compute/virtualMachines@2024-07-11' = {
   name: vmName
   location: location
   properties: {

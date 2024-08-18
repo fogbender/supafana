@@ -143,10 +143,12 @@
       packages.x86_64-linux.supafana-image = supafanaAzureImage "x86_64-linux";
       packages.x86_64-linux.grafana-image = grafanaAzureImage "x86_64-linux";
 
-
       nixosConfigurations = {
         supafana-test = nixosSystem system {
           modules = [ nix/hosts/supafana-test.nix ];
+        };
+        supafana-prod = nixosSystem system {
+          modules = [ nix/hosts/supafana-prod.nix ];
         };
         supafana-mkdev = nixosSystem system {
           modules = [ nix/hosts/supafana-mkdev.nix ];
@@ -169,6 +171,10 @@
           supafana-test = {
             hostname = "supafana-test.com";
             profiles.system.path = deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.supafana-test;
+          };
+          supafana-prod = {
+            hostname = "supafana-prod.com";
+            profiles.system.path = deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.supafana-prod;
           };
           supafana-mkdev = {
             hostname = "mkdev.supafana-test.com";
