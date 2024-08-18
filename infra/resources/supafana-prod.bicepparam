@@ -5,7 +5,7 @@ param adminGroupName = 'SupafanaProdAdmins'
 param publicDomain = 'supafana.com'
 
 param apiVmSize = 'Standard_D4s_v4'
-param apiOsDiskType = 'PremiumV2_LRS'
+param apiOsDiskType = 'Premium_LRS'
 param apiOsDiskSizeGB = 100
 
 param dbVersion  = '15'
