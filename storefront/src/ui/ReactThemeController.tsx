@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 export type Mode = "light" | "dark";
 
@@ -35,26 +35,28 @@ function enableDarkMode(persist: boolean = true) {
 }
 
 const ThemeController = () => {
-  const [checked, setChecked] = React.useState(getLocalStorage(localStorageKey) === "light");
+  const [checked, setChecked] = React.useState(false);
 
-  function onChangeTheme(evt: React.ChangeEvent) {
-    const lightMode = (evt.target as HTMLInputElement).checked;
-
-    if (lightMode) {
-      enableLightMode();
-      setChecked(true);
-    } else {
-      enableDarkMode();
-      setChecked(false);
-    }
-  }
+  useEffect(() => {
+    setChecked(getLocalStorage(localStorageKey) === "light");
+  }, []);
 
   return (
     <label className="text-black dark:text-white cursor-pointer swap swap-rotate">
       {/* this hidden checkbox controls the state */}
       <input
         checked={checked}
-        onChange={onChangeTheme}
+        onChange={function onChangeTheme(evt) {
+          const lightMode = evt.currentTarget.checked;
+
+          if (lightMode) {
+            enableLightMode();
+            setChecked(true);
+          } else {
+            enableDarkMode();
+            setChecked(false);
+          }
+        }}
         type="checkbox"
         className="theme-controller"
         value="synthwave"
