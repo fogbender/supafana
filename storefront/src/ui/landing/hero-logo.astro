@@ -2,7 +2,7 @@
 import { Image } from "astro:assets";
 import lightCircle from "./assets/light-circle.svg";
 import darkCircle from "./assets/dark-circle.svg";
-import fogbenderLogo from "./assets/logo.svg";
+import supafanaLogo from "./assets/logo.svg";
 ---
 
 <style>
@@ -37,12 +37,12 @@ import fogbenderLogo from "./assets/logo.svg";
   </div>
   <div class="z-50 h-[120px] w-[120px]">
     <Image
-      src={fogbenderLogo}
+      src={supafanaLogo}
       height={120}
       width={120}
       decoding="async"
-      loading="lazy"
-      alt={"fogbender-logo"}
+      loading="eager"
+      alt={"Supafana logo"}
     />
   </div>
 </div>
