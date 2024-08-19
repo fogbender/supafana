@@ -1,4 +1,5 @@
 ---
+import { FaGithubAlt as GitHub } from "react-icons/fa";
 import AnimateOnScroll from "../../layouts/animate-on-scroll.astro";
 import HeroText from "../../ui/landing/hero-text.astro";
 import HeroLogo from "../../ui/landing/hero-logo.astro";
@@ -44,12 +45,12 @@ import Caption from "./caption.astro";
         </div>
         <div class="z-50 flex max-w-md flex-col items-center gap-5 px-6 w-full">
           <div class="flex flex-col gap-3 md:flex-row w-full">
-            <Button name="Get started" href="/dashboard" />
-            <Button
-              name="GitHub"
-              type="secondary"
-              href="https://github.com/supabase/supabase-grafana"
-            />
+            <Button href="/dashboard">
+              <span>Get started</span>
+            </Button>
+            <Button type="secondary" href="https://github.com/supabase/supabase-grafana">
+              <div class="flex items-center gap-2 justify-center"><GitHub /> supabase-grafana</div>
+            </Button>
           </div>
         </div>
         <div class="relative w-full">

@@ -12,12 +12,12 @@ import HeroText from "../../ui/landing/hero-text.astro";
   </HeroText>
   <div class="flex max-w-xl flex-col leading-6 md:text-lg opacity-70 text-black dark:text-white">
     <p>
-      The rather unfortunate NoSQL chapter in the storied almanac of database technology wasn’t
-      born so much as a revolt against relational algebra or SQL per se, but as a totally
-      understandable pushback against the mind-shattering complexity of getting going and
-      maintaining a relational database in a non-enterprise&mdash;i.e. startup&mdash;setting. While
-      the rise of cloud computing platforms unambiguously ushered in a renaissance for Postgres and
-      friends, the getting started bar remained unacceptably high until Supabase made its debut.
+      The rather unfortunate NoSQL chapter in the storied almanac of database technology wasn’t born
+      so much as a revolt against relational algebra or SQL per se, but as a totally understandable
+      pushback against the mind-shattering complexity of getting going and maintaining a relational
+      database in a non-enterprise&mdash;i.e. startup&mdash;setting. While the rise of cloud
+      computing platforms unambiguously ushered in a renaissance for Postgres and friends, the
+      getting started bar remained unacceptably high until Supabase made its debut.
     </p>
     <br />
     <p>
@@ -48,7 +48,9 @@ import HeroText from "../../ui/landing/hero-text.astro";
   </div>
   <div class="relative mt-16 flex w-full justify-center">
     <div class="w-full max-w-[180px]">
-      <Button name="Start observing" href="/dashboard" />
+      <Button name="Start observing" href="/dashboard">
+        <span>Start observing</span>
+      </Button>
     </div>
   </div>
 </SectionLayout>

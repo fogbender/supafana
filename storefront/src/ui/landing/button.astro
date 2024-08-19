@@ -1,7 +1,7 @@
 ---
 type Props = {
-  name: string;
   href: string;
+  name?: string;
   type?: string;
   className?: string;
 };
@@ -52,7 +52,7 @@ const buttonClassNames = [
     type="submit"
   >
     <a class="block py-3" href={href}>
-      {name}
+      <slot />
     </a>
   </button>
   {
