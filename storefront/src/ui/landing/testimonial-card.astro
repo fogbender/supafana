@@ -95,7 +95,9 @@ const { image, name, company, date, text } = Astro.props as Testimonial;
             </div>
           </a>
         </figcaption>
-        <p class="border-none pl-0 pt-4 text-zinc-600 dark:text-zinc-400">
+        <p
+          class="border-none pl-0 pt-4 max-sm:max-h-56 overflow-y-auto text-zinc-600 dark:text-zinc-400"
+        >
           {text}
         </p>
       </figure>
