@@ -11,5 +11,6 @@
 
   supafana.environment = {
     SUPAFANA_TRIAL_LENGTH_MIN = "300";
+    SUPAFANA_LOG_LEVEL = "info";
   };
 }
