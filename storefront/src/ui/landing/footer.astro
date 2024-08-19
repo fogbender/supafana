@@ -50,47 +50,49 @@ const year = new Date().getFullYear();
   <div class="mx-auto flex max-w-[90rem] justify-center py-12 text-black dark:text-white px-6">
     <div aria-labelledby="footer-heading" class="w-full">
       <h2 class="sr-only" id="footer-heading">Footer</h2>
-      <div class="py-8 xl:grid xl:grid-cols-3 xl:gap-8">
-        <div class="gird grid-cols-1 gap--8 xl:col-span-2">
-          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 md:gap-8">
-            {
-              footerLinks.map(footerLink => {
-                const { heading, children } = footerLink;
-                return (
-                  <div class="mt-12 md:mt-0">
-                    <h3 class="text-sm text-black dark:text-white">{heading}</h3>
-                    <ul class="ml-0 mt-4 list-none space-y-1.5">
-                      {children.map(children => {
-                        const { name, href } = children;
-                        return (
-                          <li>
-                            <a
-                              class="text-sm text-[#666666] dark:text-[#88888888] no-underline hover:text-gray-700 dark:hover:text-white transition"
-                              href={href}
-                            >
-                              {name}
-                            </a>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                );
-              })
-            }
-          </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-y-8">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 md:col-span-2">
+          {
+            footerLinks.map(footerLink => {
+              const { heading, children } = footerLink;
+              return (
+                <div class="mt-12 md:mt-0">
+                  <h3 class="text-sm text-black dark:text-white">{heading}</h3>
+                  <ul class="ml-0 mt-4 list-none space-y-1.5">
+                    {children.map(children => {
+                      const { name, href } = children;
+                      return (
+                        <li>
+                          <a
+                            class="text-sm text-[#666666] dark:text-[#88888888] no-underline hover:text-gray-700 dark:hover:text-white transition"
+                            href={href}
+                          >
+                            {name}
+                          </a>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              );
+            })
+          }
         </div>
-        {/* <NewsLetter /> */}
-        <div class="mt-4 text-sm text-gray-600 flex items-center gap-1">
-          Site design stolen from Turborepo with much ❤️ and <span title="mad">😠</span> respect
-        </div>
-        <a href="https://fogbender.com" target="_blank">
-          <div class="mt-4 text-sm text-gray-600 flex items-center gap-1">
-            <span>©</span>
-            <span><time datetime={`${year}`}>{year}</time> Fogbender Software, Inc.</span>
+        <div class="self-start md:col-span-1">
+          <div class="text-sm text-gray-600">
+            Site design stolen from Turborepo with much ❤️ <nbsp
+              >and <span title="mad">😠</span> respect</nbsp
+            >
           </div>
-        </a>
+          <a href="https://fogbender.com" target="_blank" class="mt-8">
+            <div class="mt-4 text-sm text-gray-600 flex items-center gap-1">
+              <span>©</span>
+              <span><time datetime={`${year}`}>{year}</time> Fogbender Software, Inc.</span>
+            </div>
+          </a>
+        </div>
       </div>
     </div>
+    <div></div>
   </div>
 </footer>
