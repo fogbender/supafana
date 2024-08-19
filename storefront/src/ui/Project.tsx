@@ -255,7 +255,7 @@ const SupafanaProject = ({
               onClick={() => {
                 provisionGrafanaMutation.mutate();
               }}
-              className="btn btn-xs btn-primary"
+              className="btn btn-xs btn-primary text-white"
             >
               Provision Grafana
             </button>
@@ -332,7 +332,7 @@ const SupafanaProject = ({
                     provisionGrafanaMutation.mutate();
                   }
                 }}
-                className="btn btn-xs btn-primary w-20"
+                className="btn btn-xs btn-primary w-20 text-white"
               >
                 {provisionGrafanaMutation.isPending ? (
                   <span className="loading loading-ring loading-xs h-3" />
@@ -356,7 +356,7 @@ const SupafanaProject = ({
                 onClick={() => {
                   provisionGrafanaMutation.mutate();
                 }}
-                className="btn btn-xs btn-primary w-20"
+                className="btn btn-xs btn-primary w-20 text-white"
               >
                 {provisionGrafanaMutation.isPending ? (
                   <span className="loading loading-ring loading-xs h-3" />
