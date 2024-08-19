@@ -16,9 +16,7 @@ const cover = (thumbnailImage || coverImage || heroImage) && {
 };
 ---
 
-<div
-  class="flex cursor-pointer space-x-6 rounded-2xl p-4 md:pl-4 md:pt-4 md:pb-6 md:pr-8"
->
+<div class="flex cursor-pointer space-x-6 rounded-2xl p-4 md:pl-4 md:pt-4 md:pb-6 md:pr-8">
   <div class="h-20 w-20 shrink-0 rounded-xl">
     {
       cover && (
@@ -35,7 +33,9 @@ const cover = (thumbnailImage || coverImage || heroImage) && {
     }
   </div>
   <div class="flex flex-col space-y-3 group">
-    <div class="blog-title font-prompt text-lg font-light leading-9 md:text-2xl md:leading-9 group-hover:underline">
+    <div
+      class="blog-title font-prompt text-lg font-light leading-9 md:text-2xl md:leading-9 group-hover:underline"
+    >
       {post.title}
     </div>
     <ul role="list">

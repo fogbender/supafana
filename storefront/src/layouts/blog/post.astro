@@ -26,26 +26,26 @@ const meta = {
 <Layout meta={meta} linkedData={linkedData}>
   <Page>
     <div class="max-w-[900px]">
-        <a
-          href={blogUrl}
-          class="hover:underline font-prompt mt-11 ml-11 inline-block cursor-pointer text-lg font-light text-[#3291ff]"
-          >&#8592; All articles</a
-        >
-        <PostHeader content={content} />
-        <div
-          class:list={[
-            "prose !prose-fog dark:!prose-invert font-prompt",
-            "prose-img:md:mx-12",
-            "prose-h2:scroll-mt-20 prose-h2:md:mx-12 prose-h2:my-8 prose-h2:font-medium prose-h2:text-2xl",
-            "prose-h3:scroll-mt-20 prose-h3:md:mx-12 prose-h3:my-8 prose-h3:font-normal prose-h3:text-xl",
-            "prose-a:no-underline prose-a:break-words prose-a:font-light hover:prose-a:underline prose-p:md:ml-12 prose-li:pl-1 prose-ul:pl-1 prose-ul:md:pl-5 prose-ol:pl-1 prose-ol:md:pl-5 prose-table:md:ml-8 max-w-full text-lg font-light",
-          ]}
-        >
-          <slot />
-          <template id="copy-button"><CopyButton /></template>
-        </div>
-        <Outro tweet={{ title, href: Astro.url.toString() }} />
+      <a
+        href={blogUrl}
+        class="hover:underline font-prompt mt-11 ml-11 inline-block cursor-pointer text-lg font-light text-[#3291ff]"
+        >&#8592; All articles</a
+      >
+      <PostHeader content={content} />
+      <div
+        class:list={[
+          "prose !prose-fog dark:!prose-invert font-prompt",
+          "prose-img:md:mx-12",
+          "prose-h2:scroll-mt-20 prose-h2:md:mx-12 prose-h2:my-8 prose-h2:font-medium prose-h2:text-2xl",
+          "prose-h3:scroll-mt-20 prose-h3:md:mx-12 prose-h3:my-8 prose-h3:font-normal prose-h3:text-xl",
+          "prose-a:no-underline prose-a:break-words prose-a:font-light hover:prose-a:underline prose-p:md:ml-12 prose-li:pl-1 prose-ul:pl-1 prose-ul:md:pl-5 prose-ol:pl-1 prose-ol:md:pl-5 prose-table:md:ml-8 max-w-full text-lg font-light",
+        ]}
+      >
+        <slot />
+        <template id="copy-button"><CopyButton /></template>
       </div>
+      <Outro tweet={{ title, href: Astro.url.toString() }} />
+    </div>
   </Page>
 </Layout>
 <style>
