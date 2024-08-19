@@ -13,7 +13,7 @@ module.exports = {
           css: {
             "--tw-prose-links": "#3291ff",
             "--tw-prose-body": theme("colors.gray.600"),
-            "--tw-prose-bullets:": theme("colors.black")
+            "--tw-prose-bullets:": theme("colors.black"),
           },
         },
       }),
