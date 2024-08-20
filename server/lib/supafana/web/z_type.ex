@@ -150,6 +150,7 @@ defmodule Supafana.Z.Subscription do
     field(:status, :string, [:required])
     field(:quantity, :integer, [:required])
     field(:product_name, :string, [:required])
+    field(:discount, :string, [:required])
   end
 end
 

@@ -228,8 +228,18 @@ defmodule Supafana.Web.BillingRouter do
                                  "product" => %{
                                    "name" => product_name
                                  }
-                               }
+                               },
+                               "discount" => discount
                              } ->
+                discount_description =
+                  case discount do
+                    %{"coupon" => %{"name" => discount_name}} ->
+                      discount_name
+
+                    _ ->
+                      nil
+                  end
+
                 %Supafana.Z.Subscription{
                   id: subscription_id,
                   created_ts_sec: created_ts_sec,
@@ -238,7 +248,8 @@ defmodule Supafana.Web.BillingRouter do
                   canceled_at_ts_sec: canceled_at_ts_sec,
                   status: status,
                   quantity: quantity,
-                  product_name: product_name
+                  product_name: product_name,
+                  discount: discount_description
                 }
               end)
 

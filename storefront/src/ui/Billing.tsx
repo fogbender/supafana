@@ -239,6 +239,14 @@ export const Subscription = ({ s, b }: { s: StripeCustomer; b: BillingT }) => {
             <span>${`${(b.price_per_instance / 100) * s.quantity}`}</span>
           </RowBody>
         </tr>
+        {s.discount && (
+          <tr>
+            <RowHeader>Discount</RowHeader>
+            <RowBody>
+              <span>{s.discount}</span>
+            </RowBody>
+          </tr>
+        )}
         <tr>
           <RowHeader>Subscription status</RowHeader>
           <RowBody>

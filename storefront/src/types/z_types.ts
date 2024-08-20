@@ -43,6 +43,7 @@ export type Subscription = {
   status: string;
   quantity: number;
   product_name: string;
+  discount: string;
 };
 
 export type UserNotification = {
