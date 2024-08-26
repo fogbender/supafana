@@ -1,0 +1,56 @@
+---
+import { type CollectionEntry } from "astro:content";
+import { Picture } from "astro:assets";
+import Author from "./Author.astro";
+export interface Props {
+  post: CollectionEntry<"blog">;
+}
+
+const {
+  post: { data: post },
+} = Astro.props as Props;
+const { coverImage, heroImage, coverImageAlt, thumbnailImage, heroImageAlt, title } = post;
+const cover = (thumbnailImage || coverImage || heroImage) && {
+  src: thumbnailImage ?? coverImage ?? heroImage,
+  alt: coverImageAlt ?? heroImageAlt ?? title,
+};
+---
+
+<div class="flex cursor-pointer space-x-6 rounded-2xl p-4 md:pl-4 md:pt-4 md:pb-6 md:pr-8">
+  <div class="h-20 w-20 shrink-0 rounded-xl">
+    {
+      cover && (
+        <div class="cover-image rounded-xl">
+          <Picture
+            class="rounded-xl"
+            src={cover.src!}
+            sizes="(max-width: 600px) 80w, 160w"
+            widths={[80, 160]}
+            alt={cover.alt}
+          />
+        </div>
+      )
+    }
+  </div>
+  <div class="flex flex-col space-y-3 group">
+    <div
+      class="blog-title font-prompt text-lg font-light leading-9 md:text-2xl md:leading-9 group-hover:underline"
+    >
+      {post.title}
+    </div>
+    <ul role="list">
+      {
+        post.authors.map(author => (
+          <li class="pb-2 group-hover:underline">
+            <Author name={author} publishDate={post.publishDate} />
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</div>
+<style>
+  .blog-title {
+    word-spacing: 3px;
+  }
+</style>

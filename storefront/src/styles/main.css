@@ -1,0 +1,24 @@
+@import "./fonts.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.bg-dots {
+  background-image: radial-gradient(theme("colors.zinc.200") 1px, transparent 1px);
+  background-size: 5px 5px;
+}
+
+.dark .bg-dots {
+  background-image: radial-gradient(theme("colors.zinc.800") 1px, transparent 1px);
+  background-size: 5px 5px;
+}
+
+@layer components {
+  .table tr:not(:last-child) {
+    @apply border-b border-b-zinc-500;
+  }
+
+  .table thead tr {
+    @apply border-b border-b-zinc-500;
+  }
+}

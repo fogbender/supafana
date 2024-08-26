@@ -1,0 +1,67 @@
+{
+  "routes": [
+    {
+      "route": "/",
+      "rewrite": "/index.html"
+    },
+    {
+      "route": "/blog",
+      "rewrite": "/blog.html"
+    },
+    {
+      "route": "/pricing",
+      "rewrite": "/pricing.html"
+    },
+    {
+      "route": "/404",
+      "rewrite": "/404.html"
+    },
+    {
+      "route": "/_astro/*",
+      "headers": {
+        "cache-control": "max-age=31536000"
+      }
+    },
+    {
+      "route": "/*.{svg,png,jpg,jpeg,gif,webp}",
+      "headers": {
+        "cache-control": "max-age=31536000"
+      }
+    },
+    {
+      "route": "/manifest.json",
+      "headers": {
+        "cache-control": "max-age=0, no-cache, no-store, must-revalidate"
+      }
+    },
+    {
+      "route": "/*.txt",
+      "headers": {
+        "cache-control": "max-age=3600"
+      }
+    },
+    {
+      "route": "/*.xml",
+      "headers": {
+        "cache-control": "max-age=3600"
+      }
+    },
+    {
+      "route": "/*",
+      "rewrite": "/404.html"
+    }
+  ],
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": [
+      "/_astro/*",
+      "/*.{svg,png,jpg,jpeg,gif,webp}",
+      "/*.txt",
+      "/*.xml",
+      "/blog",
+      "/pricing",
+      "/404",
+      "/manifest.json"
+    ]
+  }
+}

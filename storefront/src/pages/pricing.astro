@@ -1,0 +1,70 @@
+---
+import Main from "../layouts/main.astro";
+
+const pricing = {
+  plans: ["Trial", "Pro"],
+  features: [
+    {
+      name: "Price per month",
+      tiers: [
+        {
+          plan: "Trial",
+          value: "Free",
+        },
+        {
+          plan: "Pro",
+          value: "$100 per project",
+        },
+      ],
+    },
+    {
+      name: "Supafana instance deleted",
+      tiers: [
+        {
+          plan: "Trial",
+          value: "After 5 hours",
+        },
+        {
+          plan: "Pro",
+          value: "Never",
+        },
+      ],
+    },
+  ],
+};
+---
+
+<Main meta={{ title: "Supafana pricing" }}>
+  <div
+    class="jusitfy-self-center flex-1 w-full min-h-72 flex flex-col justify-center px-4 md:px-24 gap-6"
+  >
+    <table class="text-gray-200 dark:text-gray-700 bg-dots table max-w-3xl mx-auto">
+      <thead>
+        <tr>
+          <th></th>
+          {
+            pricing.plans.map(p => (
+              <th>
+                <h2 class="font-bold text-3xl text-black dark:text-white">{p}</h2>
+              </th>
+            ))
+          }
+        </tr>
+      </thead>
+      <tbody>
+        {
+          pricing.features.map(f => (
+            <tr>
+              <td>
+                <span class="text-gray-500 dark:text-gray-300">{f.name}</span>
+              </td>
+              {f.tiers.map(t => (
+                <td class="text-black dark:text-white">{t.value}</td>
+              ))}
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+</Main>

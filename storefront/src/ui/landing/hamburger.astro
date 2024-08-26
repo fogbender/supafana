@@ -1,0 +1,25 @@
+---
+import { Hamburger as HamburgerIcon } from "../Icons";
+
+export type Props = {
+  className: string;
+  stroke?: string;
+};
+const props = Astro.props;
+---
+
+<div class={`block ${props.className}`}>
+  <button class="landing-sidebar-menu-button">
+    <HamburgerIcon className="h-5 w-5 dark:text-white text-black" ariaLabel="Menu" />
+  </button>
+</div>
+
+<script>
+  const button = document.querySelector(".landing-sidebar-menu-button");
+  button?.addEventListener("click", () => {
+    document.body.classList.toggle("overflow-hidden");
+    const sidebarContainer = document.querySelector(".sidebar-container");
+    sidebarContainer?.classList.toggle("max-md:[transform:translate3d(0,0,0)]");
+    sidebarContainer?.classList.toggle("max-md:[transform:translate3d(0,-100%,0)]");
+  });
+</script>

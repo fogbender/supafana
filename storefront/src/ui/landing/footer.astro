@@ -1,0 +1,97 @@
+---
+// import NewsLetter from "./news-letter.astro";
+const footerLinks = [
+  {
+    heading: "Resources",
+    children: [
+      { name: "Blog", href: "/blog" },
+      { name: "Pricing", href: "/pricing" },
+      { name: "Supabase Grafana", href: "https://github.com/supabase/supabase-grafana" },
+    ],
+  },
+  {
+    heading: "Company",
+    children: [
+      { name: "Fogbender", href: "https://fogbender.com/company" },
+      { name: "SOC 2", href: "https://fogbender.com/security" },
+      { name: "Y Combinator", href: "https://www.ycombinator.com/companies/fogbender" },
+      { name: "LinkedIn", href: "https://www.linkedin.com/company/fogbender" },
+      { name: "X", href: "https://x.com/supafana" },
+    ],
+  },
+  {
+    heading: "Legal",
+    children: [
+      {
+        name: "Privacy Policy",
+        href: "https://github.com/fogbender/legal/blob/master/privacy-policy.txt",
+      },
+      {
+        name: "Terms of Service",
+        href: "https://github.com/fogbender/legal/blob/master/terms-of-service.txt",
+      },
+    ],
+  },
+  {
+    heading: "Support",
+    children: [{ name: "help@supafana.com", href: "mailto:help@fupafana.com" }],
+  },
+];
+
+const year = new Date().getFullYear();
+---
+
+<footer class="relative bg-[#FAFAFA] dark:bg-black">
+  <div
+    class="pointer-events-none absolute top-0 h-12 w-full -translate-y-full bg-gradient-to-t to-transparent from-[#FAFAFA] dark:from-black"
+  >
+  </div>
+  <hr class="dark:border-neutral-800" />
+  <div class="mx-auto flex max-w-[90rem] justify-center py-12 text-black dark:text-white px-6">
+    <div aria-labelledby="footer-heading" class="w-full">
+      <h2 class="sr-only" id="footer-heading">Footer</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-y-8">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 md:col-span-2">
+          {
+            footerLinks.map(footerLink => {
+              const { heading, children } = footerLink;
+              return (
+                <div class="mt-12 md:mt-0">
+                  <h3 class="text-sm text-black dark:text-white">{heading}</h3>
+                  <ul class="ml-0 mt-4 list-none space-y-1.5">
+                    {children.map(children => {
+                      const { name, href } = children;
+                      return (
+                        <li>
+                          <a
+                            class="text-sm text-[#666666] dark:text-[#88888888] no-underline hover:text-gray-700 dark:hover:text-white transition"
+                            href={href}
+                          >
+                            {name}
+                          </a>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              );
+            })
+          }
+        </div>
+        <div class="self-start md:col-span-1">
+          <div class="text-sm text-gray-600">
+            Site design stolen from Turborepo with much ❤️ <nbsp
+              >and <span title="mad">😠</span> respect</nbsp
+            >
+          </div>
+        </div>
+      </div>
+      <a href="https://fogbender.com" target="_blank" class="mt-10 block">
+        <div class="text-sm text-gray-600 flex items-center gap-1">
+          <span>©</span>
+          <span><time datetime={`${year}`}>{year}</time> Fogbender Software, Inc.</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</footer>

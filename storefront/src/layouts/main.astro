@@ -1,0 +1,82 @@
+---
+import "../styles/main.css";
+import type { Props as BaseHeadProps } from "../ui/landing/BaseHead.astro";
+import BaseHead from "../ui/landing/BaseHead.astro";
+import Footer from "../ui/landing/footer.astro";
+import Header from "../ui/landing/header.astro";
+import Sidebar from "../ui/landing/sidebar.astro";
+import ThemeScript from "../components/ThemeScript.astro";
+
+export type Props = {
+  meta: BaseHeadProps;
+  linkedData?: object;
+};
+const { meta, linkedData } = Astro.props;
+---
+
+<html lang="en">
+  <head>
+    <BaseHead {...meta}>
+      <Fragment slot="preload"> </Fragment>
+
+      <Fragment slot="assets"></Fragment>
+    </BaseHead>
+
+    {
+      linkedData && (
+        <script is:inline type="application/ld+json" set:html={JSON.stringify(linkedData)} />
+      )
+    }
+
+    <script>
+      window.addEventListener("DOMContentLoaded", () => {
+        document.body.classList.add("js");
+      });
+    </script>
+    <ThemeScript />
+    <script>
+      (function () {
+        if (window.location.hostname === "supafana.com") {
+          var script = document.createElement("script");
+          script.async = true;
+          script.src = "https://www.googletagmanager.com/gtag/js?id=G-SXVXHJCCJ0";
+
+          document.head.appendChild(script);
+
+          // @ts-ignore
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            // @ts-ignore
+            dataLayer.push(arguments);
+          }
+
+          // @ts-ignore
+          gtag("js", new Date());
+
+          // @ts-ignore
+          gtag("config", "G-SXVXHJCCJ0");
+        } else {
+          console.info("GA not loaded: not production");
+        }
+      })();
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-white dark:bg-black font-prompt md:overscroll-y-none overscroll-none flex flex-col"
+  >
+    <Header />
+    <Sidebar />
+    <main class="relative h-full flex-1 flex flex-col">
+      <slot />
+      <Footer />
+      <style is:global>
+        body {
+          @apply bg-black;
+        }
+        img {
+          content-visibility: auto;
+        }
+      </style>
+    </main>
+  </body>
+</html>

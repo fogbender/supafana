@@ -1,0 +1,20 @@
+---
+import Layout from "../layouts/SPA-layout.astro";
+import { App } from "../spa";
+import { getVersion } from "./ssg/version.json";
+const version = getVersion();
+---
+
+<Layout title="Supafana Dashboard">
+  <script is:inline data-version={version}>
+    // fails with:
+    /*
+        src/pages/SPA.astro:10:12 - error ts(2339): Property '_supafana_version' does not exist on type 'Window & typeof globalThis'.
+
+10     window._supafana_version = document.currentScript?.dataset.version;
+              ~~~~~~~~~~~~~~~~~
+    */
+    // window._supafana_version = document.currentScript?.dataset.version;
+  </script>
+  <App client:only="react" />
+</Layout>

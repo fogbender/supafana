@@ -1,0 +1,172 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.26",
+      "templateHash": "17905435322716412113"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]"
+    },
+    "env": {
+      "type": "string"
+    },
+    "supafanaDomain": {
+      "type": "string"
+    },
+    "supabaseProjectRef": {
+      "type": "string"
+    },
+    "supabaseServiceRoleKey": {
+      "type": "string"
+    },
+    "grafanaPassword": {
+      "type": "securestring"
+    },
+    "virtualNetworkName": {
+      "type": "string",
+      "defaultValue": "[format('supafana-{0}-vnet', parameters('env'))]"
+    },
+    "grafanaSubnetName": {
+      "type": "string",
+      "defaultValue": "[format('supafana-{0}-grafana-subnet', parameters('env'))]"
+    },
+    "commonResourceGroupName": {
+      "type": "string",
+      "defaultValue": "supafana-common-rg"
+    },
+    "imageGalleryName": {
+      "type": "string",
+      "defaultValue": "supafanasig"
+    },
+    "imageName": {
+      "type": "string",
+      "defaultValue": "grafana"
+    },
+    "imageVersion": {
+      "type": "string",
+      "defaultValue": "0.0.5"
+    },
+    "projectId": {
+      "type": "string",
+      "defaultValue": "[parameters('supabaseProjectRef')]"
+    },
+    "vmName": {
+      "type": "string",
+      "defaultValue": "[format('supafana-{0}-grafana-{1}', parameters('env'), parameters('supabaseProjectRef'))]"
+    },
+    "vmSize": {
+      "type": "string",
+      "defaultValue": "Standard_B2s"
+    },
+    "osDiskType": {
+      "type": "string",
+      "defaultValue": "Standard_LRS"
+    },
+    "osDiskSizeGB": {
+      "type": "int",
+      "defaultValue": 20
+    },
+    "privateDnsZoneName": {
+      "type": "string",
+      "defaultValue": "[format('supafana-{0}.local', parameters('env'))]"
+    }
+  },
+  "variables": {
+    "osDiskName": "[format('{0}-os-disk', parameters('vmName'))]",
+    "networkInterfaceName": "[format('{0}-nic', parameters('vmName'))]",
+    "customDataRaw": "[format('#cloud-config\nwrite_files:\n- content: |\n    SUPABASE_PROJECT_REF={0}\n    SUPABASE_SERVICE_ROLE_KEY={1}\n    GF_SERVER_ROOT_URL=https://{3}/dashboard/{2}\n    GF_SERVER_SERVE_FROM_SUB_PATH=true\n    GRAFANA_PASSWORD={4}\n  path: /var/lib/supafana/supafana.env\n', parameters('supabaseProjectRef'), parameters('supabaseServiceRoleKey'), parameters('projectId'), parameters('supafanaDomain'), parameters('grafanaPassword'))]",
+    "grafanaSubnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('grafanaSubnetName'))]",
+    "tags": {
+      "vm": "[parameters('vmName')]"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2020-06-01",
+      "name": "[variables('networkInterfaceName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "subnet": {
+                "id": "[variables('grafanaSubnetId')]"
+              },
+              "privateIPAllocationMethod": "Dynamic"
+            }
+          }
+        ]
+      },
+      "tags": "[variables('tags')]"
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2021-03-01",
+      "name": "[parameters('vmName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('vmSize')]"
+        },
+        "osProfile": {
+          "computerName": "[parameters('vmName')]",
+          "adminUsername": "supafana",
+          "adminPassword": "Azurepass1349",
+          "customData": "[base64(variables('customDataRaw'))]"
+        },
+        "storageProfile": {
+          "osDisk": {
+            "name": "[variables('osDiskName')]",
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "[parameters('osDiskType')]"
+            },
+            "diskSizeGB": "[parameters('osDiskSizeGB')]",
+            "osType": "Linux"
+          },
+          "imageReference": {
+            "id": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('commonResourceGroupName')), 'Microsoft.Compute/galleries/images/versions', split(format('{0}/{1}/{2}', parameters('imageGalleryName'), parameters('imageName'), parameters('imageVersion')), '/')[0], split(format('{0}/{1}/{2}', parameters('imageGalleryName'), parameters('imageName'), parameters('imageVersion')), '/')[1], split(format('{0}/{1}/{2}', parameters('imageGalleryName'), parameters('imageName'), parameters('imageVersion')), '/')[2])]"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('networkInterfaceName'))]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true
+          }
+        }
+      },
+      "tags": "[variables('tags')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('networkInterfaceName'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "privateIPAddress": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Network/networkInterfaces', variables('networkInterfaceName')), '2020-06-01').ipConfigurations[0].properties.privateIPAddress]"
+    },
+    "localDomain": {
+      "type": "string",
+      "value": "[format('{0}.{1}', parameters('vmName'), parameters('privateDnsZoneName'))]"
+    },
+    "publicUri": {
+      "type": "string",
+      "value": "[format('https://{0}/dashboard/{1}', parameters('supafanaDomain'), parameters('projectId'))]"
+    }
+  }
+}

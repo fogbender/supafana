@@ -1,0 +1,18 @@
+---
+import SectionLayout from "../../layouts/section-layout.astro";
+import Features from "../../ui/landing/features.astro";
+import HeroText from "../../ui/landing/hero-text.astro";
+import Caption from "./caption.astro";
+---
+
+<SectionLayout>
+  <div class="flex flex-col items-center gap-5 md:gap-6">
+    <HeroText variant="small">Why Supafana?</HeroText>
+    <Caption>
+      Easy-to-setup, persistent, and secure observability for Supabase! <span class="font-medium"
+        >Supafana removes the need to suddenly learn how to deploy container infrastructure.</span
+      >
+    </Caption>
+  </div>
+  <Features />
+</SectionLayout>

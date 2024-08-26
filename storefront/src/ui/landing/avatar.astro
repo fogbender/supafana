@@ -1,0 +1,36 @@
+---
+import { Picture } from "astro:assets";
+
+export type Props = {
+  src: ImageMetadata;
+  name: string;
+  size: number;
+};
+
+const { src, name, size } = Astro.props;
+---
+
+<Picture
+  class="avatar"
+  style={`--size: ${size}px`}
+  aria-hidden="true"
+  src={src as any}
+  alt={name}
+  sizes={`${size}w`}
+  widths={[2 * size]}
+  formats={["avif", "webp", "jpeg"]}
+/>
+
+<style>
+  .avatar {
+    width: var(--size);
+    height: var(--size);
+    min-width: var(--size);
+    min-height: var(--size);
+    /* otherwise image is set twice */
+    --mask-image-url: url(data:image/svg+xml;base64,CiAgICA8c3ZnIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogICAgICA8cGF0aAogICAgICAgIGQ9Ik0zMy41MTMgOS41NDE2MkMyOS42MjU2IDQuODczMzcgMjcuNjgxOSAyLjUzOTI0IDI1LjUyMjMgMS40MDUxOUMyMS44NTkgLTAuNTE4NDQzIDE3LjQ3MjQgLTAuNDY0MDQ3IDEzLjg1NzkgMS41NDk4M0MxMS43MjcgMi43MzcwOSA5LjgyOTk4IDUuMTMzNjQgNi4wMzU4OSA5LjkyNjc1QzIuODg4MjcgMTMuOTAzMiAxLjMxNDQ2IDE1Ljg5MTQgMC42MzM0MjkgMTcuOTI2OEMtMC41MjUwNDkgMjEuMzg5MiAtMC4wNzk3MDM5IDI1LjE4NzggMS44NDgyMSAyOC4yODg0QzIuOTgxNTcgMzAuMTExMSA0Ljk2MDQxIDMxLjY3MTggOC45MTgwOCAzNC43OTMxQzEyLjAyNzUgMzcuMjQ1NSAxMy41ODIzIDM4LjQ3MTcgMTUuMjM5OCAzOS4xMzEzQzE4LjA1NCA0MC4yNTEyIDIxLjE4MzIgNDAuMjg5NiAyNC4wMjM5IDM5LjIzODlDMjUuNjk3MSAzOC42MiAyNy4yOTMxIDM3LjQyMzUgMzAuNDg1IDM1LjAzMDZDMzQuNzQzIDMxLjgzODMgMzYuODcyMSAzMC4yNDIxIDM4LjA2ODYgMjguMzcxM0M0MC4wOTU1IDI1LjIwMjMgNDAuNTU1IDIxLjI3OCAzOS4zMTQ5IDE3LjcyNjVDMzguNTgyOSAxNS42Mjk5IDM2Ljg5MjkgMTMuNjAwNSAzMy41MTMgOS41NDE2MloiCiAgICAgICAgZmlsbD0iIzAwMDAwMCIKICAgICAgLz4KICAgIDwvc3ZnPgogIA==);
+    mask-image: var(--mask-image-url);
+    mask-repeat: no-repeat;
+    mask-size: var(--size);
+  }
+</style>

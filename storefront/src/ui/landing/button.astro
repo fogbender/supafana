@@ -1,0 +1,62 @@
+---
+type Props = {
+  href: string;
+  type?: string;
+  className?: string;
+};
+const { href, className, type = "primary" } = Astro.props as Props;
+
+const buttonClassNames = [
+  {
+    "text-white bg-black dark:text-black dark:bg-white": type === "primary",
+    "border border-[#EAEAEA] text-neutral-800 hover:border-black hover:text-black dark:border-neutral-400 dark:text-neutral-200 dark:hover:border-white dark:hover:text-white":
+      type == "secondary",
+  },
+];
+---
+
+<style>
+  .gradients-translating-glow {
+    background: linear-gradient(32deg, #2a8af6, #a853ba 50%, #e92a67);
+    background-size: 200% 200%;
+    will-change: filter;
+    animation: gradients-translate-glow 7s linear infinite;
+  }
+
+  @keyframes gradients-translate-glow {
+    0% {
+      background-position: -20% -20%;
+    }
+    25% {
+      background-position: 30% 80%;
+    }
+    55% {
+      background-position: 110% 110%;
+    }
+    75% {
+      background-position: 80% 30%;
+    }
+    100% {
+      background-position: -20% -20%;
+    }
+  }
+</style>
+<div class="group relative w-full">
+  <button
+    class:list={[
+      "w-full min-w-[120px] text-base font-medium no-underline rounded transition-all duration-300 md:leading-6",
+      buttonClassNames,
+      className,
+    ]}
+    type="submit"
+  >
+    <a class="block py-3" href={href}>
+      <slot />
+    </a>
+  </button>
+  {
+    type === "primary" && (
+      <div class="absolute top-0 -z-10 h-full w-full rounded-full bg-red-100 opacity-0 blur-xl transition-all duration-300 group-hover:opacity-70 gradients-translating-glow" />
+    )
+  }
+</div>

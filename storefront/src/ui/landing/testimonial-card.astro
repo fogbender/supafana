@@ -1,0 +1,106 @@
+---
+import type { ImageMetadata } from "astro";
+import { Image } from "astro:assets";
+
+type Testimonial = {
+  image: ImageMetadata;
+  name: string;
+  company: string;
+  date: string;
+  text: string;
+};
+
+const { image, name, company, date, text } = Astro.props as Testimonial;
+---
+
+<style>
+  .animated-border {
+    --border-bg: conic-gradient(
+      from 180deg at 50% 50%,
+      #e92a67 0deg,
+      #a853ba 112.5deg,
+      #2a8af6 228.75deg,
+      rgba(42, 138, 246, 0) 360deg
+    );
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    z-index: 0;
+  }
+
+  .animated-border i {
+    --border-size: 1px;
+    content: "";
+    position: absolute;
+    mask-composite: exclude;
+    top: var(--border-size);
+    right: var(--border-size);
+    bottom: var(--border-size);
+    left: var(--border-size);
+    padding: var(--border-size);
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    border-radius: 13px;
+    z-index: -1;
+  }
+
+  .animated-border i::before {
+    content: "";
+    display: block;
+    width: calc(100% * 1.41421356237); /* Corrected width property */
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 100%;
+    background: var(--border-bg);
+    animation: landing-spin 5s linear infinite;
+  }
+
+  @keyframes landing-spin {
+    0% {
+      transform: translate(-50%, -50%) rotate(1turn);
+    }
+    100% {
+      transform: translate(-50%, -50%) rotate(0);
+    }
+  }
+</style>
+
+<div
+  class="border relative overflow-hidden inline-block rounded-xl h-[350px] sm:h-[400px] w-full animated-border self-start"
+>
+  <i aria-hidden="true" class="opacity-1 transition-opacity duration-100"></i>
+  <div
+    class="relative flex h-full w-full max-w-full flex-col overflow-hidden rounded-xl border border-[rgba(255,255,255,0.05)] p-3 !pb-12 pt-8 md:!pb-4 md:!pt-4 testimonial-card-bg bg-white dark:bg-black shadow-[0_0_0_1px_rgba(0,0,0,.03),0_2px_4px_rgba(0,0,0,.05),0_12px_24px_rgba(0,0,0,.05)] dark:shadow-[0_20px_48px_rgba(0,0,0,.2)] dark:border border-red dark:border-white/10"
+  >
+    <div
+      class="pointer-events-none absolute left-1/2 top-1/2 h-[261px] w-[261px] -translate-x-1/2 -translate-y-1/2 bg-gradient-to-b from-[#FF3358] to-[#FF4FD8] opacity-5 mix-blend-normal blur-[60px] dark:opacity-[0.15]"
+    >
+    </div>
+    <div>
+      <figure>
+        <figcaption class="flex items-center justify-between">
+          <a href="https://x.com/TheMillennialVC" class="cursor-pointer hover:underline">
+            <div class="group flex items-center gap-3">
+              <Image class="rounded-full" src={image} alt={name} width={72} />
+              <cite class="not-italic group-hover:underline">
+                <span class="text-base dark:text-zinc-200 font-bold">{name}</span>
+                <br />
+                <span class="text-base dark:text-white font-thin">{company}</span>
+                <div class="text-sm text-zinc-600 dark:text-zinc-400">
+                  <time datetime="2022-09-19T18:01:33.000Z">{date}</time>
+                </div>
+              </cite>
+            </div>
+          </a>
+        </figcaption>
+        <p
+          class="border-none pl-0 pt-4 max-sm:max-h-56 overflow-y-auto text-zinc-600 dark:text-zinc-400"
+        >
+          {text}
+        </p>
+      </figure>
+    </div>
+  </div>
+</div>

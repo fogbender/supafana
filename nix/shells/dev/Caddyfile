@@ -1,0 +1,5 @@
+http://localhost:3901 {
+	reverse_proxy /dashboard/* https://{$SUPAFANA_DOMAIN}
+	reverse_proxy /api/* localhost:9080
+	reverse_proxy /* localhost:3900
+}

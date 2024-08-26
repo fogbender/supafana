@@ -1,0 +1,68 @@
+---
+import * as Icon from "../Icons";
+const {
+  tweet: { title, href },
+} = Astro.props;
+
+const socialLinks = [
+  {
+    className: "hover:text-[#00aced] focus:text-[#00aced]",
+    iconName: "TwitterRounded",
+    title: "Share on X",
+    href: `https://x.com/intent/tweet?text=${encodeURIComponent(
+      title
+    )}&url=${encodeURIComponent(href)}&via=fogbender`,
+  },
+  {
+    className: "hover:text-[#007fb1] focus:text-[#007fb1]",
+    iconName: "LinkedInRounded",
+    title: "Share on Linkedin",
+    href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
+      title
+    )}&url=${encodeURIComponent(href)}&via=fogbender`,
+  },
+  {
+    className: "hover:text-[#3b5998] focus:text-[#3b5998]",
+    iconName: "Facebook",
+    title: "Share on Facebook",
+    href: `https://www.facebook.com/sharer.php?u=${encodeURIComponent(href)}&via=fogbender`,
+  },
+  {
+    className: "hover:text-[#49a9e9] focus:text-[#49a9e9]",
+    iconName: "Telegram",
+    title: "Share on Telegram",
+    href: `https://telegram.me/share/url?url=${encodeURIComponent(href)}&text=${encodeURIComponent(
+      title
+    )}&via=fogbender`,
+  },
+  {
+    className: "hover:text-[#7f7f7f] focus:text-[#7f7f7f]",
+    iconName: "Mail",
+    title: "Share on Email",
+    href: `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(href)}`,
+  },
+];
+---
+
+<section class="mb-12 w-full border-t border-gray-200">
+  <div class="text-[#3f3f46]">
+    <span class="font-prompt flex justify-center pt-4 pb-3 text-lg sm:text-lg">Share</span>
+    <span class="flex justify-center gap-x-3">
+      {
+        socialLinks.map(link => {
+          const IconComponent = Icon[link.iconName as keyof typeof Icon];
+          return (
+            <a
+              target="_blank"
+              class:list={["focus:outline-none", link.className]}
+              rel="noopener"
+              href={link.href}
+            >
+              <IconComponent className="h-6 w-6" />
+            </a>
+          );
+        })
+      }
+    </span>
+  </div>
+</section>

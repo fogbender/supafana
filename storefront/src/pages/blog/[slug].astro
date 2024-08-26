@@ -1,0 +1,23 @@
+---
+import { type CollectionEntry, getCollection } from "astro:content";
+import Post from "../../layouts/blog/post.astro";
+import { getSchema } from "../../ui/landing/blogLinedData";
+
+// 1. Generate a new path for every collection entry
+export async function getStaticPaths() {
+  const blogEntries = await getCollection("blog");
+  return blogEntries.map(entry => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+// 2. When its time to render, you can get the entry directly from the prop
+const { entry } = Astro.props as { entry: CollectionEntry<"blog"> };
+const { Content } = await entry.render();
+const wordCount = Math.round(entry.body.length / 6.5);
+const linkedData = getSchema({ astro: Astro, content: entry.data, wordCount });
+---
+
+<Post content={entry.data} linkedData={linkedData}>
+  <Content />
+</Post>

@@ -1,0 +1,42 @@
+---
+import { ViewTransitions } from "astro:transitions";
+---
+
+<script>
+  const elements = document.querySelectorAll(".animate-on-scroll");
+  let options = { thersold: "100%", rootMargin: "0px" };
+
+  elements.forEach(element => {
+    const firstChild = element.firstElementChild;
+    if (firstChild) {
+      let observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            element.classList.add("visible");
+          }
+        });
+      }, options);
+      observer.observe(firstChild);
+    }
+  });
+</script>
+
+<style>
+  .animate-on-scroll {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 1.5s,
+      transform 1.5s;
+  }
+
+  .animate-on-scroll.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+
+<div class="animate-on-scroll overflow-hidden">
+  <slot />
+  <ViewTransitions />
+</div>

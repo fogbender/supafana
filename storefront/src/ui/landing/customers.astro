@@ -1,0 +1,255 @@
+---
+import SectionLayout from "../../layouts/section-layout.astro";
+import HeroText from "./hero-text.astro";
+import { Image } from "astro:assets";
+
+import Jamglue from "../../ui/landing/assets/customers/jamglue.png";
+import Zanbazaar from "../../ui/landing/assets/customers/zanbazaar.png";
+import Socialmoth from "../../ui/landing/assets/customers/socialmoth.png";
+import Tipjoy from "../../ui/landing/assets/customers/tipjoy.png";
+import Picwing from "../../ui/landing/assets/customers/picwing.png";
+import Insight from "../../ui/landing/assets/customers/insight.png";
+import Everyme from "../../ui/landing/assets/customers/everyme.png";
+import Leaky from "../../ui/landing/assets/customers/leaky.png";
+import Zeus from "../../ui/landing/assets/customers/zeus.png";
+import PhoneSys from "../../ui/landing/assets/customers/phonesys.png";
+import Quad from "../../ui/landing/assets/customers/quad.png";
+import Dubjoy from "../../ui/landing/assets/customers/dubjoy.png";
+import LendUp from "../../ui/landing/assets/customers/lendup.png";
+import Pixelapse from "../../ui/landing/assets/customers/pixelapse.png";
+import Kippt from "../../ui/landing/assets/customers/kippt.png";
+import Markupwand from "../../ui/landing/assets/customers/markupwand.png";
+import Arc from "../../ui/landing/assets/customers/arc.png";
+import Itemsy from "../../ui/landing/assets/customers/itemsy.png";
+import Eve from "../../ui/landing/assets/customers/eve.png";
+import StyleUp from "../../ui/landing/assets/customers/styleup.png";
+import Swapbox from "../../ui/landing/assets/customers/swapbox.png";
+import CrowdMed from "../../ui/landing/assets/customers/crowdmed.png";
+import MerryMint from "../../ui/landing/assets/customers/merrymint.png";
+// import Flytenow from "../../ui/landing/assets/customers/flytenow.png";
+import Lully from "../../ui/landing/assets/customers/lully.png";
+import StandardCyborg from "../../ui/landing/assets/customers/standardcyborg.png";
+import Pigeonly from "../../ui/landing/assets/customers/pigeonly.png";
+import UndergroundCellar from "../../ui/landing/assets/customers/undergroundcellar.png";
+import GroupAhead from "../../ui/landing/assets/customers/groupahead.png";
+import Booktrope from "../../ui/landing/assets/customers/booktrope.png";
+
+/*
+Jamglue - https://bookface.ycombinator.com/company/358
+Zanbazaar - https://bookface.ycombinator.com/company/363
+Socialmoth - https://bookface.ycombinator.com/company/353
+Tipjoy - https://bookface.ycombinator.com/company/316
+Picwing - https://bookface.ycombinator.com/company/290
+Insight Data Science - https://bookface.ycombinator.com/company/155
+Everyme - https://bookface.ycombinator.com/company/108
+Leaky - https://bookface.ycombinator.com/company/120
+Zeus - https://bookface.ycombinator.com/company/128
+PhoneSys - https://bookface.ycombinator.com/company/84
+Quad - https://bookface.ycombinator.com/company/92
+Dubjoy - https://bookface.ycombinator.com/company/94
+LendUp - https://bookface.ycombinator.com/company/41
+Pixelapse - https://bookface.ycombinator.com/company/34
+Kippt - https://bookface.ycombinator.com/company/422
+Markupwand - https://bookface.ycombinator.com/company/420
+Arc - https://bookface.ycombinator.com/company/399
+Itemsy - https://bookface.ycombinator.com/company/465
+Eve - https://bookface.ycombinator.com/company/466
+StyleUp - https://bookface.ycombinator.com/company/470
+Swapbox - https://bookface.ycombinator.com/company/496
+CrowdMed - https://bookface.ycombinator.com/company/502
+MerryMint - https://bookface.ycombinator.com/company/621
+Flytenow - https://bookface.ycombinator.com/company/672
+Lully - https://bookface.ycombinator.com/company/845
+Standard Cyborg - https://bookface.ycombinator.com/company/832
+Pigeonly - https://bookface.ycombinator.com/company/823
+Underground Cellar - https://bookface.ycombinator.com/company/795
+GroupAhead - https://bookface.ycombinator.com/company/766
+Booktrope - https://bookface.ycombinator.com/company/754
+
+Wheelys Cafe - https://bookface.ycombinator.com/company/951
+Fetch - https://bookface.ycombinator.com/company/950
+Roomblocker - https://bookface.ycombinator.com/company/874
+Ross Intelligence - https://bookface.ycombinator.com/company/875
+Vinebox - https://bookface.ycombinator.com/company/983
+AlphaFlow - https://bookface.ycombinator.com/company/986
+Georgette Packaging - https://bookface.ycombinator.com/company/1064
+Interstate Analytics - https://bookface.ycombinator.com/company/1039
+ConstructVR - https://bookface.ycombinator.com/company/1035
+Unima - https://bookface.ycombinator.com/company/1023
+InnoVein - https://bookface.ycombinator.com/company/1011
+Lendsnap - https://bookface.ycombinator.com/company/1303
+Looklive - https://bookface.ycombinator.com/company/1227
+Anasen - https://bookface.ycombinator.com/company/1550
+Pulse - https://bookface.ycombinator.com/company/1465
+WheelStreet - https://bookface.ycombinator.com/company/1712
+Sunu - https://bookface.ycombinator.com/company/1669
+Storyboard - https://bookface.ycombinator.com/company/1649
+Sixty - https://bookface.ycombinator.com/company/1613
+Passerline Aircraft - https://bookface.ycombinator.com/company/1579
+Iambiq Technologies - https://bookface.ycombinator.com/company/1853
+Vathys - https://bookface.ycombinator.com/company/1823
+Nutrigene - https://bookface.ycombinator.com/company/1820
+Curious Fictions - https://bookface.ycombinator.com/company/1776
+Skip - https://bookface.ycombinator.com/company/1764
+California Dreamin - https://bookface.ycombinator.com/company/1733
+Perception Biosystems - https://bookface.ycombinator.com/company/2021
+Goodly - https://bookface.ycombinator.com/company/2008
+BHRD - https://bookface.ycombinator.com/company/1972
+Avo - https://bookface.ycombinator.com/company/1948
+Spero - https://bookface.ycombinator.com/company/1928
+Medinas - https://bookface.ycombinator.com/company/1926
+Mylk Guys - https://bookface.ycombinator.com/company/1920
+ShopWith - https://bookface.ycombinator.com/company/1915
+Inokyo - https://bookface.ycombinator.com/company/1912
+Tailor-ED - https://bookface.ycombinator.com/company/12277
+Sublime Black - https://bookface.ycombinator.com/company/12265
+Cherry - https://bookface.ycombinator.com/company/12068
+Maitian.ai - https://bookface.ycombinator.com/company/12041
+Simmer - https://bookface.ycombinator.com/company/12004
+SpaceRyde - https://bookface.ycombinator.com/company/11949
+Volk Wireless - https://bookface.ycombinator.com/company/11933
+
+
+*/
+
+const rowOne = [
+  Insight,
+  Picwing,
+  Tipjoy,
+  Socialmoth,
+  Zanbazaar,
+  Jamglue,
+  Everyme,
+  Leaky,
+  Zeus,
+  PhoneSys,
+];
+const rowTwo = [Quad, Dubjoy, LendUp, Pixelapse, Kippt, Markupwand, Arc, Itemsy, Eve, StyleUp];
+const rowThree = [
+  Quad,
+  Booktrope,
+  GroupAhead,
+  UndergroundCellar,
+  Pigeonly,
+  StandardCyborg,
+  Lully,
+  MerryMint,
+  CrowdMed,
+  Swapbox,
+];
+---
+
+<style>
+  .animate-infinite-scroll {
+    animation: 20s infinite linear a;
+  }
+
+  @keyframes a {
+    0% {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(-100%);
+    }
+  }
+
+  .animate-infinite-scroll-neg {
+    animation: 20s infinite linear b;
+  }
+
+  @keyframes b {
+    0% {
+      transform: translateX(-100%);
+    }
+
+    to {
+      transform: translateX(0%);
+    }
+  }
+</style>
+<SectionLayout>
+  <HeroText variant="small">TRUSTED BY SUPATEAMS FROM ACROSS <s>SUPA</s>SPACETIME</HeroText>
+  <div class="flex flex-col gap-y-5 max-w-xs sm:max-w-xl md:max-w-3xl lg:max-w-[1200px]">
+    <div
+      class="w-full flex-nowrap inline-flex overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-200px),transparent_100%)] my-6 mx-auto"
+    >
+      <ul
+        class="flex animate-infinite-scroll-neg items-center justify-center md:justify-start [&_img]:max-w-none [&_li]:mx-8"
+      >
+        {
+          rowOne.map((x, i) => (
+            <li class="text-black dark:text-white">
+              <Image src={x} alt={`Customer ${i}`} height="64" inferSize={true} />
+            </li>
+          ))
+        }
+      </ul>
+      <ul
+        class="flex animate-infinite-scroll-neg items-center justify-center md:justify-start [&_img]:max-w-none [&_li]:mx-8"
+      >
+        {
+          rowOne.map((x, i) => (
+            <li class="text-black dark:text-white">
+              <Image src={x} alt={`Customer ${i}`} height="64" inferSize={true} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div
+      class="w-full flex-nowrap inline-flex overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-200px),transparent_100%)] my-6 mx-auto"
+    >
+      <ul
+        class="flex animate-infinite-scroll items-center justify-center md:justify-start [&_img]:max-w-none [&_li]:mx-8"
+      >
+        {
+          rowTwo.map((x, i) => (
+            <li class="text-black dark:text-white">
+              <Image src={x} alt={`Customer ${i}`} height="64" inferSize={true} />
+            </li>
+          ))
+        }
+      </ul>
+      <ul
+        class="flex animate-infinite-scroll items-center justify-center md:justify-start [&_img]:max-w-none [&_li]:mx-8"
+      >
+        {
+          rowTwo.map((x, i) => (
+            <li class="text-black dark:text-white">
+              <Image src={x} alt={`Customer ${i}`} height="64" inferSize={true} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div
+      class="w-full flex-nowrap inline-flex overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-200px),transparent_100%)] my-6 mx-auto"
+    >
+      <ul
+        class="flex animate-infinite-scroll-neg items-center justify-center md:justify-start [&_img]:max-w-none [&_li]:mx-8"
+      >
+        {
+          rowThree.map((x, i) => (
+            <li class="text-black dark:text-white">
+              <Image src={x} alt={`Customer ${i}`} height="64" inferSize={true} />
+            </li>
+          ))
+        }
+      </ul>
+      <ul
+        class="flex animate-infinite-scroll-neg items-center justify-center md:justify-start [&_img]:max-w-none [&_li]:mx-8"
+      >
+        {
+          rowThree.map((x, i) => (
+            <li class="text-black dark:text-white">
+              <Image src={x} alt={`Customer ${i}`} height="64" inferSize={true} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</SectionLayout>

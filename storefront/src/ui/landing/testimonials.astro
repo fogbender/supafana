@@ -1,0 +1,105 @@
+---
+import SectionLayout from "../../layouts/section-layout.astro";
+import ConicGradient from "./conic-gradient.astro";
+import HeroText from "./hero-text.astro";
+import TestimonialCard from "./testimonial-card.astro";
+
+import Founder00 from "../../ui/landing/assets/founders/founder-00.png";
+import Founder01 from "../../ui/landing/assets/founders/founder-01.png";
+import Founder02 from "../../ui/landing/assets/founders/founder-02.png";
+import Founder03 from "../../ui/landing/assets/founders/founder-03.png";
+import Founder04 from "../../ui/landing/assets/founders/founder-04.png";
+import Founder05 from "../../ui/landing/assets/founders/founder-05.png";
+import Founder06 from "../../ui/landing/assets/founders/founder-06.png";
+import Founder07 from "../../ui/landing/assets/founders/founder-07.png";
+import Founder08 from "../../ui/landing/assets/founders/founder-08.png";
+import Founder09 from "../../ui/landing/assets/founders/founder-09.png";
+
+const testimonials = [
+  {
+    image: Founder00,
+    name: "Bromley McAlister",
+    company: "Riot Mooses",
+    date: "Sept 17, 2024",
+    text: "Checked out Supafana, and it’s rad, but the cloud just isn’t for me—I’m all about that rack and stack life. So I whipped up a similar setup in our colo in like half a Saturday. It’ll be safe here till spring when we’re leveling up to a killer new DC.",
+  },
+  {
+    image: Founder02,
+    name: "Avery Baldwin",
+    company: "Spartan",
+    date: "Aug 30, 2024",
+    text: "Supafana is an incredible service with a lot of potential. Their team’s innovation and dedication are truly impressive. However, our infrastructure requirements are quite specific, and since Supafana uses Nix, it just doesn’t align with our current tech stack. We wish them the best and look forward to seeing their continued success!",
+  },
+  {
+    image: Founder01,
+    name: "Tanner Lexington",
+    company: "Anchorite Shrugged",
+    date: "Aug 3, 2024",
+    text: "My understanding is Supafana uses Elixir as its application server, and while the service looks really useful, I simply refuse to pay for SaaS not written in Rust. Best of luck, though!",
+  },
+  {
+    image: Founder03,
+    name: "Rajesh Viraj Singh",
+    company: "Boldwave",
+    date: "Oct 1, 2024",
+    text: "While I have a lot of respect for what Supafana has achieved, I can’t justify using a service that isn’t open source, especially when it leverages the fully open-source Supabase. It’s important to support and use tools that contribute back to the community and maintain the transparency and collaboration that open-source projects thrive on. Good luck to Supafana, but it’s just not the right fit for our principles and needs.",
+  },
+  {
+    image: Founder04,
+    name: "Lars Müller",
+    company: "Datengarten",
+    date: "Oct 10, 2024",
+    text: "Supafana’s got some bold claims, but their love for SQL and Supabase just doesn’t cut it for me. Anyone who’s still stuck on relational databases clearly doesn’t get the power and flexibility of NoSQL. Why would I waste my time with a service that doesn’t embrace the future of database technology? No thanks, Supafana. I’ll stick with solutions that understand the NoSQL revolution.",
+  },
+  {
+    image: Founder05,
+    name: "Lenin Arakawa",
+    company: "Wakeborough Capital",
+    date: "July 15, 2024",
+    text: "Even though they allegedly went through YC, it doesn’t look like they’ve raised much capital. There’s no way you should trust a startup that hasn’t raised at least 20 million dollars with your core infrastracture, which metrics and observability obviously is—I’d rather trust a free Fly.io container without TLS than take a gamble on Supafana.",
+  },
+  {
+    image: Founder06,
+    name: "Annika Bertström",
+    company: "Snåljåp Lösningar",
+    date: "June 6, 2024",
+    text: "As a founder, you’ve got to be frugal to survive and grow. Paying for Supabase? That’s just crazy when you can snag free credits from AWS and use RDS, then hop over to Azure for Azure SQL Database, and finally switch to GCP for Cloud SQL for PostgreSQL. But paying for Supafana? That’s downright ridiculous! If you know how to write proper SQL, you don’t need all those fancy metrics or monitoring. Smart founders manage their resources wisely and don’t fall for such obvious gimmicks.",
+  },
+  {
+    image: Founder07,
+    name: "Anton Melnikov",
+    company: "Shizgara Foreva",
+    date: "July 4, 2024",
+    text: "Postgres normal database, but I believe MySQL more superior across layers, plus reliability. Also, Postgres appears to been founded by Stonebraker, notorious hippie from the Berkeley with zero credibility.",
+  },
+  {
+    image: Founder08,
+    name: "Jean-Louis Deschamps",
+    company: "Mistralytics",
+    date: "July 12, 2024",
+    text: 'Attempted to use Supafana, it sounds intriguing, but it appears to require something called a "supabase", which je ne sais quoi or why we would use it. Interesting project though, bonne chance!',
+  },
+  {
+    image: Founder09,
+    name: "Bob Sobchak",
+    company: "AC Expeditions LLC",
+    date: "August 11, 2024",
+    text: "Looks like Supafana is built by Fogbender Software, Inc., and Fogbender Software appears to be based in Oakland, California. I can't believe anyone would voluntarily choose to live in California, not to mention Oakland. How are these people still alive and where do they even get groceries and clean water?",
+  },
+];
+---
+
+<SectionLayout>
+  <HeroText variant="small">Have you heard?</HeroText>
+  <div class="my-6 grid grid-cols-1 gap-4 rounded-xl sm:grid-cols-2 xl:grid-cols-3 items-baseline">
+    {
+      testimonials.map(t => {
+        const { image, name, company, date, text } = t;
+        return (
+          <TestimonialCard image={image} name={name} company={company} date={date} text={text} />
+        );
+      })
+    }
+  </div>
+  <ConicGradient name="conic-gradient" />
+</SectionLayout>

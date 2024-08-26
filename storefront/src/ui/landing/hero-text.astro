@@ -1,0 +1,50 @@
+---
+type Props = {
+  variant?: "small" | "large";
+};
+const { variant = "large" } = Astro.props as Props;
+---
+
+<style is:global>
+  .dark .gradient-hero-heading {
+    background-clip: text !important;
+    background: linear-gradient(180deg, #fff, #aaa), #fff;
+  }
+
+  .gradient-hero-heading {
+    background-clip: text !important;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.8), #000);
+  }
+
+  @keyframes gradients-translate-glow {
+    0% {
+      background-position: -20% -20%;
+    }
+    25% {
+      background-position: 30% 80%;
+    }
+    55% {
+      background-position: 110% 110%;
+    }
+    75% {
+      background-position: 80% 30%;
+    }
+    100% {
+      background-position: -20% -20%;
+    }
+  }
+</style>
+<h2
+  class:list={[
+    "gradient-hero-heading leading-none text-center text-transparent",
+    "!text-[#3D67F7]",
+    {
+      "font-extrabold tracking-[-0.04em] text-[40px] max-w-lg md:text-5xl md:max-w-xl lg:max-w-4xl lg:text-[65px]":
+        variant === "large",
+      "max-w-sm pb-1 text-[32px] font-bold tracking-[-0.01em] md:max-w-md md:text-4xl lg:max-w-2xl lg:text-[40px]":
+        variant === "small",
+    },
+  ]}
+>
+  <slot />
+</h2>

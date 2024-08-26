@@ -1,0 +1,60 @@
+---
+import defaultImage from "../../content/blog/assets/default/social.jpg";
+
+export interface Props {
+  title?: string;
+  description?: string;
+  canonicalURL?: URL | string;
+  image?: ImageMetadata;
+}
+const defaultDescription =
+  "Supafana is hosted Grafana and Prometheus metrics and observability stack for Supabase";
+const defaultTitle = "Supafana | Grafana for Supabase | Metrics and observability for Supabase";
+
+const { canonicalURL: canonicalURL0 = Astro.url, image = defaultImage as any as ImageMetadata } =
+  Astro.props;
+const canonicalURL = new URL(canonicalURL0, Astro.site).href.replace(/\.html$/, "");
+const imageUrl = new URL(image.src, Astro.site).href;
+const description = Astro.props.description || defaultDescription;
+const title = Astro.props.title ? `Supafana | ${Astro.props.title}` : defaultTitle;
+---
+
+<!-- Global Metadata -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width" />
+<meta name="theme-color" content="#8D46E7" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="mask-icon" href="/favicon.svg" color="#8D46E7" />
+<meta name="generator" content={Astro.generator + " (qgp.app)"} />
+<link rel="sitemap" href="/sitemap-index.xml" />
+
+<!-- Preload -->
+<slot name="preload" />
+
+<!-- google -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<!-- Primary Meta Tags -->
+<title set:html={title} />
+<meta name="title" content={title} />
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalURL} />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content={canonicalURL} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={imageUrl} />
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content={canonicalURL} />
+<meta property="twitter:title" content={title} />
+<meta property="twitter:description" content={description} />
+<meta property="twitter:image" content={imageUrl} />
+
+<!-- Assets -->
+<slot name="assets" />
+
+<link rel="sitemap" href="/sitemap-index.xml" />

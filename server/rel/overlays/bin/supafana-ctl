@@ -1,0 +1,39 @@
+#!/bin/sh
+set -e
+
+APP_NAME=supafana
+BIN_DIR="$(dirname $0)"
+APP=${BIN_DIR}/${APP_NAME}
+migrate () {
+    echo "Migrating..."
+    ${APP} eval "Supafana.Release.migrate()"
+}
+
+rollback () {
+    echo "Rolling back..."
+    ${APP} eval "Supafana.Release.rollback()"
+}
+
+case $1 in
+  migrate)
+    migrate
+    ;;
+
+  rollback)
+    rollback
+    ;;
+
+  *)
+    echo "Usage: $(basename "$0") COMMAND
+
+The known commands are:
+
+    migrate        Migrates database
+    rollback       Rollbacks database to previous version
+" >&2
+    if [ -n "$1" ]; then
+      echo "ERROR: Unknown command $1" >&2
+      exit 1
+    fi
+    ;;
+esac
