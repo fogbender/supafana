@@ -1,6 +1,7 @@
-# supafana
+# Supafana | https://supafana.com
+## Metrics and observability SaaS for [Supabase](https://supabase.com) based on [supabase-grafana](https://github.com/supabase/supabase-grafana)
 
-## Building and pushing supabase-grafana Docker image
+### Building and pushing supabase-grafana Docker image
 
 ``` bash
 az login
@@ -13,7 +14,7 @@ docker push supafanacr.azurecr.io/supabase-grafana:<VERSION>
 - Update VM grafana image with new <VERSION> in file `nix/hosts/grafana/grafana-container.nix`. 
 - Upload new VM grafana image version (see next section).
 
-## NixOS Azure image creation/upload
+### NixOS Azure image creation/upload
 
 To test Azure image build:
 
@@ -45,7 +46,7 @@ scripts/upload-image-gallery.sh \
   -i '.#grafana-image'
 ```
 
-## Grafana instance provisioning
+### Grafana instance provisioning
 
 Run `./infra/hosts/grafana.bicep` template provide parameters:
 
@@ -70,7 +71,7 @@ Internally new instance accessible as `<supabaseProjectRef>.supafana.local`:
 
 Example: `kczjrdfrkmmofxkbjxex.supafana.local`
 
-### SSH access to grafana instance
+#### SSH access to grafana instance
 
 Grafana instances don't have public IPs, accessible via our main servers (supafana-test.com and supafana.com).
 To simplify access add next lines to your `~/.ssh/config` file:
@@ -84,7 +85,7 @@ With this grafana instances are accessible  directly:
 
 Example: `ssh admin@kczjrdfrkmmofxkbjxex.supafana.local`
 
-### Grafana instance internals
+#### Grafana instance internals
 
 Internally grafana instance is NixOS VM running supafana-grafana container as `podman-grafana` systemd service.
 
@@ -103,7 +104,7 @@ More info about running container:
 - `sudo podman inspect grafana`
 
 
-### Deleteng Grafana instance and resources
+#### Deleteng Grafana instance and resources
 
 All resources created with grafana instance has tag `vm:<supabaseProjectRef>`. So to delete them you need to filter all resources by tag first:
 
@@ -119,6 +120,6 @@ az resource list --tag vm='kczjrdfrkmmofxkbjxex' --query "[].id" -o tsv | xargs 
 
 
 
-## Generate Supabase API types
+### Generate Supabase API types
 
 > cd storefront && npx openapi-typescript https://api.supabase.com/api/v1-json -o src/types/supabase-api-schema.d.ts
