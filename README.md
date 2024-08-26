@@ -11,7 +11,7 @@ docker tag supabase-grafana supafanacr.azurecr.io/supabase-grafana:<VERSION>
 docker push supafanacr.azurecr.io/supabase-grafana:<VERSION> 
 ```
 
-- Update VM grafana image with new <VERSION> in file `nix/hosts/grafana/grafana-container.nix`. 
+- Update VM grafana image with new <VERSION> in `nix/hosts/grafana/grafana-container.nix`. 
 - Upload new VM grafana image version (see next section).
 
 ### NixOS Azure image creation/upload
@@ -20,14 +20,14 @@ To test Azure image build:
 
 > nix build '.#supafana-image'
 
-it should create `result` directory with VHD image inside.
+This should create a `result` directory containing a VHD image.
 
-To create and upload Azure image:
+To create and upload an image to Azure:
 
 ``` bash
 az login
 
-# uploading supafana image
+# Upload supafana image
 scripts/upload-image-gallery.sh \
   -g supafana-common-rg \
   -r supafanasig \
@@ -36,7 +36,7 @@ scripts/upload-image-gallery.sh \
   -l eastus \
   -i '.#supafana-image'
   
-# uploading grafana image
+# Upload grafana image
 scripts/upload-image-gallery.sh \
   -g supafana-common-rg \
   -r supafanasig \
@@ -48,12 +48,12 @@ scripts/upload-image-gallery.sh \
 
 ### Grafana instance provisioning
 
-Run `./infra/hosts/grafana.bicep` template provide parameters:
+Run the `./infra/hosts/grafana.bicep` template with the follwing parameters:
 
   - supabaseProjectRef - supabase project referece id
   - supabaseServiceRoleKey - service role key
-  - supafanaDomain - supafana domain (supafana-test.com for test, supafana.com for prod)
-  - grafanaPassword - optional admin user's password (default password is admin)
+  - supafanaDomain - Supafana domain (supafana-test.com for test, supafana.com for prod)
+  - grafanaPassword - optional: admin user password (default password is `admin`)
 
 Use `supafana-test-rg` resource group for test env deployment.
 
@@ -63,56 +63,55 @@ See examples in `./infra/hosts/grafana-mk-{1,2}.bicepparam
 az deployment group create -c --debug --name supafana-test-grafana-mk-1-deploy --resource-group supafana-test-rg --parameters infra/hosts/grafana-mk-1.bicepparam
 ```
 
-After provisioning host should be accessible as `https://<supafanaDomain>/dashboard/<supabaseProjectRef>`:
+After provisioning, the host should be accessible via `https://<supafanaDomain>/dashboard/<supabaseProjectRef>`:
 
 Example: `https://supafana-test.com/dashboard/kczjrdfrkmmofxkbjxex/`
 
-Internally new instance accessible as `<supabaseProjectRef>.supafana.local`:
+Internally, the new instance is accessible via `<supabaseProjectRef>.supafana.local`:
 
 Example: `kczjrdfrkmmofxkbjxex.supafana.local`
 
-#### SSH access to grafana instance
+#### SSH access to Grafana instances
 
-Grafana instances don't have public IPs, accessible via our main servers (supafana-test.com and supafana.com).
-To simplify access add next lines to your `~/.ssh/config` file:
+Grafana instances don't have public IPs and can be accessed only via our main servers (supafana-test.com and supafana.com).
+
+To simplify access (to supafana-test.com), add the following lines to your `~/.ssh/config` file:
 
 ```
 Host *.supafana.local
   ProxyJump admin@supafana-test.com
 ```
 
-With this grafana instances are accessible  directly:
-
-Example: `ssh admin@kczjrdfrkmmofxkbjxex.supafana.local`
+With this, Grafana instances can be accessed directly, e.g., `ssh admin@kczjrdfrkmmofxkbjxex.supafana.local`
 
 #### Grafana instance internals
 
-Internally grafana instance is NixOS VM running supafana-grafana container as `podman-grafana` systemd service.
+Internally, each Grafana instance runs on a NixOS VM, which, in turns, runs the `supafana-grafana` container as a `podman-grafana` systemd service.
 
-To examine service use systemd commands:
+To examine the service, use systemd commands:
 
 - `systmectl status podman-grafana`
 - `journalctl -u podman-grafana`
 
-To get into grafana container run `podman exec`:
+To get into a Grafana container, run `podman exec`:
 
 - `sudo podman exec -ti grafana bash`
 
-More info about running container:
+More info about working with containers:
 
 - `sudo podman ps`
 - `sudo podman inspect grafana`
 
 
-#### Deleteng Grafana instance and resources
+#### Deleting Grafana instances and resources
 
-All resources created with grafana instance has tag `vm:<supabaseProjectRef>`. So to delete them you need to filter all resources by tag first:
+All resources created for a particular Grafana instance are tagged with `vm:<supabaseProjectRef>`. To delete them, filter all resources by tag:
 
 ``` bash
 az resource list --tag vm=<supabaseProjectRef> --query "[].id" -o tsv
 ```
 
-Example:
+Then, delete:
 
 ``` bash
 az resource list --tag vm='kczjrdfrkmmofxkbjxex' --query "[].id" -o tsv | xargs -I {} az resource delete --ids {}
