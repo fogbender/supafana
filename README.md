@@ -1,4 +1,5 @@
-# Supafana | https://supafana.com
+# Supafana
+## https://supafana.com
 ## Metrics and observability SaaS for [Supabase](https://supabase.com) based on [supabase-grafana](https://github.com/supabase/supabase-grafana)
 
 ### Building and pushing supabase-grafana Docker image
