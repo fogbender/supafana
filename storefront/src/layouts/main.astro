@@ -59,6 +59,22 @@ const { meta, linkedData } = Astro.props;
           console.info("GA not loaded: not production");
         }
       })();
+
+      (function () {
+        // https://app.withvoyage.com
+        if (window.location.hostname === "supafana-test.com") {
+          var linkElement = document.createElement("link");
+          linkElement.rel = "stylesheet";
+          linkElement.href = "https://fast.withvoyage.com/index.min.css";
+          linkElement.type = "text/css";
+          document.head.appendChild(linkElement);
+
+          var script = document.createElement("script");
+          script.async = true;
+          script.src = "https://fast.withvoyage.com/38.js";
+          document.head.appendChild(script);
+        }
+      })();
     </script>
   </head>
   <body
