@@ -2,6 +2,8 @@
 # Supafana
 ## https://supafana.com
 ## Metrics and observability SaaS for [Supabase](https://supabase.com), based on [supabase-grafana](https://github.com/supabase/supabase-grafana)
+![image](https://github.com/user-attachments/assets/b1441d23-2147-41e9-a887-cacbd99cbcb0)
+
 
 ### Building and pushing supabase-grafana Docker image
 
