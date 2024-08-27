@@ -70,9 +70,9 @@ const SupabaseProject = ({
   return (
     <div className="text-black dark:text-white bg-dots w-full rounded-2xl">
       <ProjectRow>
-        <RowHeader className="basis-1/5 md:basis-1/3">
+        <RowDivHeader className="basis-1/5 md:basis-1/3">
           <span className="font-bold">Database</span>
-        </RowHeader>
+        </RowDivHeader>
         <div>
           <a
             className="inline-flex items-center gap-1.5 font-medium link link-primary dark:link-secondary"
@@ -87,27 +87,27 @@ const SupabaseProject = ({
         </div>
       </ProjectRow>
       <ProjectRow>
-        <RowHeader className="basis-1/5 md:basis-1/3">
+        <RowDivHeader className="basis-1/5 md:basis-1/3">
           <span dangerouslySetInnerHTML={{ __html: nbsp("Project ref") }} />
-        </RowHeader>
+        </RowDivHeader>
         <div>
           <span className="font-medium break-all">{project.id}</span>
         </div>
       </ProjectRow>
       <ProjectRow>
-        <RowHeader className="basis-1/5 md:basis-1/3">Version</RowHeader>
+        <RowDivHeader className="basis-1/5 md:basis-1/3">Version</RowDivHeader>
         <div>
           <span className="font-medium">{project.database?.version}</span>
         </div>
       </ProjectRow>
       <ProjectRow>
-        <RowHeader className="basis-1/5 md:basis-1/3">Region</RowHeader>
+        <RowDivHeader className="basis-1/5 md:basis-1/3">Region</RowDivHeader>
         <div>
           <span className="font-medium">{project.region}</span>
         </div>
       </ProjectRow>
       <ProjectRow>
-        <RowHeader className="basis-1/5 md:basis-1/3">Status</RowHeader>
+        <RowDivHeader className="basis-1/5 md:basis-1/3">Status</RowDivHeader>
         <div>
           <span
             className={classNames("flex gap-2 flex-col md:flex-row", "font-medium", {
@@ -135,7 +135,7 @@ const SupabaseProject = ({
         </div>
       </ProjectRow>
       <ProjectRow>
-        <RowHeader className="basis-1/5 md:basis-1/3">Created</RowHeader>
+        <RowDivHeader className="basis-1/5 md:basis-1/3">Created</RowDivHeader>
         <div>
           <span className="inline-block font-medium first-letter:capitalize">
             {dayjs(project.created_at).fromNow()}
@@ -263,12 +263,15 @@ const SupafanaProject = ({
     <table className="text-gray-200 dark:text-gray-700 bg-dots table">
       <tbody className="text-black dark:text-white">
         <tr>
-          <RowHeader>
+          <RowTdHeader>
             <span className="font-bold">Grafana</span>
-          </RowHeader>
+          </RowTdHeader>
           <td colSpan={state === "Running" ? 1 : 2}>
             <a
-              className="inline-flex items-center gap-1.5 font-medium link link-primary dark:link-secondary"
+              className={classNames(
+                "inline-flex items-center gap-1.5 font-medium link link-primary dark:link-secondary",
+                state === "Running" && "vertical-rl sm:horizontal-tb"
+              )}
               href={`/dashboard/${project.id}/`}
               title={`Open ${project.name} in Supafana`}
               target="_blank"
@@ -293,9 +296,9 @@ const SupafanaProject = ({
           )}
         </tr>
         <tr>
-          <RowHeader>State</RowHeader>
+          <RowTdHeader>State</RowTdHeader>
           <td>
-            <span className="font-medium break-all">{state}</span>
+            <span className="font-medium vertical-rl sm:horizontal-tb">{state}</span>
           </td>
           {state === "Running" && (
             <td>
@@ -361,19 +364,23 @@ const SupafanaProject = ({
         </tr>
         {plan !== "Trial" && (
           <tr>
-            <RowHeader>Plan</RowHeader>
-            <td>
+            <RowTdHeader>Plan</RowTdHeader>
+            <td colSpan={2}>
               <span className="font-medium break-all">{plan}</span>
             </td>
           </tr>
         )}
         {plan === "Trial" && grafana.first_start_at && (
           <tr>
-            {trialEnded ? <RowHeader>Trial ended</RowHeader> : <RowHeader>Trial ends</RowHeader>}
+            {trialEnded ? (
+              <RowTdHeader>Trial ended</RowTdHeader>
+            ) : (
+              <RowTdHeader>Trial ends</RowTdHeader>
+            )}
             <td>
               <span
                 key={grafana.trial_remaining_msec}
-                className="inline-block font-medium break-all first-letter:capitalize"
+                className="inline-block font-medium break-all first-letter:capitalize vertical-rl sm:horizontal-tb"
               >
                 {dayjs(grafana.first_start_at).add(grafana.trial_length_min, "minute").fromNow()}
               </span>
@@ -404,7 +411,7 @@ const SupafanaProject = ({
         */}
         {created && (
           <tr>
-            <RowHeader>Created</RowHeader>
+            <RowTdHeader>Created</RowTdHeader>
             <td colSpan={2}>
               <span className="inline-block font-medium first-letter:capitalize">{created}</span>
             </td>
@@ -412,7 +419,7 @@ const SupafanaProject = ({
         )}
         {grafana.state === "Running" && (
           <tr>
-            <RowHeader>User/pass</RowHeader>
+            <RowTdHeader>User/pass</RowTdHeader>
             <td>
               <span className="font-medium">
                 <code>admin</code>
@@ -440,7 +447,21 @@ const ProjectRow = ({ children }: { children: JSX.Element[] }) => {
   );
 };
 
-const RowHeader = ({
+const RowTdHeader = ({
+  children,
+  className,
+}: {
+  children: JSX.Element | string;
+  className?: string;
+}) => {
+  return (
+    <td className={classNames(className)}>
+      <span className="text-gray-500 dark:text-gray-300">{children}</span>
+    </td>
+  );
+};
+
+const RowDivHeader = ({
   children,
   className,
 }: {
