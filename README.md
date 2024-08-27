@@ -1,7 +1,7 @@
 # ![Supfana logo](https://supafana.com/_astro/logo.49zwZwxg_1adPvH.svg)
 # Supafana
 ## https://supafana.com
-## Metrics and observability SaaS for [Supabase](https://supabase.com) based on [supabase-grafana](https://github.com/supabase/supabase-grafana)
+## Metrics and observability SaaS for [Supabase](https://supabase.com), based on [supabase-grafana](https://github.com/supabase/supabase-grafana)
 
 ### Building and pushing supabase-grafana Docker image
 
