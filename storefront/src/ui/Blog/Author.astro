@@ -1,10 +1,10 @@
 ---
 import * as Icon from "../Icons";
-import { getMention, type AuthorName } from "../../mentions";
+import { getMention, } from "../../mentions";
 import DateTime from "./Date.astro";
 import Avatar from "../../ui/landing/avatar.astro";
 const { name, showTwitter, publishDate } = Astro.props as {
-  name: AuthorName;
+  name: string;
   showTwitter: boolean;
   publishDate: Date;
 };
