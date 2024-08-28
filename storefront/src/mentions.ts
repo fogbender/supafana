@@ -1,5 +1,6 @@
 import andrei from "./assets/authors/andrei.png";
 import jlarky from "./assets/authors/jlarky.png";
+import supafana from "./assets/authors/supafana.png";
 
 export const mentions = {
   jlarky: {
@@ -18,12 +19,24 @@ export const mentions = {
   },
 };
 
-export type AuthorName = keyof typeof mentions;
+type KnownAuthor = keyof typeof mentions;
 
-export const getMention = (name: AuthorName) => {
-  const author = mentions[name];
-  if (!author) {
-    throw new Error(`Could not find author "${name}"!`);
+type Author = (typeof mentions)[KnownAuthor];
+
+const isKnownAuthor = (key: string): key is KnownAuthor => {
+  return key in mentions;
+};
+
+export const getMention = (name: string) => {
+  if (isKnownAuthor(name)) {
+    return mentions[name];
+  } else {
+    return {
+      name: "Supafana",
+      avatar: supafana,
+      twitter: "https://x.com/supafana",
+      jobTitle: "Supafana",
+      social: ["https://www.linkedin.com/company/fogbender", "https://x.com/supafana"],
+    } as Author;
   }
-  return author;
 };

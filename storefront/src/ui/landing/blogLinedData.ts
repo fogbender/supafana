@@ -25,7 +25,9 @@ export function getSchema({
     }))
     .find(() => true);
 
-  if (!author) throw new Error("No author found");
+  if (!author) {
+    throw new Error("No author found");
+  }
 
   const thumbnail = `${site?.origin}${coverImage}`;
 
@@ -40,9 +42,9 @@ export function getSchema({
     "author": author,
     "publisher": {
       "@type": "Organization",
-      "@id": "https://fogbender.com",
-      "name": "Fogbender",
-      "logo": "https://fogbender.com/logo192.png",
+      "@id": "https://supafana.com",
+      "name": "Supafana",
+      "logo": "https://supafana.com/logo192.png",
     },
     "image": {
       "@type": "ImageObject",
@@ -52,8 +54,8 @@ export function getSchema({
     "url": url,
     "isPartOf": {
       "@type": "Blog",
-      "@id": "https://fogbender.com",
-      "name": "Fogbender",
+      "@id": "https://supafana.com",
+      "name": "Supafana",
     },
     "wordCount": wordCount,
     "keywords": keywords,

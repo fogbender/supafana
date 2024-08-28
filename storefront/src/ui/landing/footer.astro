@@ -6,7 +6,9 @@ const footerLinks = [
     children: [
       { name: "Blog", href: "/blog" },
       { name: "Pricing", href: "/pricing" },
+      { name: "Supabase", href: "https://github.com/supabase/supabase" },
       { name: "Supabase Grafana", href: "https://github.com/supabase/supabase-grafana" },
+      { name: "Supafana", href: "https://github.com/fogbender/supafana" },
     ],
   },
   {
@@ -64,7 +66,7 @@ const year = new Date().getFullYear();
                       return (
                         <li>
                           <a
-                            class="text-sm text-[#666666] dark:text-[#88888888] no-underline hover:text-gray-700 dark:hover:text-white transition"
+                            class="text-sm text-[#666666] dark:text-zinc-500 no-underline hover:text-zinc-700 dark:hover:text-white transition"
                             href={href}
                           >
                             {name}
@@ -79,7 +81,7 @@ const year = new Date().getFullYear();
           }
         </div>
         <div class="self-start md:col-span-1">
-          <div class="text-sm text-gray-600">
+          <div class="text-sm text-zinc-600 dark:text-zinc-500">
             Site design stolen from Turborepo with much ❤️ <nbsp
               >and <span title="mad">😠</span> respect</nbsp
             >
@@ -87,7 +89,7 @@ const year = new Date().getFullYear();
         </div>
       </div>
       <a href="https://fogbender.com" target="_blank" class="mt-10 block">
-        <div class="text-sm text-gray-600 flex items-center gap-1">
+        <div class="text-sm text-zinc-600 dark:text-zinc-500 flex items-center gap-1">
           <span>©</span>
           <span><time datetime={`${year}`}>{year}</time> Fogbender Software, Inc.</span>
         </div>

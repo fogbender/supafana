@@ -20,7 +20,11 @@ const author = getMention(name);
       <span class="body static flex h-5 items-center text-left align-top">{author.name}</span>
       {
         showTwitter && author.twitter && (
-          <a href={author.twitter} title={`Follow ${author.name} on Twitter`}>
+          <a
+            class="flex items-center justify-center rounded w-5 h-5 dark:bg-zinc-200 max-h-min"
+            href={author.twitter}
+            title={`Follow ${author.name} on Twitter`}
+          >
             <span>
               <Icon.Twitter />
             </span>

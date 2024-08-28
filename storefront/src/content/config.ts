@@ -5,7 +5,7 @@ const blog = defineCollection({
     z.object({
       title: z.string(),
       description: z.string(),
-      authors: z.array(z.enum(["andrei", "jlarky"])),
+      authors: z.array(z.string()),
       publishDate: z.string().transform(val => dayjs(val).format("MMMM D, YYYY")),
       socialImage: image(),
       thumbnailImage: image().optional(),
