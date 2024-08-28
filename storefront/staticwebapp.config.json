@@ -9,6 +9,10 @@
       "rewrite": "/blog.html"
     },
     {
+      "route": "/blog/*",
+      "rewrite": "/blog/[slug].html"
+    },
+    {
       "route": "/pricing",
       "rewrite": "/pricing.html"
     },
@@ -58,7 +62,7 @@
       "/*.{svg,png,jpg,jpeg,gif,webp}",
       "/*.txt",
       "/*.xml",
-      "/blog",
+      "/blog/*",
       "/pricing",
       "/404",
       "/manifest.json"
