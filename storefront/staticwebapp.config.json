@@ -10,7 +10,7 @@
     },
     {
       "route": "/blog/*",
-      "rewrite": "/blog/[slug].html"
+      "rewrite": "/blog/{*}.html"
     },
     {
       "route": "/pricing",
