@@ -54,7 +54,7 @@ scripts/upload-image-gallery.sh \
 
 Run the `./infra/hosts/grafana.bicep` template with the following parameters:
 
-  - supabaseProjectRef - supabase project referece id
+  - supabaseProjectRef - supabase project reference id
   - supabaseServiceRoleKey - service role key
   - supafanaDomain - Supafana domain (supafana-test.com for test, supafana.com for prod)
   - grafanaPassword - optional: admin user password (default password is `admin`)
@@ -90,11 +90,11 @@ With this, Grafana instances can be accessed directly, e.g., `ssh admin@kczjrdfr
 
 #### Grafana instance internals
 
-Internally, each Grafana instance runs on a NixOS VM, which, in turns, runs the `supafana-grafana` container as a `podman-grafana` systemd service.
+Internally, each Grafana instance runs on a NixOS VM, which, in turn, runs the `supafana-grafana` container as a `podman-grafana` systemd service.
 
 To examine the service, use systemd commands:
 
-- `systmectl status podman-grafana`
+- `systemctl status podman-grafana`
 - `journalctl -u podman-grafana`
 
 To get into a Grafana container, run `podman exec`:
