@@ -107,7 +107,7 @@ The entire infrastructure is described by the [Azure Bicep language](https://lea
 - Azure Static Web App
 
   - No public IP
-  - Uses a [private endpoint](https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview) to the private `supafana-${env}-api subnet`
+  - Uses a [private endpoint](https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview) to the private `supafana-${env}-api` subnet
   - Uses a private DNS zone
 
 - N [Virtual Machines](https://azure.microsoft.com/en-us/products/virtual-machines) `supafana-${env}-grafana-${project_id}` (Grafana servers) created dynamically
