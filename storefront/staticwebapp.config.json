@@ -9,8 +9,8 @@
       "rewrite": "/blog.html"
     },
     {
-      "route": "/blog/*",
-      "rewrite": "/blog/{*}.html"
+      "route": "/blog/supafana-why-and-how",
+      "rewrite": "/blog/supafana-why-and-how.html"
     },
     {
       "route": "/pricing",
@@ -57,6 +57,7 @@
   ],
   "navigationFallback": {
     "rewrite": "/index.html",
+    "rewrite": "/blog/index.html",
     "exclude": [
       "/_astro/*",
       "/*.{svg,png,jpg,jpeg,gif,webp}",
