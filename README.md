@@ -52,7 +52,7 @@ scripts/upload-image-gallery.sh \
 
 ### Grafana instance provisioning
 
-Run the `./infra/hosts/grafana.bicep` template with the follwing parameters:
+Run the `./infra/hosts/grafana.bicep` template with the following parameters:
 
   - supabaseProjectRef - supabase project referece id
   - supabaseServiceRoleKey - service role key
