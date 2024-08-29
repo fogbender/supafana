@@ -16,7 +16,7 @@ coverImageAspectRatio: "14:4"
 
 However, one area where Supabase currently falls short is in providing a sophisticated observability solution out of the box. To address this gap, the Supabase team has created a [Docker setup](https://github.com/supabase/supabase-grafana) that allows users to quickly spin up a [Grafana](https://grafana.com/) and [Prometheus](https://prometheus.io/)-powered database dashboard.
 
-While this setup is a great starting point, we recognized that securely deploying and maintaining such containers for long-term use by an organization requires a skill set that many Supabase users may not have. That's why we developed Supafana—a service designed to simplify the deployment of supapase-grafana Docker containers, making database observability more accessible to the broader Supabase community, and some revenue for us.
+While this setup is a great starting point, we recognized that securely deploying and maintaining such containers for long-term use by an organization requires a skill set that many Supabase users may not have. That's why we developed Supafana—a service designed to simplify the deployment of supabase-grafana Docker containers, making database observability more accessible to the broader Supabase community, and some revenue for us.
 
 ## Motivation
 
