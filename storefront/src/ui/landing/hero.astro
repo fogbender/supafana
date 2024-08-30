@@ -34,7 +34,10 @@ import Caption from "./caption.astro";
         >
         </div>
         <div class="z-50 flex flex-col items-center justify-center gap-5 px-6 text-center lg:gap-6">
-          <SupafanaTextLogo className="w-40 md:w-[200px]" />
+          <div class="w-40 md:w-[200px] relative">
+            <code class="absolute -rotate-12 font-bold text-pink-500 -end-10 -top-2">BETA</code>
+            <SupafanaTextLogo className="w-40 md:w-[200px]" />
+          </div>
           <HeroText variant="large">Observability for Supabase</HeroText>
           <Caption>
             Hosted Grafana &amp; Prometheus observability stack for <a
