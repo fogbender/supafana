@@ -9,7 +9,7 @@
 
 ``` bash
 az login
-az acr login supafanacr
+az acr login --name supafanacr
 docker build supabase-grafana --tag supabase-grafana
 docker tag supabase-grafana supafanacr.azurecr.io/supabase-grafana:<VERSION>
 docker push supafanacr.azurecr.io/supabase-grafana:<VERSION> 
