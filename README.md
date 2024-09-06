@@ -61,10 +61,10 @@ Run the `./infra/hosts/grafana.bicep` template with the following parameters:
 
 Use `supafana-test-rg` resource group for test env deployment.
 
-See examples in `./infra/hosts/grafana-mk-{1,2}.bicepparam
+See examples in `./infra/resources/grafana-mk-{1,2}.bicepparam
 
 ``` bash
-az deployment group create -c --debug --name supafana-test-grafana-mk-1-deploy --resource-group supafana-test-rg --parameters infra/hosts/grafana-mk-1.bicepparam
+az deployment group create -c --debug --name supafana-test-grafana-mk-1-deploy --resource-group supafana-test-rg --parameters infra/resources/grafana-mk-1.bicepparam
 ```
 
 After provisioning, the host should be accessible via `https://<supafanaDomain>/dashboard/<supabaseProjectRef>`:
