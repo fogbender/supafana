@@ -32,7 +32,7 @@ To create and upload an image to Azure:
 az login
 
 # Upload supafana image
-scripts/upload-image-gallery.sh \
+./scripts/azure-upload-image-gallery.sh \
   -g supafana-common-rg \
   -r supafanasig \
   -n supafana \
@@ -41,7 +41,7 @@ scripts/upload-image-gallery.sh \
   -i '.#supafana-image'
   
 # Upload grafana image
-scripts/upload-image-gallery.sh \
+./scripts/azure-upload-image-gallery.sh \
   -g supafana-common-rg \
   -r supafanasig \
   -n grafana \
