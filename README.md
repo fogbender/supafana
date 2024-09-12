@@ -67,13 +67,13 @@ See examples in `./infra/resources/grafana-mk-{1,2}.bicepparam
 az deployment group create -c --debug --name supafana-test-grafana-mk-1-deploy --resource-group supafana-test-rg --parameters infra/resources/grafana-mk-1.bicepparam
 ```
 
-After provisioning, the host should be accessible via `https://<supafanaDomain>/dashboard/<supabaseProjectRef>`:
+After provisioning, the host should be accessible via `https://<supafanaDomain>/dashboard/<supabaseProjectRef>`
 
-Example: `https://supafana-test.com/dashboard/kczjrdfrkmmofxkbjxex/`
+- Example: `https://supafana-test.com/dashboard/kczjrdfrkmmofxkbjxex/`
 
-Internally, the new instance is accessible via `<supabaseProjectRef>.supafana.local`:
+Internally, the new instance is accessible via `<supabaseProjectRef>.supafana.local`
 
-Example: `kczjrdfrkmmofxkbjxex.supafana.local`
+- Example: `kczjrdfrkmmofxkbjxex.supafana.local`
 
 #### SSH access to Grafana instances
 
