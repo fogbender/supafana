@@ -214,7 +214,7 @@ then
       --output tsv
   )"
 
-  azcopy copy "${img_file}" "${sasurl}" \
+  AZCOPY_CONCURRENCY_VALUE=10 AZCOPY_REQUEST_TRY_TIMEOUT=100 azcopy copy "${img_file}" "${sasurl}" \
     --blob-type PageBlob
 
   # https://docs.microsoft.com/en-us/cli/azure/disk?view=azure-cli-latest#az-disk-revoke-access

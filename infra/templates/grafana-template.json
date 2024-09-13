@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.26",
-      "templateHash": "17905435322716412113"
+      "version": "0.28.1.47646",
+      "templateHash": "12594621635294195744"
     }
   },
   "parameters": {
@@ -22,7 +22,22 @@
     "supabaseProjectRef": {
       "type": "string"
     },
+    "supabaseProjectName": {
+      "type": "string"
+    },
     "supabaseServiceRoleKey": {
+      "type": "string"
+    },
+    "smtpHost": {
+      "type": "string"
+    },
+    "smtpUser": {
+      "type": "string"
+    },
+    "smtpPassword": {
+      "type": "string"
+    },
+    "smtpFromAddress": {
       "type": "string"
     },
     "grafanaPassword": {
@@ -50,7 +65,7 @@
     },
     "imageVersion": {
       "type": "string",
-      "defaultValue": "0.0.5"
+      "defaultValue": "0.0.13"
     },
     "projectId": {
       "type": "string",
@@ -80,7 +95,8 @@
   "variables": {
     "osDiskName": "[format('{0}-os-disk', parameters('vmName'))]",
     "networkInterfaceName": "[format('{0}-nic', parameters('vmName'))]",
-    "customDataRaw": "[format('#cloud-config\nwrite_files:\n- content: |\n    SUPABASE_PROJECT_REF={0}\n    SUPABASE_SERVICE_ROLE_KEY={1}\n    GF_SERVER_ROOT_URL=https://{3}/dashboard/{2}\n    GF_SERVER_SERVE_FROM_SUB_PATH=true\n    GRAFANA_PASSWORD={4}\n  path: /var/lib/supafana/supafana.env\n', parameters('supabaseProjectRef'), parameters('supabaseServiceRoleKey'), parameters('projectId'), parameters('supafanaDomain'), parameters('grafanaPassword'))]",
+    "smtpFromName": "[format('Grafana alerts for {0}', parameters('supabaseProjectName'))]",
+    "customDataRaw": "[format('#cloud-config\nwrite_files:\n- content: |\n    SUPABASE_PROJECT_REF={0}\n    SUPABASE_SERVICE_ROLE_KEY={1}\n    GF_SERVER_ROOT_URL=https://{3}/dashboard/{2}\n    GF_SERVER_SERVE_FROM_SUB_PATH=true\n    GRAFANA_PASSWORD={4}\n    GF_SMTP_ENABLED=true\n    GF_SMTP_HOST={5}\n    GF_SMTP_USER={6}\n    GF_SMTP_PASSWORD={7}\n    GF_SMTP_FROM_ADDRESS={8}\n    GF_SMTP_FROM_NAME={9}\n    SUPABASE_PROJECT_NAME={10}\n  path: /var/lib/supafana/supafana.env\n', parameters('supabaseProjectRef'), parameters('supabaseServiceRoleKey'), parameters('projectId'), parameters('supafanaDomain'), parameters('grafanaPassword'), parameters('smtpHost'), parameters('smtpUser'), parameters('smtpPassword'), parameters('smtpFromAddress'), variables('smtpFromName'), parameters('supabaseProjectName'))]",
     "grafanaSubnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('grafanaSubnetName'))]",
     "tags": {
       "vm": "[parameters('vmName')]"

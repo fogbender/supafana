@@ -56,6 +56,12 @@ config :supafana,
   azure_resource_group: System.get_env("SUPAFANA_AZURE_RESOURCE_GROUP"),
   azure_subscription_id: System.get_env("SUPAFANA_AZURE_SUBSCRIPTION_ID")
 
+config :supafana,
+  smtp_host: System.get_env("SMTP_HOST"),
+  smtp_user: System.get_env("SMTP_USER"),
+  smtp_password: System.get_env("SMTP_PASSWORD"),
+  smtp_from_address: System.get_env("SMTP_FROM_ADDRESS")
+
 config :logger, :console,
   level: (System.get_env("SUPAFANA_LOG_LEVEL") || "debug") |> String.to_atom(),
   format: "\n$time [$level] $message $metadata\n",

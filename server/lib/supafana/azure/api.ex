@@ -219,13 +219,21 @@ defmodule Supafana.Azure.Api do
     end
   end
 
-  def create_deployment(project_ref, service_role_key, password) do
+  def create_deployment(project_ref, project_name, service_role_key, password) do
     supafana_domain = Supafana.env(:supafana_domain)
     supafana_env = Supafana.env(:supafana_env)
+
+    smtp_host = Supafana.env(:smtp_host)
+    smtp_user = Supafana.env(:smtp_user)
+    smtp_password = Supafana.env(:smtp_password)
+    smtp_from_address = Supafana.env(:smtp_from_address)
 
     parameters = %{
       "supabaseProjectRef" => %{
         "value" => project_ref
+      },
+      "supabaseProjectName" => %{
+        "value" => project_name
       },
       "supabaseServiceRoleKey" => %{
         "value" => service_role_key
@@ -238,6 +246,18 @@ defmodule Supafana.Azure.Api do
       },
       "env" => %{
         "value" => supafana_env
+      },
+      "smtpHost" => %{
+        "value" => smtp_host
+      },
+      "smtpUser" => %{
+        "value" => smtp_user
+      },
+      "smtpPassword" => %{
+        "value" => smtp_password
+      },
+      "smtpFromAddress" => %{
+        "value" => smtp_from_address
       }
     }
 
@@ -278,7 +298,7 @@ defmodule Supafana.Azure.Api do
        }}
       when code in ["ExpiredAuthenticationToken", "InvalidAuthenticationToken"] ->
         {:ok, _} = Azure.Auth.api_access_token(:renew)
-        create_deployment(project_ref, service_role_key, password)
+        create_deployment(project_ref, project_name, service_role_key, password)
     end
   end
 
