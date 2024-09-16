@@ -4,9 +4,12 @@ import React from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 
+import ThemeController from "./ReactThemeController";
+
 import { HiExternalLink as ExternalLink } from "react-icons/hi";
 
-import { apiServer, queryClient, queryKeys, useMembers } from "./client";
+import { apiServer, queryClient, queryKeys, useMembers, useMe } from "./client";
+import EmailAuth from "./EmailAuth";
 
 // import SupafanaLogo from "./landing/assets/logo.svg?url";
 import GrafanaLogo from "./landing/assets/grafana-logo-icon.svg?url";
@@ -481,115 +484,157 @@ const Alerting = ({ project }: { project: ProjectT }) => {
     },
   });
 
-  return (
-    <div className="flex flex-col gap-2">
-      <div className="font-bold text-black dark:text-white">Alerting</div>
-      <div className="p-4 border border-zinc-500 rounded-lg bg-white dark:bg-black">
-        {membersLoading ? (
-          <span className="loading loading-ring loading-lg text-accent" />
-        ) : (
-          <table className="text-gray-200 dark:text-gray-700 bg-dots table">
-            <tbody className="text-black dark:text-white">
-              <tr>
-                <RowTdHeader>
-                  <a
-                    className={classNames(
-                      "inline-flex items-center gap-1.5 font-medium link link-primary dark:link-secondary"
-                    )}
-                    href={`/dashboard/${project.id}/alerting/notifications`}
-                    title={`Open contacts for ${project.name} in Grafana`}
-                    target="_blank"
-                  >
-                    <img src={GrafanaLogo} alt="Supabase logo" width={12} height={12} />
-                    Contacts
-                    <ExternalLink size={18} />
-                  </a>
-                </RowTdHeader>
-                <td>
-                  {members.map(m => {
-                    const checked = !!emailAlertContacts.find(
-                      c => c.email === m.email && c.severity === "critical"
-                    );
+  const { data: me } = useMe();
 
-                    return (
-                      <div key={m.user_id} className="flex items-center justify-between h-8">
-                        <div>{m.email}</div>
-                        <div>
-                          {clickedEmail === m.email &&
-                          (updateEmailAlertContactMutation.isPending ||
-                            emailAlertContactsInProgress) ? (
-                            <span className="loading loading-ring loading-sm text-info h-3" />
-                          ) : (
-                            <input
-                              type="checkbox"
-                              onChange={e => {
-                                setClickedEmail(m.email as string);
-                                updateEmailAlertContactMutation.mutate({
-                                  email: m.email as string,
-                                  enabled: e.target.checked,
-                                });
-                              }}
-                              value={"checked"}
-                              checked={checked}
-                              className="checkbox checkbox-info checkbox-sm"
-                            />
-                          )}
+  return (
+    <>
+      <dialog id="email_auth_modal" className="modal">
+        <div className="modal-box max-w-3xl dark:bg-brand-dark-bg border">
+          {me ? (
+            <h3 className="font-bold text-lg">Only Owners and Administrators can make changes</h3>
+          ) : (
+            <h3 className="font-bold text-lg">Please verify your email address to make changes</h3>
+          )}
+          <EmailAuth me={me} organizationId={project.organization_id} />
+          <div className="flex justify-end">
+            <form method="dialog">
+              <button className="btn btn-sm btn-primary">Close</button>
+            </form>
+          </div>
+        </div>
+        <form method="dialog" className="modal-backdrop">
+          <button>Close</button>
+        </form>
+      </dialog>
+      <div className="flex flex-col gap-2">
+        <div className="font-bold text-black dark:text-white">Alerting</div>
+        <div className="p-4 border border-zinc-500 rounded-lg bg-white dark:bg-black">
+          {membersLoading ? (
+            <span className="loading loading-ring loading-lg text-accent" />
+          ) : (
+            <table className="text-gray-200 dark:text-gray-700 bg-dots table">
+              <tbody className="text-black dark:text-white">
+                <tr>
+                  <RowTdHeader>
+                    <a
+                      className={classNames(
+                        "inline-flex items-center gap-1.5 font-medium link link-primary dark:link-secondary"
+                      )}
+                      href={`/dashboard/${project.id}/alerting/notifications`}
+                      title={`Open contacts for ${project.name} in Grafana`}
+                      target="_blank"
+                    >
+                      <img src={GrafanaLogo} alt="Supabase logo" width={12} height={12} />
+                      Contacts
+                      <ExternalLink size={18} />
+                    </a>
+                  </RowTdHeader>
+                  <td>
+                    {members.map(m => {
+                      const checked = !!emailAlertContacts.find(
+                        c => c.email === m.email && c.severity === "critical"
+                      );
+
+                      return (
+                        <div key={m.user_id} className="flex items-center justify-between h-8">
+                          <div>{m.email}</div>
+                          <div>
+                            {clickedEmail === m.email &&
+                            (updateEmailAlertContactMutation.isPending ||
+                              emailAlertContactsInProgress) ? (
+                              <span className="loading loading-ring loading-sm text-info h-3" />
+                            ) : (
+                              <input
+                                type="checkbox"
+                                onChange={e => {
+                                  if (
+                                    me &&
+                                    (me.email === m.email ||
+                                      ["Owner", "Administrator"].includes(me.role_name))
+                                  ) {
+                                    setClickedEmail(m.email as string);
+                                    updateEmailAlertContactMutation.mutate({
+                                      email: m.email as string,
+                                      enabled: e.target.checked,
+                                    });
+                                  } else {
+                                    (
+                                      document.getElementById(
+                                        "email_auth_modal"
+                                      ) as HTMLDialogElement
+                                    ).showModal();
+                                  }
+                                }}
+                                value={"checked"}
+                                checked={checked}
+                                className="checkbox checkbox-info checkbox-sm"
+                              />
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                </td>
-              </tr>
-              <tr>
-                <RowTdHeader>
-                  <a
-                    className={classNames(
-                      "inline-flex items-center gap-1.5 font-medium link link-primary dark:link-secondary"
-                    )}
-                    href={`/dashboard/${project.id}/alerting/list`}
-                    title={`Open alerts for ${project.name} in Grafana`}
-                    target="_blank"
-                  >
-                    <img src={GrafanaLogo} alt="Supabase logo" width={12} height={12} />
-                    Alerts
-                    <ExternalLink size={18} />
-                  </a>
-                </RowTdHeader>
-                <td>
-                  {alerts.map(a => {
-                    return (
-                      <div key={a.title} className="flex items-center justify-between h-8">
-                        <div>{a.title}</div>
-                        <div>
-                          {clickedAlert === a.title &&
-                          (updateAlertMutation.isPending || alertsInProgress) ? (
-                            <span className="loading loading-ring loading-sm text-info h-3" />
-                          ) : (
-                            <input
-                              type="checkbox"
-                              onChange={e => {
-                                setClickedAlert(a.title);
-                                updateAlertMutation.mutate({
-                                  title: a.title,
-                                  enabled: e.target.checked,
-                                });
-                              }}
-                              value={"checked"}
-                              checked={a.enabled}
-                              className="checkbox checkbox-info checkbox-sm"
-                            />
-                          )}
+                      );
+                    })}
+                  </td>
+                </tr>
+                <tr>
+                  <RowTdHeader>
+                    <a
+                      className={classNames(
+                        "inline-flex items-center gap-1.5 font-medium link link-primary dark:link-secondary"
+                      )}
+                      href={`/dashboard/${project.id}/alerting/list`}
+                      title={`Open alerts for ${project.name} in Grafana`}
+                      target="_blank"
+                    >
+                      <img src={GrafanaLogo} alt="Supabase logo" width={12} height={12} />
+                      Alerts
+                      <ExternalLink size={18} />
+                    </a>
+                  </RowTdHeader>
+                  <td>
+                    {alerts.map(a => {
+                      return (
+                        <div key={a.title} className="flex items-center justify-between h-8">
+                          <div>{a.title}</div>
+                          <div>
+                            {clickedAlert === a.title &&
+                            (updateAlertMutation.isPending || alertsInProgress) ? (
+                              <span className="loading loading-ring loading-sm text-info h-3" />
+                            ) : (
+                              <input
+                                type="checkbox"
+                                onChange={e => {
+                                  if (me && ["Owner", "Administrator"].includes(me.role_name)) {
+                                    setClickedAlert(a.title);
+                                    updateAlertMutation.mutate({
+                                      title: a.title,
+                                      enabled: e.target.checked,
+                                    });
+                                  } else {
+                                    (
+                                      document.getElementById(
+                                        "email_auth_modal"
+                                      ) as HTMLDialogElement
+                                    ).showModal();
+                                  }
+                                }}
+                                value={"checked"}
+                                checked={a.enabled}
+                                className="checkbox checkbox-info checkbox-sm"
+                              />
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        )}
+                      );
+                    })}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
