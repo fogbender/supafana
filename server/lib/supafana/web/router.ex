@@ -7,7 +7,7 @@ defmodule Supafana.Web.Router do
 
   use Plug.Router
 
-  alias Supafana.{Data, Repo, Utils, Z}
+  alias Supafana.{Data, Grafana, Repo, Utils, Z}
 
   plug(:match)
 
@@ -46,6 +46,288 @@ defmodule Supafana.Web.Router do
     conn = fetch_session(conn)
     me = get_session(conn)["me"]
     conn |> ok_json(me)
+  end
+
+  post "/grafanas/:project_ref" do
+    access_token = conn.assigns[:supabase_access_token]
+
+    case ensure_own_project(access_token, project_ref) do
+      false ->
+        forbid(conn, "Project #{project_ref} does not belong to your Supabase organization")
+
+      {:ok, _} ->
+        max_client_connections = conn.params["maxClientConnections"]
+
+        case max_client_connections do
+          x when is_integer(x) ->
+            Process.sleep(1000)
+
+            Data.Grafana
+            |> Repo.get_by(supabase_id: project_ref)
+            |> Data.Grafana.update(max_client_connections: x)
+            |> Repo.update!()
+
+            {:ok, grafana_api_access_url, _, _, _} = get_grafana_api_params(project_ref)
+
+            {:ok, alert_definitions} = Grafana.Api.get_alert_definitions(grafana_api_access_url)
+
+            case alert_definitions |> Enum.find(&(&1["title"] == "Connection Count Alert")) do
+              nil ->
+                :ok
+
+              %{"uid" => alert_uid} ->
+                :ok = Grafana.Api.delete_alert(grafana_api_access_url, alert_uid)
+            end
+
+            conn |> ok_no_content()
+
+          _ ->
+            send_resp(
+              conn,
+              400,
+              "Expected maxClientConnections parameter of type integer"
+            )
+        end
+    end
+  end
+
+  post "/grafanas/:project_ref/alerts/:title" do
+    access_token = conn.assigns[:supabase_access_token]
+
+    case ensure_own_project(access_token, project_ref) do
+      false ->
+        forbid(conn, "Project #{project_ref} does not belong to your Supabase organization")
+
+      {:ok, _} ->
+        me = get_session(conn)["me"]
+        enabled = conn.params["enabled"]
+
+        update = fn ->
+          %Data.Grafana{id: grafana_id} =
+            from(
+              g in Data.Grafana,
+              where: g.supabase_id == ^project_ref
+            )
+            |> Repo.one!()
+
+          Data.Alert.new(%{
+            grafana_id: grafana_id,
+            supabase_id: project_ref,
+            title: title,
+            enabled: enabled
+          })
+          |> Repo.insert!(
+            on_conflict: {:replace, [:enabled]},
+            conflict_target: [:grafana_id, :title]
+          )
+
+          :ok
+        end
+
+        case me do
+          %{"role_name" => role} when role in ["Owner", "Administrator"] ->
+            update.()
+            ok_no_content(conn)
+
+          _ ->
+            send_resp(
+              conn,
+              400,
+              "Only Owners and Administrators can update alerts"
+            )
+        end
+    end
+  end
+
+  get "/grafanas/:project_ref/alerts" do
+    access_token = conn.assigns[:supabase_access_token]
+
+    case ensure_own_project(access_token, project_ref) do
+      false ->
+        forbid(conn, "Project #{project_ref} does not belong to your Supabase organization")
+
+      {:ok, _} ->
+        {:ok, grafana_api_access_url, grafana, folder_uid, prometheus_uid} =
+          get_grafana_api_params(project_ref)
+
+        case {folder_uid, prometheus_uid} do
+          {nil, _} ->
+            forbid(conn, "Project #{project_ref} does not have an Alerts folder")
+
+          {_, nil} ->
+            forbid(conn, "Project #{project_ref} does not have a Prometheus data source")
+
+          _ ->
+            {:ok, alert_definitions} = Grafana.Api.get_alert_definitions(grafana_api_access_url)
+
+            alert_specs =
+              Grafana.Alerts.specs(
+                project_ref,
+                folder_uid,
+                prometheus_uid,
+                grafana.max_client_connections
+              )
+
+            alert_titles = alert_specs |> Enum.map(& &1["title"])
+
+            {_, _} =
+              Repo.insert_all(
+                Data.Alert,
+                alert_specs
+                |> Enum.map(fn alert ->
+                  %{
+                    grafana_id: grafana.id,
+                    supabase_id: project_ref,
+                    title: alert["title"],
+                    inserted_at: DateTime.utc_now(),
+                    updated_at: DateTime.utc_now()
+                  }
+                end),
+                on_conflict: :nothing,
+                conflict_target: [:grafana_id, :title]
+              )
+
+            active_alerts =
+              from(
+                a in Data.Alert,
+                where: a.grafana_id == ^grafana.id,
+                where: a.enabled == true and a.title in ^alert_titles
+              )
+              |> Repo.all()
+
+            active_alerts
+            |> Enum.each(fn %{title: title} ->
+              if is_nil(alert_definitions |> Enum.find(&(&1["title"] == title))) do
+                spec = alert_specs |> Enum.find(&(&1["title"] == title))
+                {:ok, _} = Grafana.Api.set_alert(grafana_api_access_url, spec)
+              end
+            end)
+
+            inactive_alerts =
+              from(
+                a in Data.Alert,
+                where: a.grafana_id == ^grafana.id,
+                where: a.enabled == false or a.title not in ^alert_titles
+              )
+              |> Repo.all()
+
+            inactive_alerts
+            |> Enum.each(fn %{title: title} ->
+              case alert_definitions |> Enum.find(&(&1["title"] == title)) do
+                nil ->
+                  :ok
+
+                %{"uid" => uid} ->
+                  Grafana.Api.delete_alert(grafana_api_access_url, uid)
+              end
+            end)
+
+            alerts =
+              from(
+                a in Data.Alert,
+                where: a.grafana_id == ^grafana.id
+              )
+              |> Repo.all()
+
+            conn
+            |> ok_json(
+              alerts
+              |> Enum.map(fn a ->
+                %Z.Alert{
+                  title: a.title,
+                  enabled: a.enabled
+                }
+              end)
+            )
+        end
+    end
+  end
+
+  post "/grafanas/:project_ref/email-alert-contacts/:email" do
+    access_token = conn.assigns[:supabase_access_token]
+
+    case ensure_own_project(access_token, project_ref) do
+      false ->
+        forbid(conn, "Project #{project_ref} does not belong to your Supabase organization")
+
+      {:ok, _} ->
+        me = get_session(conn)["me"]
+        enabled = conn.params["enabled"]
+
+        update = fn ->
+          %Data.Grafana{id: grafana_id, password: password} =
+            from(
+              g in Data.Grafana,
+              where: g.supabase_id == ^project_ref
+            )
+            |> Repo.one!()
+
+          Data.EmailAlertContact.new(%{
+            grafana_id: grafana_id,
+            supabase_id: project_ref,
+            email: email,
+            severity:
+              case enabled do
+                true ->
+                  "critical"
+
+                false ->
+                  "none"
+              end
+          })
+          |> Repo.insert!(
+            on_conflict: {:replace, [:severity]},
+            conflict_target: [:grafana_id, :email]
+          )
+
+          :ok = update_contact_point(password, project_ref, email, enabled)
+        end
+
+        case me do
+          %{"role_name" => role} when role in ["Owner", "Administrator"] ->
+            update.()
+            ok_no_content(conn)
+
+          %{"email" => ^email} ->
+            update.()
+            ok_no_content(conn)
+
+          _ ->
+            send_resp(
+              conn,
+              400,
+              "Only Owners and Administrators can update alert contacts for others"
+            )
+        end
+    end
+  end
+
+  get "/grafanas/:project_ref/email-alert-contacts" do
+    access_token = conn.assigns[:supabase_access_token]
+
+    case ensure_own_project(access_token, project_ref) do
+      false ->
+        forbid(conn, "Project #{project_ref} does not belong to your Supabase organization")
+
+      {:ok, _} ->
+        data =
+          from(
+            n in Data.EmailAlertContact,
+            where: n.supabase_id == ^project_ref
+          )
+          |> Repo.all()
+
+        email_alert_contacts =
+          data
+          |> Enum.map(fn c ->
+            %Z.EmailAlertContact{
+              email: c.email,
+              severity: c.severity
+            }
+          end)
+
+        conn |> ok_json(email_alert_contacts)
+    end
   end
 
   post "/email-notifications/:user_id" do
@@ -221,6 +503,66 @@ defmodule Supafana.Web.Router do
         conflict_target: [:org_id, :user_id]
       )
 
+    project_emails = members |> Enum.filter(&(not is_nil(&1["email"]))) |> Enum.map(& &1["email"])
+
+    from(
+      g in Data.Grafana,
+      where: g.org_id == ^org_id,
+      where: g.state == "Running"
+    )
+    |> Repo.all()
+    |> Enum.each(fn g ->
+      {_, _} =
+        Repo.insert_all(
+          Data.EmailAlertContact,
+          project_emails
+          |> Enum.map(fn email ->
+            %{
+              grafana_id: g.id,
+              supabase_id: g.supabase_id,
+              email: email,
+              severity: "critical",
+              inserted_at: DateTime.utc_now(),
+              updated_at: DateTime.utc_now()
+            }
+          end),
+          on_conflict: :nothing,
+          conflict_target: [:grafana_id, :email]
+        )
+
+      enabled_emails =
+        from(
+          c in Data.EmailAlertContact,
+          where: c.grafana_id == ^g.id,
+          where: c.severity == "critical",
+          select: c.email
+        )
+        |> Repo.all()
+
+      enabled_emails
+      |> Enum.each(fn email ->
+        :ok = update_contact_point(g.password, g.supabase_id, email, true)
+      end)
+
+      {_, deleted_members} =
+        from(
+          m in Data.EmailAlertContact,
+          where: m.grafana_id == ^g.id,
+          where: m.email not in ^project_emails,
+          select: m
+        )
+        |> Repo.delete_all()
+
+      deleted_members
+      |> Enum.each(fn
+        %Data.EmailAlertContact{email: email} when not is_nil(email) ->
+          :ok = update_contact_point(g.password, g.supabase_id, email, false)
+
+        _ ->
+          :ok
+      end)
+    end)
+
     case show_emails do
       "false" ->
         conn |> ok_json(members |> Enum.map(&(&1 |> Map.delete("email"))))
@@ -291,12 +633,26 @@ defmodule Supafana.Web.Router do
         %Data.Grafana{} =
           Repo.Grafana.set_state(project_ref, org_id, "Provisioning")
 
+        project_name =
+          case Supafana.Supabase.Management.projects(access_token) do
+            {:ok, projects} ->
+              case projects |> Enum.find(&(&1["id"] === project_ref)) do
+                project when not is_nil(project) ->
+                  project["name"]
+              end
+          end
+
         password = Supafana.Password.generate()
 
         %Data.Grafana{} =
           Repo.Grafana.set_password(project_ref, org_id, password)
 
-        case Supafana.Azure.Api.create_deployment(project_ref, service_key, password) do
+        case Supafana.Azure.Api.create_deployment(
+               project_ref,
+               project_name,
+               service_key,
+               password
+             ) do
           {:ok, %{"properties" => %{"provisioningState" => "Accepted"}}} ->
             Logger.info("#{project_ref}: Accepted")
             :ok
@@ -353,9 +709,75 @@ defmodule Supafana.Web.Router do
           first_start_at ->
             to_unix(first_start_at) + Supafana.env(:trial_length_min) * 60 * 1000 -
               (DateTime.now("Etc/UTC") |> elem(1) |> DateTime.to_unix(:millisecond))
-        end
+        end,
+      max_client_connections: g.max_client_connections
     }
     |> Z.Grafana.to_json!()
     |> Z.Grafana.from_json!()
+  end
+
+  defp get_grafana_api_access_url(project_ref) do
+    %Data.Grafana{password: password} =
+      grafana =
+      from(
+        g in Data.Grafana,
+        where: g.supabase_id == ^project_ref
+      )
+      |> Repo.one()
+
+    {:ok, "https://admin:#{password}@#{Supafana.env(:supafana_domain)}/dashboard/#{project_ref}/",
+     grafana}
+  end
+
+  defp update_contact_point(password, project_ref, email, enabled) do
+    url = "https://admin:#{password}@#{Supafana.env(:supafana_domain)}/dashboard/#{project_ref}/"
+
+    {:ok, existing_contact_points} = Grafana.Api.get_contact_points(url)
+
+    contact = existing_contact_points |> Enum.find(&(&1["settings"]["addresses"] === email))
+
+    case {enabled, is_nil(contact)} do
+      {true, true} ->
+        :ok = Grafana.Api.create_contact_point(url, email)
+        :ok = Grafana.Api.create_policy(url, email)
+
+      {false, false} ->
+        :ok = Grafana.Api.delete_policy(url, email)
+        :ok = Grafana.Api.delete_contact_point(url, contact["uid"])
+
+      _ ->
+        :ok
+    end
+
+    :ok
+  end
+
+  defp get_grafana_api_params(project_ref) do
+    {:ok, grafana_api_access_url, grafana} = get_grafana_api_access_url(project_ref)
+
+    {:ok, folders} = Grafana.Api.get_folders(grafana_api_access_url)
+
+    folder_uid =
+      case folders |> Enum.find(&(&1["title"] === "Alerts")) do
+        nil ->
+          {:ok, %{"uid" => uid}} = Grafana.Api.create_folder(grafana_api_access_url, "Alerts")
+          uid
+
+        %{"uid" => uid} ->
+          uid
+      end
+
+    {:ok, datasources} = Grafana.Api.get_datasources(grafana_api_access_url)
+
+    prometheus_uid =
+      case datasources |> Enum.find(&(&1["name"] === "prometheus")) do
+        nil ->
+          nil
+
+        %{"uid" => prometheus_uid} ->
+          prometheus_uid
+      end
+
+    {:ok, grafana_api_access_url, grafana, folder_uid, prometheus_uid}
   end
 end

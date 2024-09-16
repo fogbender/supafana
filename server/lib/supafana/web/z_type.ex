@@ -135,6 +135,7 @@ defmodule Supafana.Z.Grafana do
     field(:trial_length_min, :integer, [:required])
     field(:trial_remaining_msec, :integer, [])
     field(:stripe_subscription_id, :string, [])
+    field(:max_client_connections, :integer, [:required])
   end
 end
 
@@ -189,5 +190,23 @@ defmodule Supafana.Z.UserNotification do
     field(:org_id, :string, [:required])
     field(:user_id, :string, [:required])
     field(:email, :string, [:required])
+  end
+end
+
+defmodule Supafana.Z.EmailAlertContact do
+  use Supafana.Z
+
+  schema do
+    field(:email, :string, [:required])
+    field(:severity, :string, [:required])
+  end
+end
+
+defmodule Supafana.Z.Alert do
+  use Supafana.Z
+
+  schema do
+    field(:title, :string, [:required])
+    field(:enabled, :boolean, [:required])
   end
 end

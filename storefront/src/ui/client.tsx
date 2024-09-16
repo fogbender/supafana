@@ -22,6 +22,8 @@ export const queryKeys = {
   ],
   billing: (organizationId: string) => ["billing", organizationId],
   notifications: (organizationId: string) => ["notifications", organizationId],
+  emailAlertContacts: (projectId: string) => ["email_alert_contacts", projectId],
+  alerts: (projectId: string) => ["alerts", projectId],
 } as any;
 
 export const apiServer = wretch(getServerUrl(), {

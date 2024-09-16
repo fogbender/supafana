@@ -13,6 +13,7 @@ defmodule Supafana.Data.Grafana do
     field(:password, :string)
     field(:first_start_at, :utc_datetime_usec)
     field(:stripe_subscription_id, :string)
+    field(:max_client_connections, :integer)
 
     timestamps()
   end
@@ -27,7 +28,8 @@ defmodule Supafana.Data.Grafana do
       :state,
       :password,
       :first_start_at,
-      :stripe_subscription_id
+      :stripe_subscription_id,
+      :max_client_connections
     ])
     |> validate_required([:supabase_id, :org_id])
   end

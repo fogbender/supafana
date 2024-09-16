@@ -2,7 +2,12 @@ param location string = resourceGroup().location
 param env string
 param supafanaDomain string
 param supabaseProjectRef string
+param supabaseProjectName string
 param supabaseServiceRoleKey string
+param smtpHost string
+param smtpUser string
+param smtpPassword string
+param smtpFromAddress string
 @secure()
 param grafanaPassword string
 
@@ -13,7 +18,7 @@ param grafanaSubnetName string = 'supafana-${env}-grafana-subnet'
 param commonResourceGroupName string = 'supafana-common-rg'
 param imageGalleryName string = 'supafanasig'
 param imageName string = 'grafana'
-param imageVersion string = '0.0.5'
+param imageVersion string = '0.0.13'
 
 param projectId string = supabaseProjectRef
 
@@ -27,6 +32,8 @@ var networkInterfaceName = '${vmName}-nic'
 
 param privateDnsZoneName string = 'supafana-${env}.local'
 
+var smtpFromName = 'Grafana alerts for ${supabaseProjectName}'
+
 var customDataRaw = format('''
 #cloud-config
 write_files:
@@ -36,8 +43,15 @@ write_files:
     GF_SERVER_ROOT_URL=https://{3}/dashboard/{2}
     GF_SERVER_SERVE_FROM_SUB_PATH=true
     GRAFANA_PASSWORD={4}
+    GF_SMTP_ENABLED=true
+    GF_SMTP_HOST={5}
+    GF_SMTP_USER={6}
+    GF_SMTP_PASSWORD={7}
+    GF_SMTP_FROM_ADDRESS={8}
+    GF_SMTP_FROM_NAME={9}
+    SUPABASE_PROJECT_NAME={10}
   path: /var/lib/supafana/supafana.env
-''', supabaseProjectRef, supabaseServiceRoleKey, projectId, supafanaDomain, grafanaPassword)
+''', supabaseProjectRef, supabaseServiceRoleKey, projectId, supafanaDomain, grafanaPassword, smtpHost, smtpUser, smtpPassword, smtpFromAddress, smtpFromName, supabaseProjectName)
 
 resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' existing = {
   name: virtualNetworkName

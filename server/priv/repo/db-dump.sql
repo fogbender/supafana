@@ -21,6 +21,34 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: alert; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.alert (
+    grafana_id uuid NOT NULL,
+    supabase_id text NOT NULL,
+    enabled boolean DEFAULT true NOT NULL,
+    title text NOT NULL,
+    inserted_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: email_alert_contact; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.email_alert_contact (
+    grafana_id uuid NOT NULL,
+    supabase_id text NOT NULL,
+    email text NOT NULL,
+    severity text DEFAULT 'critical'::text NOT NULL,
+    inserted_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: grafana; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -34,7 +62,8 @@ CREATE TABLE public.grafana (
     inserted_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     first_start_at timestamp without time zone,
-    stripe_subscription_id text
+    stripe_subscription_id text,
+    max_client_connections integer DEFAULT 200
 );
 
 
@@ -127,6 +156,20 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
+-- Name: alert_grafana_id_title_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX alert_grafana_id_title_index ON public.alert USING btree (grafana_id, title);
+
+
+--
+-- Name: email_alert_contact_grafana_id_email_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX email_alert_contact_grafana_id_email_index ON public.email_alert_contact USING btree (grafana_id, email);
+
+
+--
 -- Name: grafana_supabase_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -171,3 +214,4 @@ INSERT INTO public."schema_migrations" (version) VALUES (20240720230903);
 INSERT INTO public."schema_migrations" (version) VALUES (20240727002752);
 INSERT INTO public."schema_migrations" (version) VALUES (20240804050719);
 INSERT INTO public."schema_migrations" (version) VALUES (20240815015612);
+INSERT INTO public."schema_migrations" (version) VALUES (20240914002713);
