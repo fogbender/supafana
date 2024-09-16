@@ -621,6 +621,13 @@ defmodule Supafana.Web.Router do
       false ->
         forbid(conn, "Project #{project_ref} does not belong to your Supabase organization")
 
+      {:ok, _, _} ->
+        send_resp(
+          conn,
+          400,
+          "Project must be restored to provision"
+        )
+
       {:ok, service_key} ->
         case Supafana.Azure.Api.check_deployment(project_ref) do
           {:ok, %{"properties" => %{"provisioningState" => "Failed"}}} ->
@@ -675,7 +682,7 @@ defmodule Supafana.Web.Router do
       false ->
         forbid(conn, "Project #{project_ref} does not belong to your Supabase organization")
 
-      {:ok, _} ->
+      _ ->
         Supafana.Web.Task.schedule(
           operation: :delete_vm,
           project_ref: project_ref,

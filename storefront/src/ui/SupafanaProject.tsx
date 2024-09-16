@@ -213,20 +213,33 @@ const SupafanaProject = ({
           {(["Failed"].includes(state) ||
             (plan === "Supafana Pro" && ["Deleted"].includes(state))) && (
             <td>
-              <button
-                onClick={() => {
-                  if (!provisionGrafanaMutation.isPending) {
-                    provisionGrafanaMutation.mutate();
-                  }
-                }}
-                className="btn btn-xs btn-primary w-20 text-white"
-              >
-                {provisionGrafanaMutation.isPending ? (
-                  <span className="loading loading-ring loading-xs h-3" />
-                ) : (
-                  <span>Provision</span>
-                )}
-              </button>
+              {project.status.startsWith("ACTIVE") ? (
+                <button
+                  onClick={() => {
+                    if (!provisionGrafanaMutation.isPending) {
+                      provisionGrafanaMutation.mutate();
+                    }
+                  }}
+                  className="btn btn-xs btn-primary w-20 text-white"
+                >
+                  {provisionGrafanaMutation.isPending ? (
+                    <span className="loading loading-ring loading-xs h-3" />
+                  ) : (
+                    <span>Provision</span>
+                  )}
+                </button>
+              ) : (
+                <span className="text-zinc-500">
+                  You’ll have to{" "}
+                  <a
+                    className="link link-primary dark:link-secondary"
+                    href={`https://supabase.com/dashboard/project/${project.id}`}
+                  >
+                    restore
+                  </a>{" "}
+                  this project to provision Supafana
+                </span>
+              )}
             </td>
           )}
           {plan === "Trial" && trialEnded && state === "Deleted" && (
@@ -239,18 +252,31 @@ const SupafanaProject = ({
           )}
           {plan === "Trial" && !trialEnded && state === "Deleted" && (
             <td>
-              <button
-                onClick={() => {
-                  provisionGrafanaMutation.mutate();
-                }}
-                className="btn btn-xs btn-primary w-20 text-white"
-              >
-                {provisionGrafanaMutation.isPending ? (
-                  <span className="loading loading-ring loading-xs h-3" />
-                ) : (
-                  <span>Provision</span>
-                )}
-              </button>
+              {project.status.startsWith("ACTIVE") ? (
+                <button
+                  onClick={() => {
+                    provisionGrafanaMutation.mutate();
+                  }}
+                  className="btn btn-xs btn-primary w-20 text-white"
+                >
+                  {provisionGrafanaMutation.isPending ? (
+                    <span className="loading loading-ring loading-xs h-3" />
+                  ) : (
+                    <span>Provision</span>
+                  )}
+                </button>
+              ) : (
+                <span className="text-zinc-500">
+                  You’ll have to{" "}
+                  <a
+                    className="link link-primary dark:link-secondary"
+                    href={`https://supabase.com/dashboard/project/${project.id}`}
+                  >
+                    restore
+                  </a>{" "}
+                  this project to provision Supafana
+                </span>
+              )}
             </td>
           )}
         </tr>

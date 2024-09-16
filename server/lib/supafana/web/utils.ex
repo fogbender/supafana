@@ -36,7 +36,13 @@ defmodule Supafana.Web.Utils do
         {:ok, service_key}
 
       _ ->
-        false
+        case Supafana.Supabase.Management.project_health(access_token, project_ref) do
+          {:ok, health} ->
+            {:ok, :inactive, health}
+
+          _ ->
+            false
+        end
     end
   end
 end
