@@ -88,6 +88,12 @@ Host *.supafana.local
 
 With this, Grafana instances can be accessed directly, e.g., `ssh admin@kczjrdfrkmmofxkbjxex.supafana.local`
 
+While there, to access the Elixir shell of the running app:
+
+```
+supafana remote
+```
+
 #### Grafana instance internals
 
 Internally, each Grafana instance runs on a NixOS VM, which, in turn, runs the `supafana-grafana` container as a `podman-grafana` systemd service.
