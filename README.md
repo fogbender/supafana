@@ -1,7 +1,7 @@
 # ![Supfana logo](https://supafana.com/_astro/logo.49zwZwxg_1adPvH.svg)
 # Supafana
 ## https://supafana.com
-## Metrics and observability SaaS for [Supabase](https://supabase.com), based on [supabase-grafana](https://github.com/supabase/supabase-grafana)
+## Observability and alerting SaaS for [Supabase](https://supabase.com), based on [supabase-grafana](https://github.com/supabase/supabase-grafana)
 ![image](https://github.com/user-attachments/assets/b1441d23-2147-41e9-a887-cacbd99cbcb0)
 
 
