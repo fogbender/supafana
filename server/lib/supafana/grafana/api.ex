@@ -128,20 +128,80 @@ defmodule Supafana.Grafana.Api do
     end
   end
 
-  def create_contact_point(url, email) do
-    r =
-      client(url, [{"X-Disable-Provenance", "true"}])
-      |> Tesla.post(
-        "/api/v1/provisioning/contact-points",
+  def add_contact_point_email(url, email) do
+    :ok = update_email_contact_point(url, email, :add)
+    :ok = create_grafana_email_policy(url)
+  end
+
+  def delete_contact_point_email(url, email) do
+    update_email_contact_point(url, email, :remove)
+  end
+
+  def update_email_contact_point(url, email, operation) when operation in [:add, :remove] do
+    {:ok, contact_points} = get_contact_points(url)
+
+    email_contact_point =
+      contact_points
+      |> Enum.find(
         %{
-          "name" => email,
+          "name" => "supafana-email",
           "type" => "email",
           "settings" => %{
-            "addresses" => email,
+            "addresses" => "",
             "singleEmail" => true
           }
-        }
+        },
+        &(&1["name"] === "supafana-email")
       )
+
+    %{"settings" => %{"addresses" => existing_addresses}} = email_contact_point
+
+    emails =
+      existing_addresses
+      |> String.split([",", ";"])
+      |> Enum.filter(&(String.length(&1 |> String.trim()) > 0))
+      |> Enum.uniq()
+
+    new_emails =
+      case operation do
+        :add ->
+          [email | emails] |> Enum.filter(&(&1 !== "example@email.com"))
+
+        :remove ->
+          case emails |> Enum.filter(&(&1 !== email)) do
+            [] ->
+              ["example@email.com"]
+
+            x ->
+              x
+          end
+      end
+      |> Enum.join(";")
+
+    new_email_contact_point =
+      Map.merge(email_contact_point, %{
+        "settings" => %{
+          "addresses" => new_emails,
+          "singleEmail" => true
+        }
+      })
+
+    r =
+      case new_email_contact_point do
+        %{"uid" => uid} ->
+          client(url, [{"X-Disable-Provenance", "true"}])
+          |> Tesla.put(
+            "/api/v1/provisioning/contact-points/#{uid}",
+            new_email_contact_point
+          )
+
+        _ ->
+          client(url, [{"X-Disable-Provenance", "true"}])
+          |> Tesla.post(
+            "/api/v1/provisioning/contact-points",
+            new_email_contact_point
+          )
+      end
 
     case r do
       {:ok, %Tesla.Env{status: 202}} ->
@@ -149,19 +209,26 @@ defmodule Supafana.Grafana.Api do
     end
   end
 
-  def create_policy(url, email) do
+  def create_grafana_email_policy(url) do
     {:ok, policy} = get_policies(url)
 
-    routes = policy |> Map.get("routes", []) |> Enum.filter(&(&1["receiver"] !== email))
+    routes = policy |> Map.get("routes", [])
 
-    new_routes = [
-      %{
-        "object_matchers" => [["severity", "=", "critical"]],
-        "provenance" => "api",
-        "receiver" => email
-      }
-      | routes
-    ]
+    new_routes =
+      case routes |> Enum.find(&(&1["receiver"] === "supafana-email")) do
+        nil ->
+          [
+            %{
+              "object_matchers" => [["severity", "=", "critical"]],
+              "provenance" => "api",
+              "receiver" => "supafana-email"
+            }
+            | routes
+          ]
+
+        _ ->
+          routes
+      end
 
     new_policy = Map.merge(policy, %{"routes" => new_routes})
 

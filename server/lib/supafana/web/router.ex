@@ -732,24 +732,13 @@ defmodule Supafana.Web.Router do
   defp update_contact_point(password, project_ref, email, enabled) do
     url = "https://admin:#{password}@#{Supafana.env(:supafana_domain)}/dashboard/#{project_ref}/"
 
-    {:ok, existing_contact_points} = Grafana.Api.get_contact_points(url)
+    case enabled do
+      true ->
+        :ok = Grafana.Api.add_contact_point_email(url, email)
 
-    contact = existing_contact_points |> Enum.find(&(&1["settings"]["addresses"] === email))
-
-    case {enabled, is_nil(contact)} do
-      {true, true} ->
-        :ok = Grafana.Api.create_contact_point(url, email)
-        :ok = Grafana.Api.create_policy(url, email)
-
-      {false, false} ->
-        :ok = Grafana.Api.delete_policy(url, email)
-        :ok = Grafana.Api.delete_contact_point(url, contact["uid"])
-
-      _ ->
-        :ok
+      false ->
+        :ok = Grafana.Api.delete_contact_point_email(url, email)
     end
-
-    :ok
   end
 
   defp get_grafana_api_params(project_ref) do
