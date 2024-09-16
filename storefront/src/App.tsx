@@ -7,7 +7,7 @@ import AppBody from "./ui/AppBody";
 const App = () => {
   return (
     <MetaProvider>
-      <Title>Supafana | Observability for Supabase</Title>
+      <Title>Supafana | Observability and Alerts for Supabase</Title>
       <ErrorBoundary FallbackComponent={ErrorPageFallback}>
         <AppBody />
       </ErrorBoundary>
