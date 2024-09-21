@@ -57,7 +57,21 @@ defmodule Supafana.Supabase.OAuth do
          }
        ]}
 
-    middleware = [base_url, form, json, query, headers]
+    retry =
+      {Tesla.Middleware.Retry,
+       [
+         delay: 1000,
+         max_retries: 10,
+         max_delay: 4_000,
+         should_retry: fn
+           {:ok, %{status: status}} when status in [400, 429, 500] -> true
+           {:ok, _} -> false
+           {:error, :timeout} -> true
+           {:error, _} -> true
+         end
+       ]}
+
+    middleware = [base_url, form, json, query, headers, retry]
 
     Tesla.client(middleware)
   end
