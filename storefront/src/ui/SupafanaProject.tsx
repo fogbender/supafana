@@ -361,7 +361,7 @@ const SupafanaProject = ({
             <td>
               <div className="flex items-center gap-2">
                 <input
-                  className="text-sm input input-sm input-bordered w-full max-w-xs dark:text-black dark:bg-accent font-medium"
+                  className="min-w-14 text-sm input input-sm input-bordered w-full max-w-xs dark:text-black dark:bg-accent font-medium"
                   value={maxClientConnections}
                   onChange={e => {
                     setMaxClientConnections(e.target.value);
