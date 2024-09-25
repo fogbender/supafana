@@ -13,6 +13,10 @@
       "rewrite": "/blog/supafana-why-and-how.html"
     },
     {
+      "route": "/blog/announcing-alerting-for-supabase",
+      "rewrite": "/blog/announcing-alerting-for-supabase.html"
+    },
+    {
       "route": "/pricing",
       "rewrite": "/pricing.html"
     },
