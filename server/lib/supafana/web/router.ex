@@ -703,6 +703,8 @@ defmodule Supafana.Web.Router do
   def handle_members(access_token, org_slug, org_id) do
     {:ok, members} = Supafana.Supabase.Management.organization_members(access_token, org_slug)
 
+    Logger.info("Got members from org_slug #{org_slug}, org_id #{org_id}, #{inspect(members)}")
+
     {_, _} =
       Repo.insert_all(
         Data.UserNotification,
