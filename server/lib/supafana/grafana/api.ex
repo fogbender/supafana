@@ -111,7 +111,7 @@ defmodule Supafana.Grafana.Api do
       client(url)
       |> Tesla.get("/api/v1/provisioning/contact-points")
 
-    Logger.info("get_contact_points: #{inspect(r)}")
+    Logger.info("get_contact_points #{url}: #{inspect(r)}")
 
     case r do
       {:ok, %Tesla.Env{status: 200, body: body}} ->
