@@ -206,6 +206,10 @@ defmodule Supafana.Grafana.Api do
     case r do
       {:ok, %Tesla.Env{status: 202}} ->
         :ok
+
+      _ ->
+        Logger.error("update_email_contact_point failed with #{inspect(r)}")
+        :error
     end
   end
 
