@@ -181,6 +181,9 @@ defmodule Supafana.CheckVmsJob do
 
           "Deleting" ->
             "Deleted"
+
+          "Running" ->
+            "Running"
         end
 
       {:ok, %{"statuses" => statuses}} ->
