@@ -478,90 +478,13 @@ defmodule Supafana.Web.Router do
 
   get "/organizations/:slug/members" do
     access_token = conn.assigns[:supabase_access_token]
+    org_id = conn.assigns[:org_id]
 
     show_emails = conn.params["showEmails"]
 
-    {:ok, members} = Supafana.Supabase.Management.organization_members(access_token, slug)
+    members = handle_members(access_token, slug, org_id)
 
-    org_id = conn.assigns[:org_id]
-
-    {_, _} =
-      Repo.insert_all(
-        Data.UserNotification,
-        members
-        |> Enum.filter(&(not is_nil(&1["email"])))
-        |> Enum.map(fn m ->
-          %{
-            org_id: org_id,
-            user_id: m["user_id"],
-            email: m["email"],
-            inserted_at: DateTime.utc_now(),
-            updated_at: DateTime.utc_now()
-          }
-        end),
-        on_conflict: :nothing,
-        conflict_target: [:org_id, :user_id]
-      )
-
-    project_emails = members |> Enum.filter(&(not is_nil(&1["email"]))) |> Enum.map(& &1["email"])
-
-    from(
-      g in Data.Grafana,
-      where: g.org_id == ^org_id,
-      where: g.state == "Running"
-    )
-    |> Repo.all()
-    |> Enum.each(fn g ->
-      {_, _} =
-        Repo.insert_all(
-          Data.EmailAlertContact,
-          project_emails
-          |> Enum.map(fn email ->
-            %{
-              grafana_id: g.id,
-              supabase_id: g.supabase_id,
-              email: email,
-              severity: "critical",
-              inserted_at: DateTime.utc_now(),
-              updated_at: DateTime.utc_now()
-            }
-          end),
-          on_conflict: :nothing,
-          conflict_target: [:grafana_id, :email]
-        )
-
-      enabled_emails =
-        from(
-          c in Data.EmailAlertContact,
-          where: c.grafana_id == ^g.id,
-          where: c.severity == "critical",
-          select: c.email
-        )
-        |> Repo.all()
-
-      enabled_emails
-      |> Enum.each(fn email ->
-        :ok = update_contact_point(g.password, g.supabase_id, email, true)
-      end)
-
-      {_, deleted_members} =
-        from(
-          m in Data.EmailAlertContact,
-          where: m.grafana_id == ^g.id,
-          where: m.email not in ^project_emails,
-          select: m
-        )
-        |> Repo.delete_all()
-
-      deleted_members
-      |> Enum.each(fn
-        %Data.EmailAlertContact{email: email} when not is_nil(email) ->
-          :ok = update_contact_point(g.password, g.supabase_id, email, false)
-
-        _ ->
-          :ok
-      end)
-    end)
+    Logger.info("handle_members: #{inspect(members)}")
 
     case show_emails do
       "false" ->
@@ -775,5 +698,87 @@ defmodule Supafana.Web.Router do
       end
 
     {:ok, grafana_api_access_url, grafana, folder_uid, prometheus_uid}
+  end
+
+  def handle_members(access_token, org_slug, org_id) do
+    {:ok, members} = Supafana.Supabase.Management.organization_members(access_token, org_slug)
+
+    {_, _} =
+      Repo.insert_all(
+        Data.UserNotification,
+        members
+        |> Enum.filter(&(not is_nil(&1["email"])))
+        |> Enum.map(fn m ->
+          %{
+            org_id: org_id,
+            user_id: m["user_id"],
+            email: m["email"],
+            inserted_at: DateTime.utc_now(),
+            updated_at: DateTime.utc_now()
+          }
+        end),
+        on_conflict: :nothing,
+        conflict_target: [:org_id, :user_id]
+      )
+
+    project_emails = members |> Enum.filter(&(not is_nil(&1["email"]))) |> Enum.map(& &1["email"])
+
+    from(
+      g in Data.Grafana,
+      where: g.org_id == ^org_id,
+      where: g.state == "Running"
+    )
+    |> Repo.all()
+    |> Enum.each(fn g ->
+      {_, _} =
+        Repo.insert_all(
+          Data.EmailAlertContact,
+          project_emails
+          |> Enum.map(fn email ->
+            %{
+              grafana_id: g.id,
+              supabase_id: g.supabase_id,
+              email: email,
+              severity: "critical",
+              inserted_at: DateTime.utc_now(),
+              updated_at: DateTime.utc_now()
+            }
+          end),
+          on_conflict: :nothing,
+          conflict_target: [:grafana_id, :email]
+        )
+
+      enabled_emails =
+        from(
+          c in Data.EmailAlertContact,
+          where: c.grafana_id == ^g.id,
+          where: c.severity == "critical",
+          select: c.email
+        )
+        |> Repo.all()
+
+      enabled_emails
+      |> Enum.each(fn email ->
+        :ok = update_contact_point(g.password, g.supabase_id, email, true)
+      end)
+
+      {_, deleted_members} =
+        from(
+          m in Data.EmailAlertContact,
+          where: m.grafana_id == ^g.id,
+          where: m.email not in ^project_emails,
+          select: m
+        )
+        |> Repo.delete_all()
+
+      deleted_members
+      |> Enum.each(fn
+        %Data.EmailAlertContact{email: email} when not is_nil(email) ->
+          :ok = update_contact_point(g.password, g.supabase_id, email, false)
+
+        _ ->
+          :ok
+      end)
+    end)
   end
 end
