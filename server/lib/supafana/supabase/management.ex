@@ -1,5 +1,9 @@
 defmodule Supafana.Supabase.Management do
+  require Logger
+
   def organization_members(token, slug) do
+    Logger.info("Calling members with token #{token} for slug #{slug}")
+
     path = "/v1/organizations/#{slug}/members"
 
     r =
