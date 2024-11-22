@@ -1,13 +1,10 @@
-import { useMutation } from "@tanstack/react-query";
-import classNames from "classnames";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import React from "react";
 
-import { HiExternalLink as ExternalLink } from "react-icons/hi";
 import { SiDungeonsanddragons as DividerGlyph } from "react-icons/si";
 
-import { apiServer, queryClient, queryKeys } from "./client";
+import { queryClient, queryKeys } from "./client";
 
 import SupabaseProject from "./SupabaseProject";
 import SupafanaProject from "./SupafanaProject";

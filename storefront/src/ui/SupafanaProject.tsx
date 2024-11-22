@@ -4,8 +4,6 @@ import React from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 
-import ThemeController from "./ReactThemeController";
-
 import { HiExternalLink as ExternalLink } from "react-icons/hi";
 
 import { apiServer, queryClient, queryKeys, useMembers, useMe } from "./client";
