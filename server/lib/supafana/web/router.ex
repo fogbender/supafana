@@ -482,7 +482,7 @@ defmodule Supafana.Web.Router do
 
     show_emails = conn.params["showEmails"]
 
-    members = handle_members(access_token, slug, org_id)
+    {:ok, members} = handle_members(access_token, slug, org_id)
 
     Logger.info("handle_members: #{inspect(members)}")
 
@@ -780,5 +780,7 @@ defmodule Supafana.Web.Router do
           :ok
       end)
     end)
+
+    {:ok, members}
   end
 end
