@@ -645,7 +645,7 @@ defmodule Supafana.Web.Router do
   end
 
   defp get_grafana_api_access_url(password, project_ref) do
-    "https://admin:#{URI.encode(password)}@#{Supafana.env(:supafana_domain)}/dashboard/#{project_ref}/"
+    "https://admin:#{URI.encode_www_form(password)}@#{Supafana.env(:supafana_domain)}/dashboard/#{project_ref}/"
   end
 
   defp get_grafana_api_access_url_and_grafana(project_ref) do
