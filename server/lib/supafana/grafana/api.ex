@@ -107,11 +107,11 @@ defmodule Supafana.Grafana.Api do
   end
 
   def get_contact_points(url) do
+    path = "/api/v1/provisioning/contact-points"
+
     r =
       client(url)
-      |> Tesla.get("/api/v1/provisioning/contact-points")
-
-    Logger.info("get_contact_points #{url}: #{inspect(r)}")
+      |> Tesla.get(path)
 
     case r do
       {:ok, %Tesla.Env{status: 200, body: body}} ->
@@ -245,8 +245,6 @@ defmodule Supafana.Grafana.Api do
         new_policy
       )
 
-    Logger.info("create_grafana_email_policy: #{inspect(r)}")
-
     case r do
       {:ok, %Tesla.Env{status: 202}} ->
         :ok
@@ -257,8 +255,6 @@ defmodule Supafana.Grafana.Api do
     r =
       client(url)
       |> Tesla.get("/api/v1/provisioning/policies")
-
-    Logger.info("get_policies: #{inspect(r)}")
 
     case r do
       {:ok, %Tesla.Env{status: 200, body: body}} ->

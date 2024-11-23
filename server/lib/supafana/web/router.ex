@@ -484,8 +484,6 @@ defmodule Supafana.Web.Router do
 
     {:ok, members} = handle_members(access_token, slug, org_id)
 
-    Logger.info("handle_members: #{inspect(members)}")
-
     case show_emails do
       "false" ->
         conn |> ok_json(members |> Enum.map(&(&1 |> Map.delete("email"))))
@@ -646,7 +644,11 @@ defmodule Supafana.Web.Router do
     |> Z.Grafana.from_json!()
   end
 
-  defp get_grafana_api_access_url(project_ref) do
+  defp get_grafana_api_access_url(password, project_ref) do
+    "https://admin:#{URI.encode(password)}@#{Supafana.env(:supafana_domain)}/dashboard/#{project_ref}/"
+  end
+
+  defp get_grafana_api_access_url_and_grafana(project_ref) do
     %Data.Grafana{password: password} =
       grafana =
       from(
@@ -655,12 +657,13 @@ defmodule Supafana.Web.Router do
       )
       |> Repo.one()
 
-    {:ok, "https://admin:#{password}@#{Supafana.env(:supafana_domain)}/dashboard/#{project_ref}/",
-     grafana}
+    url = get_grafana_api_access_url(password, project_ref)
+
+    {:ok, url, grafana}
   end
 
   defp update_contact_point(password, project_ref, email, enabled) do
-    url = "https://admin:#{password}@#{Supafana.env(:supafana_domain)}/dashboard/#{project_ref}/"
+    url = get_grafana_api_access_url(password, project_ref)
 
     case enabled do
       true ->
@@ -672,7 +675,7 @@ defmodule Supafana.Web.Router do
   end
 
   defp get_grafana_api_params(project_ref) do
-    {:ok, grafana_api_access_url, grafana} = get_grafana_api_access_url(project_ref)
+    {:ok, grafana_api_access_url, grafana} = get_grafana_api_access_url_and_grafana(project_ref)
 
     {:ok, folders} = Grafana.Api.get_folders(grafana_api_access_url)
 
@@ -702,8 +705,6 @@ defmodule Supafana.Web.Router do
 
   def handle_members(access_token, org_slug, org_id) do
     {:ok, members} = Supafana.Supabase.Management.organization_members(access_token, org_slug)
-
-    Logger.info("Got members from org_slug #{org_slug}, org_id #{org_id}, #{inspect(members)}")
 
     {_, _} =
       Repo.insert_all(
