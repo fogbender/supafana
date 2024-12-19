@@ -1,4 +1,4 @@
-# ![Supfana logo](https://supafana.com/_astro/logo.49zwZwxg_1adPvH.svg)
+# ![Supafana logo](https://supafana.com/_astro/logo.49zwZwxg_1adPvH.svg)
 # Supafana
 ## https://supafana.com
 ## Observability and alerting SaaS for [Supabase](https://supabase.com), based on [supabase-grafana](https://github.com/supabase/supabase-grafana)
