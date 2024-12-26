@@ -29,7 +29,7 @@ export SUPAFANA_AZURE_RESOURCE_GROUP="supafana-newdev-rg"
 
 ### Create Azure infrastructure in new resource group:
 
-Copy one of `infra/resources/supafana-xxdev.bicepparam` files to new `supafana-newdev.bicepparam` and replace env name in it.
+Copy one of `infra/resources/supafana-xxdev.bicepparam` files to new `infra/resources/supafana-newdev.bicepparam` and replace env name in it.
 
 Run azure deployment with new bicepparam file:
 
@@ -47,7 +47,7 @@ az keyvault key show --name sops-key --vault-name supafana-newdev-vault  --query
 ```
 
 Add new entry to the `.sops.yaml` file:
- 
+
 ```yaml
 creation_rules:
  ...
@@ -69,8 +69,9 @@ sops -e -i infra/secrets/supafana-newdev.env
 
 ### Create nixOS deployment configuration
 
-Copy one of `nix/hosts/supafana-xxxdev.nix` files to new `supafana-newdev.nix`
+Copy one of `nix/hosts/supafana-xxxdev.nix` files to new `nix/hosts/supafana-newdev.nix`
 Update it.
+
 Add nixos configuration and deploy entries to flake.nix with new `supafana-newdev` host.
 
 Deploy:

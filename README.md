@@ -12,10 +12,10 @@ az login
 az acr login --name supafanacr
 docker build supabase-grafana --tag supabase-grafana
 docker tag supabase-grafana supafanacr.azurecr.io/supabase-grafana:<VERSION>
-docker push supafanacr.azurecr.io/supabase-grafana:<VERSION> 
+docker push supafanacr.azurecr.io/supabase-grafana:<VERSION>
 ```
 
-- Update VM grafana image with new <VERSION> in `nix/hosts/grafana/grafana-container.nix`. 
+- Update VM grafana image with new <VERSION> in `nix/hosts/grafana/grafana-container.nix`.
 - Upload new VM grafana image version (see next section).
 
 ### NixOS Azure image creation/upload
@@ -39,7 +39,7 @@ az login
   -v '0.0.1' \
   -l eastus \
   -i '.#supafana-image'
-  
+
 # Upload grafana image
 ./scripts/azure-upload-image-gallery.sh \
   -g supafana-common-rg \
