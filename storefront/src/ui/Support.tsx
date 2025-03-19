@@ -112,7 +112,7 @@ export const Support = () => {
     <div className="flex flex-col min-h-screen">
       <Header organization={organization} />
       {me && fogbenderToken ? (
-        <div className="flex-1">
+        <div className="flex flex-1">
           <FogbenderProvider fogbender={fogbender.current}>
             <FogbenderConfig
               clientUrl="https://client.fogbender.com"
