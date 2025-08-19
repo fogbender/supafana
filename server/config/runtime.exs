@@ -35,7 +35,7 @@ config :supafana,
   supafana_env: System.get_env("SUPAFANA_ENV"),
   supafana_api_url: System.get_env("SUPAFANA_API_URL"),
   supafana_storefront_url: System.get_env("SUPAFANA_STOREFRONT_URL"),
-  trial_length_min: System.get_env("SUPAFANA_TRIAL_LENGTH_MIN") || "30" |> String.to_integer()
+  trial_length_min: (System.get_env("SUPAFANA_TRIAL_LENGTH_MIN") || "30") |> String.to_integer()
 
 config :supafana,
   loops_api_key: System.get_env("LOOPS_API_KEY")
