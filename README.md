@@ -71,9 +71,9 @@ After provisioning, the host should be accessible via `https://<supafanaDomain>/
 
 - Example: `https://supafana-test.com/dashboard/kczjrdfrkmmofxkbjxex/`
 
-Internally, the new instance is accessible via `<supabaseProjectRef>.supafana.local`
+Internally, the new instance is accessible via `supafana-<env>-grafana-<supabaseProjectRef>.supafana-<env>.local`
 
-- Example: `kczjrdfrkmmofxkbjxex.supafana.local`
+- Example: `supafana-prod-grafana-xjzrrbkmeubsmkgdwgfq.supafana-prod.local`
 
 #### SSH access to Grafana instances
 
@@ -82,11 +82,17 @@ Grafana instances don't have public IPs and can be accessed only via our main se
 To simplify access (to supafana-test.com), add the following lines to your `~/.ssh/config` file:
 
 ```
-Host *.supafana.local
+#test access
+Host *.supafana-test.local
   ProxyJump admin@supafana-test.com
+
+#prod access
+Host *.supafana-prod.local
+  ProxyJump admin@supafana.com
+
 ```
 
-With this, Grafana instances can be accessed directly, e.g., `ssh admin@kczjrdfrkmmofxkbjxex.supafana.local`
+With this, Grafana instances can be accessed directly, e.g., `ssh admin@supafana-prod-grafana-xjzrrbkmeubsmkgdwgfq.supafana-prod.local`
 
 While there, to access the Elixir shell of the running app:
 
