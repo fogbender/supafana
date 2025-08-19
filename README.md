@@ -121,16 +121,16 @@ More info about working with containers:
 
 #### Deleting Grafana instances and resources
 
-All resources created for a particular Grafana instance are tagged with `vm:<supabaseProjectRef>`. To delete them, filter all resources by tag:
+All resources created for a particular Grafana instance are tagged with `vm:supafana-<env>-grafana-<supabaseProjectRef>`. To delete them, filter all resources by tag:
 
 ``` bash
-az resource list --tag vm=<supabaseProjectRef> --query "[].id" -o tsv
+az resource list --tag vm=supafana-<env>-grafana-<supabaseProjectRef> --query "[].id" -o tsv
 ```
 
 Then, delete:
 
 ``` bash
-az resource list --tag vm='kczjrdfrkmmofxkbjxex' --query "[].id" -o tsv | xargs -I {} az resource delete --ids {}
+az resource list --tag vm='supafana-prod-grafana-kczjrdfrkmmofxkbjxex' --query "[].id" -o tsv | xargs -I {} az resource delete --ids {}
 ```
 
 
