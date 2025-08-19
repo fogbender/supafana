@@ -18,7 +18,7 @@ param grafanaSubnetName string = 'supafana-${env}-grafana-subnet'
 param commonResourceGroupName string = 'supafana-common-rg'
 param imageGalleryName string = 'supafanasig'
 param imageName string = 'grafana'
-param imageVersion string = '0.0.13'
+param imageVersion string = '0.0.14'
 
 param projectId string = supabaseProjectRef
 

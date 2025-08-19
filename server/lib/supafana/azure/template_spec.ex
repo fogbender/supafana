@@ -1,7 +1,7 @@
 defmodule Supafana.Azure.TemplateSpec do
   @template_group "supafana-common-rg"
   @template_name "grafana-template"
-  @template_version "2024.9.1"
+  @template_version "2025.8.0"
 
   def grafana() do
     subscription_id = Supafana.env(:azure_subscription_id)
