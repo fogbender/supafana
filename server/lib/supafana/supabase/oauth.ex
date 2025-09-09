@@ -41,7 +41,6 @@ defmodule Supafana.Supabase.OAuth do
     url = "https://api.supabase.com"
     base_url = {Tesla.Middleware.BaseUrl, url}
     form = Tesla.Middleware.FormUrlencoded
-    json = Tesla.Middleware.JSON
     query = Tesla.Middleware.Query
 
     supabase_client_id = Supafana.env(:supabase_client_id)
@@ -57,22 +56,12 @@ defmodule Supafana.Supabase.OAuth do
          }
        ]}
 
-    retry =
-      {Tesla.Middleware.Retry,
-       [
-         delay: 1000,
-         max_retries: 10,
-         max_delay: 4_000,
-         should_retry: fn
-           {:ok, %{status: status}} when status in [400, 429, 500] -> true
-           {:ok, _} -> false
-           {:error, :timeout} -> true
-           {:error, _} -> true
-         end
-       ]}
+    adapter = {Tesla.Adapter.Hackney, recv_timeout: 30_000}
 
-    middleware = [base_url, form, json, query, headers, retry]
+    json = Tesla.Middleware.JSON
 
-    Tesla.client(middleware)
+    middleware = [base_url, form, json, query, headers]
+
+    Tesla.client(middleware, adapter)
   end
 end
