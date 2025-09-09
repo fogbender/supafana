@@ -6,9 +6,23 @@ import Hero from "../ui/landing/hero.astro";
 // import Testimonials from "../ui/landing/testimonials.astro";
 import WhySupafana from "../ui/landing/why-supafana.astro";
 import Yc from "../ui/landing/yc.astro";
+
+const linkedData = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Supafana",
+  "url": "https://supafana.com",
+  "description": "Metrics, observability, and alerting for Supabase",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web Browser",
+  "offers": {
+    "@type": "Offer",
+    "category": "SaaS",
+  },
+};
 ---
 
-<Main meta={{ title: "Metrics, observability, and alerting for Supabase" }}>
+<Main meta={{ title: "Metrics, observability, and alerting for Supabase" }} linkedData={linkedData}>
   <Hero />
   <WhySupafana />
   {/* <Scaling /> */}

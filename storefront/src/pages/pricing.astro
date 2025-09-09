@@ -32,9 +32,40 @@ const pricing = {
     },
   ],
 };
+
+const linkedData = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Supafana",
+  "description": "Metrics, observability, and alerting for Supabase",
+  "brand": {
+    "@type": "Organization",
+    "name": "Supafana",
+  },
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "Trial",
+      "price": "0",
+      "priceCurrency": "USD",
+      "priceValidUntil": "2025-12-31",
+      "availability": "https://schema.org/InStock",
+      "validFrom": "2024-01-01",
+    },
+    {
+      "@type": "Offer",
+      "name": "Pro",
+      "price": "100",
+      "priceCurrency": "USD",
+      "priceValidUntil": "2025-12-31",
+      "availability": "https://schema.org/InStock",
+      "validFrom": "2024-01-01",
+    },
+  ],
+};
 ---
 
-<Main meta={{ title: "Supafana pricing" }}>
+<Main meta={{ title: "Supafana pricing" }} linkedData={linkedData}>
   <div
     class="jusitfy-self-center flex-1 w-full min-h-72 flex flex-col justify-center px-4 md:px-24 gap-6"
   >
