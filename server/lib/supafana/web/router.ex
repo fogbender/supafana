@@ -762,7 +762,13 @@ defmodule Supafana.Web.Router do
 
       enabled_emails
       |> Enum.each(fn email ->
-        :ok = update_contact_point(g.password, g.supabase_id, email, true)
+        try do
+          :ok = update_contact_point(g.password, g.supabase_id, email, true)
+        rescue
+          e ->
+            Logger.error("Failed to update contact point for email #{email}: #{inspect(e)}")
+            :ok
+        end
       end)
 
       {_, deleted_members} =
@@ -777,7 +783,13 @@ defmodule Supafana.Web.Router do
       deleted_members
       |> Enum.each(fn
         %Data.EmailAlertContact{email: email} when not is_nil(email) ->
-          :ok = update_contact_point(g.password, g.supabase_id, email, false)
+          try do
+            :ok = update_contact_point(g.password, g.supabase_id, email, false)
+          rescue
+            e ->
+              Logger.error("Failed to remove contact point for email #{email}: #{inspect(e)}")
+              :ok
+          end
 
         _ ->
           :ok
